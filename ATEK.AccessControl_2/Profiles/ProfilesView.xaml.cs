@@ -13,17 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ATEK.AccessControl_2
+namespace ATEK.AccessControl_2.Profiles
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ProfilesView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ProfilesView : UserControl
     {
-        public MainWindow()
+        public ProfilesView()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
     }
 }

@@ -18,42 +18,14 @@ namespace ATEK.AccessControl_2.Services
             _context = new AccessControlContext();
         }
 
-        public async Task<Profile> AddProfileAsync(Profile profile)
-        {
-            _context.Profiles.Add(profile);
-            await _context.SaveChangesAsync();
-            return profile;
-        }
-
-        public async Task DeleteProfileAsync(int id)
-        {
-            var profile = _context.Profiles.FirstOrDefault(c => c.Id == id);
-            if (profile != null)
-            {
-                _context.Profiles.Remove(profile);
-            }
-            await _context.SaveChangesAsync();
-        }
-
-        public Task<Profile> GetProfileAsync(int id)
-        {
-            return _context.Profiles.FirstOrDefaultAsync(p => p.Id == id);
-        }
-
         public Task<List<Profile>> GetProfilesAsync()
         {
             return _context.Profiles.ToListAsync();
         }
 
-        public async Task<Profile> UpdateProfileAsync(Profile profile)
+        public List<Profile> GetProfiles()
         {
-            if (!_context.Profiles.Local.Any(p => p.Id == profile.Id))
-            {
-                _context.Profiles.Attach(profile);
-            }
-            _context.Entry(profile).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return profile;
+            return _context.Profiles.ToList();
         }
     }
 }

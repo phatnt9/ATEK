@@ -11,12 +11,6 @@ namespace ATEK.AccessControl_2.Services
     {
         Task<List<Profile>> GetProfilesAsync();
 
-        Task<Profile> GetProfileAsync(int id);
-
-        Task<Profile> AddProfileAsync(Profile profile);
-
-        Task<Profile> UpdateProfileAsync(Profile profile);
-
-        Task DeleteProfileAsync(int id);
+        List<Profile> GetProfiles();
     }
 }

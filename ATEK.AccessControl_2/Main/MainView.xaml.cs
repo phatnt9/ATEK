@@ -1,4 +1,5 @@
-﻿using ATEK.AccessControl_2.ViewModels;
+﻿using ATEK.AccessControl_2.Services;
+using ATEK.Data.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,16 +15,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ATEK.AccessControl_2.Views
+namespace ATEK.AccessControl_2.Main
 {
     /// <summary>
-    /// Interaction logic for LoginView.xaml
+    /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class LoginView : UserControl
+    public partial class MainView : UserControl
     {
-        public LoginView()
+        public MainView()
         {
-            this.DataContext = new LoginViewModel();
             InitializeComponent();
         }
     }

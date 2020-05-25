@@ -1,9 +1,8 @@
-﻿<Application x:Class="ATEK.AccessControl_2.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ATEK.AccessControl_2"
-             StartupUri="MainWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
+﻿<Application
+    x:Class="ATEK.AccessControl_2.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ATEK.AccessControl_2"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources />
 </Application>
