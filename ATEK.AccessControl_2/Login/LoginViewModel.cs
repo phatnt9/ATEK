@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATEK.AccessControl_2.Login
 {
-    public class LoginViewModel : ViewModelBase
+    public class LoginViewModel : BindableBase
     {
         public LoginViewModel()
         {

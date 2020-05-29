@@ -2,7 +2,10 @@
     x:Class="ATEK.AccessControl_2.Main.MainView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classes="clr-namespace:ATEK.AccessControl_2.Classes"
+    xmlns:conv="clr-namespace:ATEK.AccessControl_2.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gates="clr-namespace:ATEK.AccessControl_2.Gates"
     xmlns:local="clr-namespace:ATEK.AccessControl_2"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:profiles="clr-namespace:ATEK.AccessControl_2.Profiles"
@@ -10,8 +13,22 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <conv:NegatableBooleanToVisibilityConverter x:Key="VisConverter" />
+        <conv:NegatableBooleanToVisibilityConverter x:Key="NegVisConverter" Negate="True" />
         <DataTemplate DataType="{x:Type profiles:ProfilesViewModel}">
             <profiles:ProfilesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type gates:GatesViewModel}">
+            <gates:GatesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type classes:ClassesViewModel}">
+            <classes:ClassesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type classes:AddEditClassViewModel}">
+            <classes:AddEditClassView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type profiles:ImportProfilesViewModel}">
+            <profiles:ImportProfilesView />
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
@@ -20,14 +37,40 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" />
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Width="50"
+                    Height="20"
+                    Margin="4,0"
+                    Command="{Binding NavToProfilesCommand}"
+                    Content="Profiles"
+                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                <Button
+                    Width="50"
+                    Height="20"
+                    Margin="4,0"
+                    Command="{Binding NavToGatesCommand}"
+                    Content="Gates"
+                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                <Button
+                    Width="50"
+                    Height="20"
+                    Margin="4,0"
+                    Command="{Binding NavToClassesCommand}"
+                    Content="Classes"
+                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+            </StackPanel>
+        </Grid>
         <Grid Grid.Row="1">
-            <TabControl>
-                <TabItem Header="Profiles">
-                    <ContentControl Content="{Binding ProfilesViewModel}" />
-                </TabItem>
-                <TabItem Header="Gates" />
-            </TabControl>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="0" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <ContentControl Content="{Binding CurrentViewModel}" />
+            </Grid>
+            <Grid Grid.Column="1" />
         </Grid>
         <Grid Grid.Row="2" />
     </Grid>

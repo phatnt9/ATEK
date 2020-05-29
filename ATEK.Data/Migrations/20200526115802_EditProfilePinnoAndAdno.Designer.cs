@@ -4,14 +4,16 @@ using ATEK.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ATEK.Data.Migrations
 {
     [DbContext(typeof(AccessControlContext))]
-    partial class ProfileContextModelSnapshot : ModelSnapshot
+    [Migration("20200526115802_EditProfilePinnoAndAdno")]
+    partial class EditProfilePinnoAndAdno
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +125,7 @@ namespace ATEK.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Pinno")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -131,10 +133,6 @@ namespace ATEK.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("Pinno")
-                        .IsUnique()
-                        .HasFilter("[Pinno] IS NOT NULL");
 
                     b.ToTable("Profiles");
                 });

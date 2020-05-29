@@ -12,6 +12,7 @@ namespace ATEK.Data.Contexts
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Gate> Gates { get; set; }
         public DbSet<Group> Groups { get; set; }
+        public DbSet<Class> Classes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,6 +21,7 @@ namespace ATEK.Data.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Profile>().HasIndex(u => u.Pinno).IsUnique();
             modelBuilder.Entity<ProfileGate>().HasKey(s => new { s.ProfileId, s.GateId });
             modelBuilder.Entity<ProfileGroup>().HasKey(s => new { s.ProfileId, s.GroupId });
         }

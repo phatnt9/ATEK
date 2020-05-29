@@ -27,14 +27,20 @@
     </b:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <StackPanel Width="100" HorizontalAlignment="Left">
+        <Grid Grid.Row="0" Background="#f1f1f1">
+            <StackPanel
+                Width="100"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
                 <Button Command="{Binding NavLoginCommand}" Content="Login" />
             </StackPanel>
-            <StackPanel Width="100" HorizontalAlignment="Right">
+            <StackPanel
+                Width="100"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
                 <Button Command="{Binding NavMainCommand}" Content="Main" />
             </StackPanel>
         </Grid>

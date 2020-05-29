@@ -5,6 +5,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="Migrations\20200525135925_ThemClassPropertiesVaoProfile.cs" />
+		<Compile Remove="Migrations\20200525135925_ThemClassPropertiesVaoProfile.Designer.cs" />
+		<Compile Remove="Migrations\20200526144344_EditProfilePinnoAndAdnoascasca.cs" />
+		<Compile Remove="Migrations\20200526144344_EditProfilePinnoAndAdnoascasca.Designer.cs" />
+		<Compile Remove="Migrations\20200526144508_EditProfilePinnoAndAdnoascasca.cs" />
+		<Compile Remove="Migrations\20200526144508_EditProfilePinnoAndAdnoascasca.Designer.cs" />
+		<Compile Remove="Migrations\20200526145037_Initial.cs" />
+		<Compile Remove="Migrations\20200526145037_Initial.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.4">
 			<PrivateAssets>all</PrivateAssets>

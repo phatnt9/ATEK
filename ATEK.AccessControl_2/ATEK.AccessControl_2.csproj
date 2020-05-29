@@ -111,6 +111,7 @@
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Common, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -146,6 +147,12 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Unity.Abstractions, Version=5.11.6.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.11.7\lib\net47\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.11.8.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.11.7\lib\net47\Unity.Container.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -155,14 +162,52 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\AddEditClassView.xaml.cs">
+      <DependentUpon>AddEditClassView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\AddEditClassViewModel.cs" />
+    <Compile Include="Classes\ClassesView.xaml.cs">
+      <DependentUpon>ClassesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\ClassesViewModel.cs" />
+    <Compile Include="Classes\SimpleEditableClass.cs" />
+    <Compile Include="ContainerHelper.cs" />
+    <Compile Include="Converters\NegatableBooleanToVisibilityConverter.cs" />
+    <Compile Include="Gates\GatesView.xaml.cs">
+      <DependentUpon>GatesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gates\GatesViewModel.cs" />
+    <Compile Include="GlobalConstant.cs" />
+    <Compile Include="Groups\GroupsView.xaml.cs">
+      <DependentUpon>GroupsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Groups\GroupsViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Profiles\AddEditProfileView.xaml.cs">
+      <DependentUpon>AddEditProfileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\AddEditProfileViewModel.cs" />
+    <Compile Include="Profiles\ImportProfilesView.xaml.cs">
+      <DependentUpon>ImportProfilesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\ImportProfilesViewModel.cs" />
+    <Compile Include="Profiles\ProfileOfflineView.xaml.cs">
+      <DependentUpon>ProfileOfflineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\ProfileOfflineViewModel.cs" />
+    <Compile Include="Profiles\ProfileOnlineView.xaml.cs">
+      <DependentUpon>ProfileOnlineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\ProfileOnlineViewModel.cs" />
+    <Compile Include="Profiles\SimpleEditableProfile.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="Services\IProfilesRepository.cs" />
-    <Compile Include="Services\ProfilesRepository.cs" />
+    <Compile Include="Services\AccessControlRepository.cs" />
+    <Compile Include="Services\IAccessControlRepository.cs" />
     <Compile Include="Login\LoginViewModel.cs" />
     <Compile Include="Main\MainViewModel.cs" />
     <Compile Include="Profiles\ProfilesViewModel.cs" />
-    <Compile Include="ViewModelBase.cs" />
+    <Compile Include="ValidatableBindableBase.cs" />
+    <Compile Include="BindableBase.cs" />
     <Compile Include="Login\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -172,6 +217,22 @@
     <Compile Include="Profiles\ProfilesView.xaml.cs">
       <DependentUpon>ProfilesView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Classes\AddEditClassView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Classes\ClassesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gates\GatesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Groups\GroupsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -189,6 +250,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Main\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Profiles\AddEditProfileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Profiles\ImportProfilesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Profiles\ProfileOfflineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Profiles\ProfileOnlineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -216,6 +293,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\ATEK.Domain.Models.Class.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -225,7 +303,33 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gates\" />
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>9</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ATEK.Data\ATEK.Data.csproj">

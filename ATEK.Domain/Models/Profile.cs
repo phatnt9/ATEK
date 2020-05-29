@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -8,10 +9,9 @@ namespace ATEK.Domain.Models
     public class Profile : ModelBase
     {
         private int id;
-        private int pinno;
-        private int adno;
+        private string pinno;
+        private string adno;
         private string name;
-        private string @class;
         private string gender;
         private DateTime dateOfBirth;
         private DateTime dateOfIssue;
@@ -25,6 +25,8 @@ namespace ATEK.Domain.Models
         private string licensePlate;
         private DateTime dateCreated;
         private DateTime dateModified;
+        private Class @class;
+        private int classId;
         private List<ProfileGate> profileGates;
         private List<ProfileGroup> profileGroups;
 
@@ -35,10 +37,11 @@ namespace ATEK.Domain.Models
         }
 
         public int Id { get { return id; } set { SetProperty(ref id, value); } }
-        public int Pinno { get { return pinno; } set { SetProperty(ref pinno, value); } }
-        public int Adno { get { return adno; } set { SetProperty(ref adno, value); } }
+        public string Pinno { get { return pinno; } set { SetProperty(ref pinno, value); } }
+        public string Adno { get { return adno; } set { SetProperty(ref adno, value); } }
         public string Name { get { return name; } set { SetProperty(ref name, value); } }
-        public string Class { get { return @class; } set { SetProperty(ref @class, value); } }
+        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
+        public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
         public string Gender { get { return gender; } set { SetProperty(ref gender, value); } }
         public DateTime DateOfBirth { get { return dateOfBirth; } set { SetProperty(ref dateOfBirth, value); } }
         public DateTime DateOfIssue { get { return dateOfIssue; } set { SetProperty(ref dateOfIssue, value); } }
@@ -52,7 +55,6 @@ namespace ATEK.Domain.Models
         public string LicensePlate { get { return licensePlate; } set { SetProperty(ref licensePlate, value); } }
         public DateTime DateCreated { get { return dateCreated; } set { SetProperty(ref dateCreated, value); } }
         public DateTime DateModified { get { return dateModified; } set { SetProperty(ref dateModified, value); } }
-
         public List<ProfileGate> ProfileGates { get { return profileGates; } set { SetProperty(ref profileGates, value); } }
         public List<ProfileGroup> ProfileGroups { get { return profileGroups; } set { SetProperty(ref profileGroups, value); } }
     }

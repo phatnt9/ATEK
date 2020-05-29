@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ATEK.AccessControl_2
 {
-    public class ViewModelBase : INotifyPropertyChanged
+    public class BindableBase : INotifyPropertyChanged
     {
         protected virtual void SetProperty<T>(ref T member, T val,
               [CallerMemberName] string propertyName = null)
