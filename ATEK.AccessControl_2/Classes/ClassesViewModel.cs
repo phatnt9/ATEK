@@ -25,6 +25,7 @@ namespace ATEK.AccessControl_2.Classes
             this.repo = repo;
             AddClassCommand = new RelayCommand(OnAddClass);
             EditClassCommand = new RelayCommand<Class>(OnEditClass);
+            RemoveClassCommand = new RelayCommand<Class>(OnRemoveClass);
         }
 
         #region Actions
@@ -40,7 +41,7 @@ namespace ATEK.AccessControl_2.Classes
         public RelayCommand AddClassCommand { get; private set; }
         public RelayCommand CancelCommand { get; private set; }
         public RelayCommand<Class> EditClassCommand { get; private set; }
-        public RelayCommand RemoveClassCommand { get; private set; }
+        public RelayCommand<Class> RemoveClassCommand { get; private set; }
 
         #endregion Commands
 
@@ -56,7 +57,14 @@ namespace ATEK.AccessControl_2.Classes
             set
             {
                 SetProperty(ref selectedClass, value);
-                LoadClassProfiles(selectedClass.Id);
+                //if (selectedClass != null)
+                //{
+                //    LoadClassProfiles(selectedClass.Id);
+                //}
+                //else
+                //{
+                //    ClassProfiles.Clear();
+                //}
             }
         }
 
@@ -73,14 +81,14 @@ namespace ATEK.AccessControl_2.Classes
             //{
             //    return;
             //}
-            allClasses = repo.GetClasses();
+            allClasses = repo.GetClasses().ToList();
             Classes = new ObservableCollection<Class>(allClasses);
         }
 
         private void LoadClassProfiles(int classId)
         {
-            Class @class = repo.LoadClassProfiles(classId);
-            ClassProfiles = new ObservableCollection<Profile>(@class.Profiles);
+            //ClassProfiles = new ObservableCollection<Profile>(repo.LoadClassProfiles(classId));
+            ClassProfiles = new ObservableCollection<Profile>(SelectedClass.Profiles);
         }
 
         private void OnAddClass()
@@ -91,6 +99,14 @@ namespace ATEK.AccessControl_2.Classes
         private void OnEditClass(Class @class)
         {
             EditClassRequested(@class);
+        }
+
+        private void OnRemoveClass(Class @class)
+        {
+            List<Class> deletes = new List<Class>();
+            deletes.Add(@class);
+            repo.RemoveClasses(deletes);
+            LoadData();
         }
     }
 }

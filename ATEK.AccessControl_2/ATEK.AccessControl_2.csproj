@@ -178,10 +178,19 @@
     </Compile>
     <Compile Include="Gates\GatesViewModel.cs" />
     <Compile Include="GlobalConstant.cs" />
+    <Compile Include="Groups\AddEditGroupView.xaml.cs">
+      <DependentUpon>AddEditGroupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Groups\AddEditGroupViewModel.cs" />
     <Compile Include="Groups\GroupsView.xaml.cs">
       <DependentUpon>GroupsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Groups\GroupsViewModel.cs" />
+    <Compile Include="Groups\ManageGroupView.xaml.cs">
+      <DependentUpon>ManageGroupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Groups\ManageGroupViewModel.cs" />
+    <Compile Include="Groups\SimpleEditableGroup.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Profiles\AddEditProfileView.xaml.cs">
       <DependentUpon>AddEditProfileView.xaml</DependentUpon>
@@ -229,7 +238,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Groups\AddEditGroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Groups\GroupsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Groups\ManageGroupView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -294,6 +311,8 @@
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\DataSources\ATEK.Domain.Models.Class.datasource" />
+    <None Include="Properties\DataSources\ATEK.Domain.Models.Group.datasource" />
+    <None Include="Properties\DataSources\ATEK.Domain.Models.Profile.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -17,8 +17,14 @@ namespace ATEK.AccessControl_2.Profiles
     {
         private readonly IAccessControlRepository repo;
         private List<Profile> allProfiles;
+        private List<Class> allClasses;
+        private List<Group> allGroups;
         private ObservableCollection<Profile> profiles;
         private Profile selectedProfile;
+        private string searchInput;
+        private ObservableCollection<Class> classes;
+        private ObservableCollection<Group> groups;
+        private string searchProfilesByClass;
 
         public ProfilesViewModel(IAccessControlRepository repo)
         {
@@ -31,10 +37,32 @@ namespace ATEK.AccessControl_2.Profiles
 
         #region Properties
 
+        public string SearchInput
+        {
+            get { return searchInput; }
+            set
+            {
+                SetProperty(ref searchInput, value);
+                FilterCustomers(searchInput);
+            }
+        }
+
         public ObservableCollection<Profile> Profiles
         {
             get { return profiles; }
             set { SetProperty(ref profiles, value); }
+        }
+
+        public ObservableCollection<Class> Classes
+        {
+            get { return classes; }
+            set { SetProperty(ref classes, value); }
+        }
+
+        public ObservableCollection<Group> Groups
+        {
+            get { return groups; }
+            set { SetProperty(ref groups, value); }
         }
 
         public Profile SelectedProfile
@@ -43,13 +71,39 @@ namespace ATEK.AccessControl_2.Profiles
             set { SetProperty(ref selectedProfile, value); }
         }
 
+        public string SearchProfilesByClass
+        {
+            get { return searchProfilesByClass; }
+            set { SetProperty(ref searchProfilesByClass, value); Console.WriteLine(value); }
+        }
+
         #endregion Properties
 
         #region Methods
 
+        private void FilterCustomers(string searchInput)
+        {
+            if (string.IsNullOrWhiteSpace(searchInput))
+            {
+                Profiles = new ObservableCollection<Profile>(allProfiles);
+                return;
+            }
+            else
+            {
+                Profiles = new ObservableCollection<Profile>(
+                    allProfiles.Where(c =>
+                    (
+                    c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                    c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                    c.Adno.ToLower().Contains(searchInput.ToLower())
+                    )
+                    ));
+            }
+        }
+
         private void OnRefreshProfiles()
         {
-            LoadData();
+            LoadProfiles();
         }
 
         public void LoadData()
@@ -59,8 +113,30 @@ namespace ATEK.AccessControl_2.Profiles
             //{
             //    return;
             //}
-            allProfiles = repo.GetProfiles();
+            LoadProfiles();
+            LoadClasses();
+            LoadGroups();
+        }
+
+        private void LoadProfiles()
+        {
+            allProfiles = repo.GetProfiles().ToList();
+            Console.WriteLine("Number of Profile:" + allProfiles.Count);
             Profiles = new ObservableCollection<Profile>(allProfiles);
+        }
+
+        private void LoadClasses()
+        {
+            allClasses = repo.GetClasses().ToList();
+            Console.WriteLine("Number of Class:" + allClasses.Count);
+            Classes = new ObservableCollection<Class>(allClasses);
+        }
+
+        private void LoadGroups()
+        {
+            allGroups = repo.GetGroups().ToList();
+            Console.WriteLine("Number of Group:" + allGroups.Count);
+            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         private void OnAddProfile()
@@ -73,17 +149,17 @@ namespace ATEK.AccessControl_2.Profiles
             ImportProfilesRequested();
         }
 
-        private void OnRemoveProfiles(object profiles)
+        private void OnRemoveProfiles(object obj)
         {
-            if (profiles != null)
+            if (obj != null)
             {
-                System.Collections.IList items = (System.Collections.IList)profiles;
+                System.Collections.IList items = (System.Collections.IList)obj;
                 var collection = items.Cast<Profile>();
                 if (collection.Count() > 0)
                 {
                     repo.RemoveProfiles(collection);
                 }
-                LoadData();
+                LoadProfiles();
             }
         }
 

@@ -165,13 +165,8 @@ namespace ATEK.AccessControl_2.Profiles
                 errorRowIndex = 0;
                 hasError = false;
 
-                //var s1 = xlRange.Cells[i, 2];
-                //var s2 = xlRange.Cells[i, 2].Value2;
-                //var s3 = xlRange.Cells[i, 2].Value2.ToString();
-                //var s4 = string.IsNullOrWhiteSpace(xlRange.Cells[i, 2].Value2);
-
                 //Name 2
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 2].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 2].Value2))
                 {
                     profile.Name = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
                 }
@@ -181,9 +176,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 2;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Pinno 8
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 8].Value2) && IsDigitsOnly(xlRange.Cells[i, 8].Value2.ToString()))
+                if (CheckNumberInputFromExcel(xlRange.Cells[i, 8].Value2))
                 {
                     profile.Pinno = xlRange.Cells[i, 8].Value2.ToString();
                 }
@@ -193,9 +189,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 8;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Adno 3
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 3].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 3].Value2))
                 {
                     profile.Adno = xlRange.Cells[i, 3].Value2.ToString().ToUpper();
                 }
@@ -205,9 +202,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 3;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Gender 4
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 4].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 4].Value2))
                 {
                     profile.Gender = (xlRange.Cells[i, 4].Value2.ToString().ToUpper() == "MALE" ? "Male" : "Female");
                 }
@@ -217,9 +215,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 4;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Date of Birth 5
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 5].Value2))
+                if (CheckDateInputFromExcel(xlRange.Cells[i, 5].Value2))
                 {
                     profile.DateOfBirth = ParseDateTimeFormCell(xlRange.Cells[i, 5].Value2.ToString());
                 }
@@ -229,9 +228,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 5;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Date of Issue 6
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 6].Value2))
+                if (CheckDateInputFromExcel(xlRange.Cells[i, 6].Value2))
                 {
                     profile.DateOfIssue = ParseDateTimeFormCell(xlRange.Cells[i, 6].Value2.ToString());
                 }
@@ -241,9 +241,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 6;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Image 7
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 7].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 7].Value2))
                 {
                     profile.Image = xlRange.Cells[i, 7].Value2.ToString();
                 }
@@ -253,9 +254,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 7;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Class 9
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 9].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 9].Value2))
                 {
                     className = xlRange.Cells[i, 9].Value2.ToString();
                     int classId = CheckClassNameValid(className.ToUpper());
@@ -280,9 +282,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 9;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Group 10
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 10].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 10].Value2))
                 {
                     groupName = xlRange.Cells[i, 10].Value2.ToString();
                     int groupId = CheckGroupNameValid(groupName.ToUpper());
@@ -307,9 +310,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 10;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Email 11
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 11].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 11].Value2))
                 {
                     profile.Email = xlRange.Cells[i, 11].Value2.ToString();
                 }
@@ -319,9 +323,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 11;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Address 12
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 12].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 12].Value2))
                 {
                     profile.Address = xlRange.Cells[i, 12].Value2.ToString();
                 }
@@ -331,9 +336,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 12;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Phone 13
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 13].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 13].Value2))
                 {
                     profile.Phone = xlRange.Cells[i, 13].Value2.ToString();
                 }
@@ -343,9 +349,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 13;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Status 14
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 14].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 14].Value2))
                 {
                     profile.Status = xlRange.Cells[i, 14].Value2.ToString();
                 }
@@ -355,9 +362,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 14;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Expire Date 15
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 15].Value2))
+                if (CheckDateInputFromExcel(xlRange.Cells[i, 15].Value2))
                 {
                     var expireDate = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
                     if (expireDate != null)
@@ -370,6 +378,7 @@ namespace ATEK.AccessControl_2.Profiles
                         errorColumnIndex = 15;
                         errorRowIndex = i;
                         hasError = true;
+                        break;
                     }
                 }
                 else
@@ -378,9 +387,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 15;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Automatic Suspension 16
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 16].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 16].Value2))
                 {
                     bool checkDateToLock = false;
                     if (Boolean.TryParse(xlRange.Cells[i, 16].Value2.ToString(), out checkDateToLock))
@@ -397,7 +407,7 @@ namespace ATEK.AccessControl_2.Profiles
                     profile.CheckDateToLock = false;
                 }
                 //License Plate 17
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 17].Value2))
+                if (CheckStringInputFromExcel(xlRange.Cells[i, 17].Value2))
                 {
                     profile.LicensePlate = xlRange.Cells[i, 17].Value2.ToString();
                 }
@@ -407,9 +417,10 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 17;
                     errorRowIndex = i;
                     hasError = true;
+                    break;
                 }
                 //Date Created 18
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 18].Value2))
+                if (CheckDateInputFromExcel(xlRange.Cells[i, 18].Value2))
                 {
                     if (addProfilesChecked)
                     {
@@ -428,6 +439,7 @@ namespace ATEK.AccessControl_2.Profiles
                             errorColumnIndex = 18;
                             errorRowIndex = i;
                             hasError = true;
+                            break;
                         }
                     }
                 }
@@ -437,35 +449,27 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 18;
                     errorRowIndex = i;
                     hasError = true;
-                }
-                //Date Modified 19
-                if (!string.IsNullOrWhiteSpace(xlRange.Cells[i, 19].Value2))
-                {
-                    profile.DateCreated = DateTime.Now;
-                }
-                else
-                {
-                    profile.DateCreated = DateTime.Now;
-                }
-
-                if (hasError)
-                {
-                    string errorMessage = $"Invalid data in Row:{errorRowIndex}, Column:{errorColumn}(index:{errorColumnIndex})";
-                    System.Windows.Forms.MessageBox.Show("File not Exist!", errorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 }
-                else
-                {
-                    listProfiles.Add(profile);
-                }
+                //Date Modified 19
+                profile.DateCreated = DateTime.Now;
+
+                listProfiles.Add(profile);
 
                 //Finish process
                 if (importBackGroundWorker.CancellationPending)
                 {
                     ImportStatus = "Stopped";
-                    break;
+                    return;
                 }
                 (sender as BackgroundWorker).ReportProgress((i * 100) / rowCount);
+            }
+
+            if (hasError)
+            {
+                string errorMessage = $"Invalid data in Row:{errorRowIndex}, Column:{errorColumn}(index:{errorColumnIndex})";
+                System.Windows.Forms.MessageBox.Show(errorMessage, "Invalid Data!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             if (listProfiles.Count > 0)
@@ -530,6 +534,83 @@ namespace ATEK.AccessControl_2.Profiles
             return true;
         }
 
+        private bool CheckStringInputFromExcel(object value)
+        {
+            //Console.WriteLine("====CheckString====");
+            if (value != null)
+            {
+                string str = value.ToString();
+                bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
+                //Console.WriteLine("str: " + str);
+                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
+                if (notNullOrWhiteSpace)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Value is null.");
+                return false;
+            }
+        }
+
+        private bool CheckDateInputFromExcel(object value)
+        {
+            //Console.WriteLine("====CheckDouble====");
+            if (value != null)
+            {
+                string str = value.ToString();
+                bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
+                //Console.WriteLine("str: " + str);
+                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
+                if (notNullOrWhiteSpace)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Value is null.");
+                return false;
+            }
+        }
+
+        private bool CheckNumberInputFromExcel(object value)
+        {
+            //Console.WriteLine("====CheckDouble====");
+            if (value != null)
+            {
+                string str = value.ToString();
+                bool isDigitsOnly = IsDigitsOnly(value.ToString());
+                bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
+                //Console.WriteLine("str: " + str);
+                //Console.WriteLine("isDigitsOnly: " + isDigitsOnly);
+                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
+                if (isDigitsOnly && notNullOrWhiteSpace)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Value is null.");
+                return false;
+            }
+        }
+
         private int CheckClassNameValid(string className)
         {
             var @class = allClasses.FirstOrDefault(c => c.Name == className);
@@ -568,8 +649,8 @@ namespace ATEK.AccessControl_2.Profiles
             //{
             //    return;
             //}
-            allClasses = repo.GetClasses();
-            allGroups = repo.GetGroups();
+            allClasses = repo.GetClasses().ToList();
+            allGroups = repo.GetGroups().ToList();
         }
 
         #endregion Methods

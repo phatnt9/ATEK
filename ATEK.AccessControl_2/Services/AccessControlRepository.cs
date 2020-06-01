@@ -1,5 +1,6 @@
 ﻿using ATEK.Data.Contexts;
 using ATEK.Domain.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,27 +19,38 @@ namespace ATEK.AccessControl_2.Services
             _context = new AccessControlContext();
         }
 
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
+
         #region Profiles
 
-        public List<Profile> GetProfiles()
+        public IEnumerable<Profile> GetProfiles()
         {
             return _context.Profiles.ToList();
         }
 
-        public Profile AddProfile(Profile profile)
+        public void AddProfile(Profile profile)
         {
             _context.Profiles.Add(profile);
             _context.SaveChanges();
-            return profile;
         }
 
         public void AddProfiles(IEnumerable<Profile> profiles)
         {
-            _context.Profiles.AddRange(profiles);
-            _context.SaveChanges();
+            try
+            {
+                _context.Profiles.AddRange(profiles);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
-        public Profile UpdateProfile(Profile profile)
+        public void UpdateProfile(Profile profile)
         {
             if (!_context.Profiles.Local.Any(c => c.Id == profile.Id))
             {
@@ -46,7 +58,6 @@ namespace ATEK.AccessControl_2.Services
             }
             _context.Entry(profile).State = EntityState.Modified;
             _context.SaveChanges();
-            return profile;
         }
 
         public void RemoveProfiles(IEnumerable<Profile> profiles)
@@ -59,19 +70,18 @@ namespace ATEK.AccessControl_2.Services
 
         #region Classes
 
-        public List<Class> GetClasses()
+        public IEnumerable<Class> GetClasses()
         {
             return _context.Classes.ToList();
         }
 
-        public Class AddClass(Class @class)
+        public void AddClass(Class @class)
         {
             _context.Classes.Add(@class);
             _context.SaveChanges();
-            return @class;
         }
 
-        public Class UpdateClass(Class @class)
+        public void UpdateClass(Class @class)
         {
             if (!_context.Classes.Local.Any(c => c.Id == @class.Id))
             {
@@ -79,7 +89,6 @@ namespace ATEK.AccessControl_2.Services
             }
             _context.Entry(@class).State = EntityState.Modified;
             _context.SaveChanges();
-            return @class;
         }
 
         public void RemoveClasses(IEnumerable<Class> classes)
@@ -101,51 +110,50 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
-        public Class AddProfilesToClass(int classId, List<Profile> profiles)
+        public void AddProfilesToClass(int classId, IEnumerable<Profile> profiles)
         {
             var @class = _context.Classes.Find(classId);
             @class.Profiles.AddRange(profiles);
             _context.SaveChanges();
-            return @class;
         }
 
-        public Class AddProfileToClass(int classId, Profile profile)
+        public void AddProfileToClass(int classId, Profile profile)
         {
             var @class = _context.Classes.Find(classId);
             @class.Profiles.Add(profile);
             _context.SaveChanges();
-            return @class;
         }
 
-        public Class GetClassIncludeProfiles(int classId)
-        {
-            var @class = _context.Classes.Where(c => c.Id == classId).Include(c => c.Profiles).FirstOrDefault();
-            return @class;
-        }
-
-        public Class LoadClassProfiles(int classId)
+        public IEnumerable<Profile> LoadClassProfiles(int classId)
         {
             Class @class = _context.Classes.Include(c => c.Profiles).SingleOrDefault(c => c.Id == classId);
-            return @class;
+            return @class.Profiles;
         }
 
         #endregion Classes
 
         #region Groups
 
-        public List<Group> GetGroups()
+        public IEnumerable<Group> GetGroups()
         {
             return _context.Groups.ToList();
         }
 
-        public Group AddGroup(Group group)
+        public Group GetGroupWithAllRelatedData(int groupId)
+        {
+            return _context.Groups
+                .Include(g => g.ProfileGroups)
+                .ThenInclude(g => g.Profile)
+                .First(g => g.Id == groupId);
+        }
+
+        public void AddGroup(Group group)
         {
             _context.Groups.Add(group);
             _context.SaveChanges();
-            return group;
         }
 
-        public Group UpdateGroup(Group group)
+        public void UpdateGroup(Group group)
         {
             if (!_context.Groups.Local.Any(c => c.Id == group.Id))
             {
@@ -153,7 +161,6 @@ namespace ATEK.AccessControl_2.Services
             }
             _context.Entry(group).State = EntityState.Modified;
             _context.SaveChanges();
-            return group;
         }
 
         public void RemoveGroups(IEnumerable<Group> groups)
@@ -162,6 +169,141 @@ namespace ATEK.AccessControl_2.Services
             _context.SaveChanges();
         }
 
+        public IEnumerable<Profile> LoadGroupProfiles(int groupId)
+        {
+            var group = _context.Groups.Where(g => g.Id == groupId)
+                .Select(g => new
+                {
+                    Group = g,
+                    Profiles = g.ProfileGroups.Select(pg => pg.Profile)
+                }).FirstOrDefault();
+            return group.Profiles;
+        }
+
+        public bool AddProfileToGroup(Group group, Profile profile)
+        {
+            var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
+            _context.Add(addItem);
+            _context.SaveChanges();
+            return true;
+            //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
+            //if (data != null)
+            //{
+            //    Console.WriteLine($"Co ne.{profile.Id}");
+            //    _context.Entry(data).State = EntityState.Added;
+            //    _context.SaveChanges();
+            //    return true;
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Ko co.{profile.Id}");
+            //    var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
+            //    _context.Add(addItem);
+            //    _context.SaveChanges();
+            //    return true;
+            //}
+        }
+
+        public async Task AddProfilesToGroupAsync(Group group, IEnumerable<Profile> collection)
+        {
+            Console.WriteLine("ADD:");
+            foreach (var item in collection)
+            {
+                var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == item.Id);
+                if (data != null)
+                {
+                    Console.WriteLine($"Add Co ne.{item.Id}");
+                    _context.Entry(data).State = EntityState.Added;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    Console.WriteLine($"Add Ko co.{item.Id}");
+                    var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
+                    _context.Add(addItem);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public bool RemoveProfileFromGroup(Group group, Profile profile)
+        {
+            var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
+            _context.Entry(data).State = EntityState.Deleted;
+            _context.SaveChanges();
+            return true;
+            //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
+            //if (data != null)
+            //{
+            //    Console.WriteLine($"Remove Co ne.{profile.Id}");
+            //    _context.Entry(data).State = EntityState.Deleted;
+            //    _context.SaveChanges();
+            //    return true;
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Remove Ko co.{profile.Id}");
+            //    var removeItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
+            //    _context.Remove(removeItem);
+            //    _context.SaveChanges();
+            //    return true;
+            //}
+        }
+
+        public async Task RemoveProfilesFromGroupAsync(Group group, IEnumerable<Profile> collection)
+        {
+            Console.WriteLine("REMOVE:");
+            foreach (var item in collection)
+            {
+                var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == item.Id);
+                if (data != null)
+                {
+                    Console.WriteLine($"Co ne.{item.Id}");
+                    _context.Entry(data).State = EntityState.Deleted;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    Console.WriteLine($"Ko co.{item.Id}");
+                    var removeItem = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
+                    _context.Remove(removeItem);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
         #endregion Groups
+
+        public virtual void HandleException(Exception exception)
+        {
+            Console.WriteLine("ERROR IN DATABASE CONTEXT");
+            SqlException innerException = exception.InnerException as SqlException;
+            if (innerException != null)
+            {
+                switch (innerException.Number)
+                {
+                    case 2601:
+                        {
+                            Console.WriteLine(innerException.Message);
+                            Console.WriteLine("Duplicated Pinno");
+                            break;
+                        }
+                    case 2627:
+                        {
+                            Console.WriteLine(innerException.Message);
+                            Console.WriteLine("Duplicated GroupProfiles");
+                            break;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

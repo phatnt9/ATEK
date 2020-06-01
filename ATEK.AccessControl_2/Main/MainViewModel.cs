@@ -13,6 +13,7 @@ using System.Timers;
 using Unity;
 using ATEK.AccessControl_2.Gates;
 using ATEK.AccessControl_2.Classes;
+using ATEK.AccessControl_2.Groups;
 
 namespace ATEK.AccessControl_2.Main
 {
@@ -24,24 +25,42 @@ namespace ATEK.AccessControl_2.Main
         private GatesViewModel gatesViewModel;
         private ClassesViewModel classesViewModel;
         private AddEditClassViewModel addEditClassViewModel;
+        private GroupsViewModel groupsViewModel;
+        private AddEditGroupViewModel addEditGroupViewModel;
+        private ManageGroupViewModel manageGroupViewModel;
 
         public MainViewModel()
         {
             NavToProfilesCommand = new RelayCommand(OnNavProfiles);
             NavToGatesCommand = new RelayCommand(OnNavGates);
             NavToClassesCommand = new RelayCommand(OnNavClasses);
+            NavToGroupsCommand = new RelayCommand(OnNavGroups);
 
             ProfilesViewModel = ContainerHelper.Container.Resolve<ProfilesViewModel>();
-            GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
-            ClassesViewModel = ContainerHelper.Container.Resolve<ClassesViewModel>();
-            AddEditClassViewModel = ContainerHelper.Container.Resolve<AddEditClassViewModel>();
-            ImportProfilesViewModel = ContainerHelper.Container.Resolve<ImportProfilesViewModel>();
-
             ProfilesViewModel.ImportProfilesRequested += NavToImportProfiles;
-            ImportProfilesViewModel.Done += OnNavProfiles;
+
+            GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
+
+            ClassesViewModel = ContainerHelper.Container.Resolve<ClassesViewModel>();
             ClassesViewModel.AddClassRequested += NavToAddClass;
             ClassesViewModel.EditClassRequested += NavToEditClass;
+
+            GroupsViewModel = ContainerHelper.Container.Resolve<GroupsViewModel>();
+            GroupsViewModel.AddGroupRequested += NavToAddGroup;
+            GroupsViewModel.EditGroupRequested += NavToEditGroup;
+            GroupsViewModel.ManageGroupRequested += NavToManageGroup;
+
+            AddEditClassViewModel = ContainerHelper.Container.Resolve<AddEditClassViewModel>();
             AddEditClassViewModel.Done += OnNavClasses;
+
+            AddEditGroupViewModel = ContainerHelper.Container.Resolve<AddEditGroupViewModel>();
+            AddEditGroupViewModel.Done += OnNavGroups;
+
+            ManageGroupViewModel = ContainerHelper.Container.Resolve<ManageGroupViewModel>();
+            ManageGroupViewModel.Done += OnNavGroups;
+
+            ImportProfilesViewModel = ContainerHelper.Container.Resolve<ImportProfilesViewModel>();
+            ImportProfilesViewModel.Done += OnNavProfiles;
         }
 
         private void NavToAddClass(Class @class)
@@ -58,9 +77,35 @@ namespace ATEK.AccessControl_2.Main
             CurrentViewModel = AddEditClassViewModel;
         }
 
+        private void NavToAddGroup(Group group)
+        {
+            AddEditGroupViewModel.EditMode = false;
+            AddEditGroupViewModel.SetGroup(group);
+            CurrentViewModel = AddEditGroupViewModel;
+        }
+
+        private void NavToEditGroup(Group group)
+        {
+            AddEditGroupViewModel.EditMode = true;
+            AddEditGroupViewModel.SetGroup(group);
+            CurrentViewModel = AddEditGroupViewModel;
+        }
+
+        private void NavToManageGroup(Group group)
+        {
+            ManageGroupViewModel.SetGroup(group);
+            CurrentViewModel = ManageGroupViewModel;
+        }
+
         public RelayCommand NavToProfilesCommand { get; private set; }
         public RelayCommand NavToGatesCommand { get; private set; }
         public RelayCommand NavToClassesCommand { get; private set; }
+        public RelayCommand NavToGroupsCommand { get; private set; }
+
+        public void LoadData()
+        {
+            CurrentViewModel = ProfilesViewModel;
+        }
 
         private void NavToImportProfiles()
         {
@@ -82,6 +127,11 @@ namespace ATEK.AccessControl_2.Main
             CurrentViewModel = ClassesViewModel;
         }
 
+        private void OnNavGroups()
+        {
+            CurrentViewModel = GroupsViewModel;
+        }
+
         public BindableBase CurrentViewModel
         {
             get { return currentViewModel; }
@@ -92,6 +142,18 @@ namespace ATEK.AccessControl_2.Main
         {
             get { return addEditClassViewModel; }
             set { SetProperty(ref addEditClassViewModel, value); }
+        }
+
+        public AddEditGroupViewModel AddEditGroupViewModel
+        {
+            get { return addEditGroupViewModel; }
+            set { SetProperty(ref addEditGroupViewModel, value); }
+        }
+
+        public ManageGroupViewModel ManageGroupViewModel
+        {
+            get { return manageGroupViewModel; }
+            set { SetProperty(ref manageGroupViewModel, value); }
         }
 
         public ProfilesViewModel ProfilesViewModel
@@ -116,6 +178,12 @@ namespace ATEK.AccessControl_2.Main
         {
             get { return classesViewModel; }
             set { SetProperty(ref classesViewModel, value); }
+        }
+
+        public GroupsViewModel GroupsViewModel
+        {
+            get { return groupsViewModel; }
+            set { SetProperty(ref groupsViewModel, value); }
         }
     }
 }

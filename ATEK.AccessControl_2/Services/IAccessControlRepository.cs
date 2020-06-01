@@ -9,27 +9,41 @@ namespace ATEK.AccessControl_2.Services
 {
     public interface IAccessControlRepository
     {
+        void SaveChanges();
+
         #region Groups
 
-        List<Group> GetGroups();
+        IEnumerable<Group> GetGroups();
 
-        Group AddGroup(Group group);
+        Group GetGroupWithAllRelatedData(int groupId);
 
-        Group UpdateGroup(Group group);
+        void AddGroup(Group group);
+
+        void UpdateGroup(Group group);
 
         void RemoveGroups(IEnumerable<Group> groups);
+
+        IEnumerable<Profile> LoadGroupProfiles(int groupId);
+
+        bool AddProfileToGroup(Group group, Profile profile);
+
+        Task AddProfilesToGroupAsync(Group group, IEnumerable<Profile> collection);
+
+        bool RemoveProfileFromGroup(Group group, Profile profile);
+
+        Task RemoveProfilesFromGroupAsync(Group group, IEnumerable<Profile> collection);
 
         #endregion Groups
 
         #region Profiles
 
-        List<Profile> GetProfiles();
+        IEnumerable<Profile> GetProfiles();
 
-        Profile AddProfile(Profile profile);
+        void AddProfile(Profile profile);
 
         void AddProfiles(IEnumerable<Profile> profiles);
 
-        Profile UpdateProfile(Profile profile);
+        void UpdateProfile(Profile profile);
 
         void RemoveProfiles(IEnumerable<Profile> profiles);
 
@@ -37,23 +51,21 @@ namespace ATEK.AccessControl_2.Services
 
         #region Classes
 
-        List<Class> GetClasses();
+        IEnumerable<Class> GetClasses();
 
-        Class AddClass(Class @class);
+        void AddClass(Class @class);
 
-        Class AddProfileToClass(int classId, Profile profile);
+        void AddProfileToClass(int classId, Profile profile);
 
-        Class AddProfilesToClass(int classId, List<Profile> profiles);
+        void AddProfilesToClass(int classId, IEnumerable<Profile> profiles);
 
-        Class UpdateClass(Class @class);
+        void UpdateClass(Class @class);
 
         void RemoveClasses(IEnumerable<Class> classes);
 
-        Class GetClassIncludeProfiles(int classId);
-
         int CheckClassNameValid(string className);
 
-        Class LoadClassProfiles(int classId);
+        IEnumerable<Profile> LoadClassProfiles(int classId);
 
         #endregion Classes
     }

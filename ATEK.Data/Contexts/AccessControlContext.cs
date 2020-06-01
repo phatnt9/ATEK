@@ -9,6 +9,10 @@ namespace ATEK.Data.Contexts
 {
     public class AccessControlContext : DbContext
     {
+        public AccessControlContext()
+        {
+        }
+
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Gate> Gates { get; set; }
         public DbSet<Group> Groups { get; set; }

@@ -13,6 +13,8 @@
 		<Compile Remove="Migrations\20200526144508_EditProfilePinnoAndAdnoascasca.Designer.cs" />
 		<Compile Remove="Migrations\20200526145037_Initial.cs" />
 		<Compile Remove="Migrations\20200526145037_Initial.Designer.cs" />
+		<Compile Remove="Migrations\20200531101639_testthu.cs" />
+		<Compile Remove="Migrations\20200531101639_testthu.Designer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
