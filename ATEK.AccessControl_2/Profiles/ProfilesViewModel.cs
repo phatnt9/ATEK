@@ -18,86 +18,98 @@ namespace ATEK.AccessControl_2.Profiles
         private readonly IAccessControlRepository repo;
         private List<Profile> allProfiles;
         private List<Class> allClasses;
-        private List<Group> allGroups;
         private ObservableCollection<Profile> profiles;
         private Profile selectedProfile;
-        private string searchInput;
+        private string searchProfilesInput;
         private ObservableCollection<Class> classes;
-        private ObservableCollection<Group> groups;
-        private string searchProfilesByClass;
+        private int searchProfilesByClass;
 
         public ProfilesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
             AddProfileCommand = new RelayCommand(OnAddProfile);
+            EditProfileCommand = new RelayCommand<Profile>(OnEditProfile);
             RemoveProfilesCommand = new RelayCommand<object>(OnRemoveProfiles);
             RefreshProfilesCommand = new RelayCommand(OnRefreshProfiles);
             ImportProfilesCommand = new RelayCommand(OnImportProfiles);
         }
 
-        #region Properties
+        //=====================================================================
 
-        public string SearchInput
-        {
-            get { return searchInput; }
-            set
-            {
-                SetProperty(ref searchInput, value);
-                FilterCustomers(searchInput);
-            }
-        }
+        #region Commands
 
-        public ObservableCollection<Profile> Profiles
-        {
-            get { return profiles; }
-            set { SetProperty(ref profiles, value); }
-        }
+        public RelayCommand AddProfileCommand { get; private set; }
+        public RelayCommand<Profile> EditProfileCommand { get; private set; }
+        public RelayCommand<object> RemoveProfilesCommand { get; private set; }
+        public RelayCommand RefreshProfilesCommand { get; private set; }
+        public RelayCommand ImportProfilesCommand { get; private set; }
 
-        public ObservableCollection<Class> Classes
-        {
-            get { return classes; }
-            set { SetProperty(ref classes, value); }
-        }
+        #endregion Commands
 
-        public ObservableCollection<Group> Groups
-        {
-            get { return groups; }
-            set { SetProperty(ref groups, value); }
-        }
+        //=====================================================================
 
-        public Profile SelectedProfile
-        {
-            get { return selectedProfile; }
-            set { SetProperty(ref selectedProfile, value); }
-        }
+        #region Actions
 
-        public string SearchProfilesByClass
-        {
-            get { return searchProfilesByClass; }
-            set { SetProperty(ref searchProfilesByClass, value); Console.WriteLine(value); }
-        }
+        public event Action<Profile> AddProfileRequested = delegate { };
 
-        #endregion Properties
+        public event Action<Profile> EditProfileRequested = delegate { };
+
+        public event Action ImportProfilesRequested = delegate { };
+
+        #endregion Actions
+
+        //=====================================================================
 
         #region Methods
 
-        private void FilterCustomers(string searchInput)
+        private void FilterProfiles(string searchInput, int classId)
         {
             if (string.IsNullOrWhiteSpace(searchInput))
             {
-                Profiles = new ObservableCollection<Profile>(allProfiles);
-                return;
+                if (classId == 0)
+                {
+                    Profiles = new ObservableCollection<Profile>(allProfiles);
+                    return;
+                }
+                else
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                  allProfiles.Where(c =>
+                  (
+                  c.ClassId == classId
+                  )
+                  ));
+                }
             }
             else
             {
-                Profiles = new ObservableCollection<Profile>(
-                    allProfiles.Where(c =>
-                    (
-                    c.Name.ToLower().Contains(searchInput.ToLower()) ||
-                    c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
-                    c.Adno.ToLower().Contains(searchInput.ToLower())
-                    )
-                    ));
+                if (classId == 0)
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                   allProfiles.Where(c =>
+                   (
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
+                else
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                   allProfiles.Where(c =>
+                   (
+                    c.ClassId == classId &&
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
             }
         }
 
@@ -108,14 +120,8 @@ namespace ATEK.AccessControl_2.Profiles
 
         public void LoadData()
         {
-            Console.WriteLine("ProfilesView load data.");
-            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    return;
-            //}
             LoadProfiles();
             LoadClasses();
-            LoadGroups();
         }
 
         private void LoadProfiles()
@@ -129,19 +135,18 @@ namespace ATEK.AccessControl_2.Profiles
         {
             allClasses = repo.GetClasses().ToList();
             Console.WriteLine("Number of Class:" + allClasses.Count);
+            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
             Classes = new ObservableCollection<Class>(allClasses);
-        }
-
-        private void LoadGroups()
-        {
-            allGroups = repo.GetGroups().ToList();
-            Console.WriteLine("Number of Group:" + allGroups.Count);
-            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         private void OnAddProfile()
         {
             AddProfileRequested(new Profile());
+        }
+
+        private void OnEditProfile(Profile profile)
+        {
+            EditProfileRequested(profile);
         }
 
         private void OnImportProfiles()
@@ -165,22 +170,50 @@ namespace ATEK.AccessControl_2.Profiles
 
         #endregion Methods
 
-        #region Commands
+        //=====================================================================
 
-        public RelayCommand AddProfileCommand { get; private set; }
-        public RelayCommand<Profile> EditProfileCommand { get; private set; }
-        public RelayCommand ImportProfilesCommand { get; private set; }
-        public RelayCommand<object> RemoveProfilesCommand { get; private set; }
-        public RelayCommand RefreshProfilesCommand { get; private set; }
+        #region Properties
 
-        #endregion Commands
+        public string SearchProfilesInput
+        {
+            get { return searchProfilesInput; }
+            set
+            {
+                SetProperty(ref searchProfilesInput, value);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            }
+        }
 
-        #region Actions
+        public ObservableCollection<Profile> Profiles
+        {
+            get { return profiles; }
+            set { SetProperty(ref profiles, value); }
+        }
 
-        public event Action<Profile> AddProfileRequested = delegate { };
+        public ObservableCollection<Class> Classes
+        {
+            get { return classes; }
+            set { SetProperty(ref classes, value); }
+        }
 
-        public event Action ImportProfilesRequested = delegate { };
+        public Profile SelectedProfile
+        {
+            get { return selectedProfile; }
+            set { SetProperty(ref selectedProfile, value); }
+        }
 
-        #endregion Actions
+        public int SearchProfilesByClass
+        {
+            get { return searchProfilesByClass; }
+            set
+            {
+                SetProperty(ref searchProfilesByClass, value);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            }
+        }
+
+        #endregion Properties
+
+        //=====================================================================
     }
 }

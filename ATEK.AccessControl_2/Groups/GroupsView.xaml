@@ -86,10 +86,77 @@
                 </DataGrid>
             </Grid>
             <Grid Grid.Column="1">
-                <DataGrid
-                    CanUserAddRows="False"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding GroupProfiles}" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <ComboBox
+                            Width="Auto"
+                            Height="20"
+                            Margin="4,0"
+                            VerticalContentAlignment="Center"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding Classes}"
+                            SelectedIndex="0"
+                            SelectedValue="{Binding SearchGroupProfilesByClass}"
+                            SelectedValuePath="Id" />
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <TextBox
+                            Height="20"
+                            Margin="4,0"
+                            Text="{Binding SearchGroupProfilesInput, UpdateSourceTrigger=PropertyChanged}"
+                            TextAlignment="Center" />
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <DataGrid
+                        x:Name="dg_groupProfiles"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Path=GroupProfiles, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                        SelectionUnit="FullRow">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Pinno}"
+                                Header="Pinno"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Name}"
+                                Header="Name"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Adno}"
+                                Header="Adno"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Class.Name}"
+                                Header="Class"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding LicensePlate}"
+                                Header="LicensePlate"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Status}"
+                                Header="Status"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </Grid>
         </Grid>
         <Grid Grid.Row="2">

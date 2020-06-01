@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace ATEK.AccessControl_2.Profiles
 {
-    internal class SimpleEditableProfile : ValidatableBindableBase
+    public class SimpleEditableProfile : ValidatableBindableBase
     {
         private int id;
-        private int pinno;
-        private int adno;
+        private string pinno;
+        private string adno;
         private string name;
-        private string @class;
+        private Class @class;
+        private int classId;
         private string gender;
         private DateTime dateOfBirth;
         private string email;
@@ -32,16 +33,18 @@ namespace ATEK.AccessControl_2.Profiles
         public int Id { get { return id; } set { SetProperty(ref id, value); } }
 
         [Required]
-        public int Pinno { get { return pinno; } set { SetProperty(ref pinno, value); } }
+        public string Pinno { get { return pinno; } set { SetProperty(ref pinno, value); } }
 
         [Required]
-        public int Adno { get { return adno; } set { SetProperty(ref adno, value); } }
+        public string Adno { get { return adno; } set { SetProperty(ref adno, value); } }
 
         [Required]
         public string Name { get { return name; } set { SetProperty(ref name, value); } }
 
         [Required]
-        public string Class { get { return @class; } set { SetProperty(ref @class, value); } }
+        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
+
+        public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
 
         [Required]
         public string Gender { get { return gender; } set { SetProperty(ref gender, value); } }

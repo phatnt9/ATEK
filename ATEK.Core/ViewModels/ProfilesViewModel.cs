@@ -27,7 +27,6 @@ namespace ATEK.Core.ViewModels
             this.logger = logger;
             this.navigationService = navigationService;
             _context = new AccessControlContext();
-            //LoadData();
         }
 
         #region Commands

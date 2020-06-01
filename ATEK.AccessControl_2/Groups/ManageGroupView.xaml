@@ -42,7 +42,31 @@
                     <RowDefinition />
                     <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" />
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <ComboBox
+                            Width="Auto"
+                            Height="20"
+                            Margin="4,0"
+                            VerticalContentAlignment="Center"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding Classes}"
+                            SelectedIndex="0"
+                            SelectedValue="{Binding SearchProfilesByClass}"
+                            SelectedValuePath="Id" />
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <TextBox
+                            Height="20"
+                            Margin="4,0"
+                            Text="{Binding SearchProfilesInput, UpdateSourceTrigger=PropertyChanged}"
+                            TextAlignment="Center" />
+                    </Grid>
+                </Grid>
                 <Grid Grid.Row="1">
                     <ProgressBar
                         Name="pbStatusSelect"
@@ -112,7 +136,6 @@
                             Text="{Binding ElementName=dg_profiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button
-                            x:Name="btn_profiles_select"
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
@@ -121,7 +144,6 @@
                             Content="Select"
                             Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                         <Button
-                            x:Name="btn_stop_select"
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
@@ -138,7 +160,31 @@
                     <RowDefinition />
                     <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" />
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <ComboBox
+                            Width="Auto"
+                            Height="20"
+                            Margin="4,0"
+                            VerticalContentAlignment="Center"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding Classes}"
+                            SelectedIndex="0"
+                            SelectedValue="{Binding SearchGroupProfilesByClass}"
+                            SelectedValuePath="Id" />
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <TextBox
+                            Height="20"
+                            Margin="4,0"
+                            Text="{Binding SearchGroupProfilesInput, UpdateSourceTrigger=PropertyChanged}"
+                            TextAlignment="Center" />
+                    </Grid>
+                </Grid>
                 <Grid Grid.Row="1">
                     <ProgressBar
                         Name="pbStatusDelete"
@@ -208,7 +254,6 @@
                             Text="{Binding ElementName=dg_groupProfiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button
-                            x:Name="btn_deviceProfiles_remove"
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
@@ -217,7 +262,6 @@
                             Content="Remove"
                             Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                         <Button
-                            x:Name="btn_stop_remove"
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"

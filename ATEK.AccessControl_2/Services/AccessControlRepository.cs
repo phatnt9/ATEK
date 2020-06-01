@@ -31,6 +31,17 @@ namespace ATEK.AccessControl_2.Services
             return _context.Profiles.ToList();
         }
 
+        public Profile GetProfilesWithAllRelatedData(Profile profile)
+        {
+            return _context.Profiles
+                 .Include(p => p.Class)
+                 .Include(p => p.ProfileGates)
+                 .ThenInclude(p => p.Gate)
+                 .Include(p => p.ProfileGroups)
+                 .ThenInclude(p => p.Group)
+                 .FirstOrDefault(p => p.Id == profile.Id);
+        }
+
         public void AddProfile(Profile profile)
         {
             _context.Profiles.Add(profile);

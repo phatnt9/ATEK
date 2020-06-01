@@ -133,12 +133,12 @@
                                         Margin="5,0"
                                         Maximum="100"
                                         Minimum="0"
-                                        Value="{Binding ImportProcessValue}" />
+                                        Value="{Binding ImportProgressValue}" />
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         FontWeight="Bold"
-                                        Text="{Binding ImportProcess}" />
+                                        Text="{Binding ImportProgress}" />
                                 </Grid>
                             </StatusBarItem>
                         </StatusBar>

@@ -14,8 +14,10 @@ namespace ATEK.AccessControl_2.Groups
     {
         private readonly IAccessControlRepository repo;
         private Group group;
+        private List<Class> allClasses;
         private List<Profile> allProfiles;
         private List<Profile> allGroupProfiles;
+        private ObservableCollection<Class> classes;
         private ObservableCollection<Profile> profiles;
         private ObservableCollection<Profile> groupProfiles;
         private BackgroundWorker selectBackGroundWorker;
@@ -26,6 +28,10 @@ namespace ATEK.AccessControl_2.Groups
         private int selectProgressValue;
         private string removeProgress;
         private int removeProgressValue;
+        private int searchProfilesByClass;
+        private string searchProfilesInput;
+        private int searchGroupProfilesByClass;
+        private string searchGroupProfilesInput;
 
         public ManageGroupViewModel(IAccessControlRepository repo)
         {
@@ -34,19 +40,74 @@ namespace ATEK.AccessControl_2.Groups
             removeBackGroundWorker = new BackgroundWorker();
             CancelCommand = new RelayCommand(OnCancel);
             SelectProfilesCommand = new RelayCommand<object>(OnSelectProfiles);
-            DeleteGroupProfilesCommand = new RelayCommand<object>(OnDeleteGroupProfiles);
+            DeleteGroupProfilesCommand = new RelayCommand<object>(OnRemoveGroupProfiles);
             StopSelectProfilesCommand = new RelayCommand(OnStopSelectProfiles);
-            StopDeleteGroupProfilesCommand = new RelayCommand(OnStopDeleteGroupProfiles);
+            StopDeleteGroupProfilesCommand = new RelayCommand(OnStopRemoveGroupProfiles);
         }
+
+        //=====================================================================
+
+        #region Commands
+
+        public RelayCommand CancelCommand { get; private set; }
+        public RelayCommand<object> SelectProfilesCommand { get; private set; }
+        public RelayCommand StopSelectProfilesCommand { get; private set; }
+        public RelayCommand<object> DeleteGroupProfilesCommand { get; private set; }
+        public RelayCommand StopDeleteGroupProfilesCommand { get; private set; }
+
+        #endregion Commands
+
+        //=====================================================================
+
+        #region Actions
+
+        public event Action Done = delegate { };
+
+        public event Action StartBackgroundProgress = delegate { };
+
+        public event Action StopBackgroundProgress = delegate { };
+
+        #endregion Actions
+
+        //=====================================================================
 
         #region Properties
 
-        public Group Group { get { return group; } set { SetProperty(ref group, value); } }
-        public ObservableCollection<Profile> Profiles { get { return profiles; } set { SetProperty(ref profiles, value); } }
-        public ObservableCollection<Profile> GroupProfiles { get { return groupProfiles; } set { SetProperty(ref groupProfiles, value); } }
+        public Group Group
+        {
+            get { return group; }
+            set { SetProperty(ref group, value); }
+        }
 
-        public string SelectProgress { get { return selectProgress; } set { SetProperty(ref selectProgress, value); } }
-        public string RemoveProgress { get { return removeProgress; } set { SetProperty(ref removeProgress, value); } }
+        public ObservableCollection<Class> Classes
+        {
+            get { return classes; }
+            set { SetProperty(ref classes, value); }
+        }
+
+        public ObservableCollection<Profile> Profiles
+        {
+            get { return profiles; }
+            set { SetProperty(ref profiles, value); }
+        }
+
+        public ObservableCollection<Profile> GroupProfiles
+        {
+            get { return groupProfiles; }
+            set { SetProperty(ref groupProfiles, value); }
+        }
+
+        public string SelectProgress
+        {
+            get { return selectProgress; }
+            set { SetProperty(ref selectProgress, value); }
+        }
+
+        public string RemoveProgress
+        {
+            get { return removeProgress; }
+            set { SetProperty(ref removeProgress, value); }
+        }
 
         public int SelectProgressValue
         {
@@ -68,30 +129,170 @@ namespace ATEK.AccessControl_2.Groups
             }
         }
 
+        public int SearchProfilesByClass
+        {
+            get { return searchProfilesByClass; }
+            set
+            {
+                SetProperty(ref searchProfilesByClass, value);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            }
+        }
+
+        public string SearchProfilesInput
+        {
+            get { return searchProfilesInput; }
+            set
+            {
+                SetProperty(ref searchProfilesInput, value);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            }
+        }
+
+        public int SearchGroupProfilesByClass
+        {
+            get { return searchGroupProfilesByClass; }
+            set
+            {
+                SetProperty(ref searchGroupProfilesByClass, value);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+        }
+
+        public string SearchGroupProfilesInput
+        {
+            get { return searchGroupProfilesInput; }
+            set
+            {
+                SetProperty(ref searchGroupProfilesInput, value);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+        }
+
         public bool IsBackGroundWorkerBusy
         {
             get { return isBackGroundWorkerBusy; }
             set
             {
                 SetProperty(ref isBackGroundWorkerBusy, value);
+                if (isBackGroundWorkerBusy)
+                {
+                    StartBackgroundProgress();
+                }
+                else
+                {
+                    StopBackgroundProgress();
+                }
             }
         }
 
         #endregion Properties
 
-        #region Commands
-
-        public RelayCommand CancelCommand { get; private set; }
-        public RelayCommand<object> SelectProfilesCommand { get; private set; }
-        public RelayCommand StopSelectProfilesCommand { get; private set; }
-        public RelayCommand<object> DeleteGroupProfilesCommand { get; private set; }
-        public RelayCommand StopDeleteGroupProfilesCommand { get; private set; }
-
-        public event Action Done = delegate { };
-
-        #endregion Commands
+        //=====================================================================
 
         #region Methods
+
+        private void FilterProfiles(string searchInput, int classId)
+        {
+            if (string.IsNullOrWhiteSpace(searchInput))
+            {
+                if (classId == 0)
+                {
+                    Profiles = new ObservableCollection<Profile>(allProfiles);
+                    return;
+                }
+                else
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                  allProfiles.Where(c =>
+                  (
+                  c.ClassId == classId
+                  )
+                  ));
+                }
+            }
+            else
+            {
+                if (classId == 0)
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                   allProfiles.Where(c =>
+                   (
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
+                else
+                {
+                    Profiles = new ObservableCollection<Profile>(
+                   allProfiles.Where(c =>
+                   (
+                    c.ClassId == classId &&
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
+            }
+        }
+
+        private void FilterGroupProfiles(string searchInput, int classId)
+        {
+            if (string.IsNullOrWhiteSpace(searchInput))
+            {
+                if (classId == 0)
+                {
+                    GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+                    return;
+                }
+                else
+                {
+                    GroupProfiles = new ObservableCollection<Profile>(
+                  allGroupProfiles.Where(c =>
+                  (
+                  c.ClassId == classId
+                  )
+                  ));
+                }
+            }
+            else
+            {
+                if (classId == 0)
+                {
+                    GroupProfiles = new ObservableCollection<Profile>(
+                   allGroupProfiles.Where(c =>
+                   (
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
+                else
+                {
+                    GroupProfiles = new ObservableCollection<Profile>(
+                   allGroupProfiles.Where(c =>
+                   (
+                    c.ClassId == classId &&
+                   (
+                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                   c.Adno.ToLower().Contains(searchInput.ToLower())
+                   )
+                   )
+                   ));
+                }
+            }
+        }
 
         private void OnCancel()
         {
@@ -100,14 +301,21 @@ namespace ATEK.AccessControl_2.Groups
 
         public void SetGroup(Group group)
         {
-            //Group = group;
             Group = repo.GetGroupWithAllRelatedData(group.Id);
         }
 
         public void LoadData()
         {
+            LoadClasses();
             LoadProfiles();
             LoadGroupProfiles();
+        }
+
+        private void LoadClasses()
+        {
+            allClasses = repo.GetClasses().ToList();
+            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+            Classes = new ObservableCollection<Class>(allClasses);
         }
 
         public void LoadProfiles()
@@ -120,14 +328,7 @@ namespace ATEK.AccessControl_2.Groups
         {
             allGroupProfiles = repo.LoadGroupProfiles(group.Id).ToList();
             GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
-        }
-
-        private void OnStopDeleteGroupProfiles()
-        {
-            if (removeBackGroundWorker.WorkerSupportsCancellation)
-            {
-                removeBackGroundWorker.CancelAsync();
-            }
+            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
         }
 
         private void OnStopSelectProfiles()
@@ -135,6 +336,14 @@ namespace ATEK.AccessControl_2.Groups
             if (selectBackGroundWorker.WorkerSupportsCancellation)
             {
                 selectBackGroundWorker.CancelAsync();
+            }
+        }
+
+        private void OnStopRemoveGroupProfiles()
+        {
+            if (removeBackGroundWorker.WorkerSupportsCancellation)
+            {
+                removeBackGroundWorker.CancelAsync();
             }
         }
 
@@ -217,37 +426,7 @@ namespace ATEK.AccessControl_2.Groups
             }
         }
 
-        private async void OnSelectProfilesAsync(object obj)
-        {
-            if (obj != null)
-            {
-                List<Profile> list = new List<Profile>();
-                System.Collections.IList items = (System.Collections.IList)obj;
-                var collection = items.Cast<Profile>();
-                if (collection.Count() > 0)
-                {
-                    foreach (var item in collection)
-                    {
-                        var groupProfile = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
-                        if (!Group.ProfileGroups.Exists(g => (g.ProfileId == item.Id)))
-                        {
-                            list.Add(item);
-                        }
-                    }
-                    if (list.Count() > 0)
-                    {
-                        await repo.AddProfilesToGroupAsync(group, list);
-                        LoadData();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Co Select ma bi trung het roi");
-                    }
-                }
-            }
-        }
-
-        private void OnDeleteGroupProfiles(object obj)
+        private void OnRemoveGroupProfiles(object obj)
         {
             if (obj != null)
             {
@@ -327,6 +506,36 @@ namespace ATEK.AccessControl_2.Groups
             }
         }
 
+        private async void OnSelectProfilesAsync(object obj)
+        {
+            if (obj != null)
+            {
+                List<Profile> list = new List<Profile>();
+                System.Collections.IList items = (System.Collections.IList)obj;
+                var collection = items.Cast<Profile>();
+                if (collection.Count() > 0)
+                {
+                    foreach (var item in collection)
+                    {
+                        var groupProfile = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
+                        if (!Group.ProfileGroups.Exists(g => (g.ProfileId == item.Id)))
+                        {
+                            list.Add(item);
+                        }
+                    }
+                    if (list.Count() > 0)
+                    {
+                        await repo.AddProfilesToGroupAsync(group, list);
+                        LoadGroupProfiles();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Co Select ma bi trung het roi");
+                    }
+                }
+            }
+        }
+
         private async void OnDeleteGroupProfilesAsync(object obj)
         {
             if (obj != null)
@@ -343,7 +552,7 @@ namespace ATEK.AccessControl_2.Groups
                     if (list.Count() > 0)
                     {
                         await repo.RemoveProfilesFromGroupAsync(group, list);
-                        LoadData();
+                        LoadGroupProfiles();
                     }
                     else
                     {
@@ -354,5 +563,7 @@ namespace ATEK.AccessControl_2.Groups
         }
 
         #endregion Methods
+
+        //=====================================================================
     }
 }

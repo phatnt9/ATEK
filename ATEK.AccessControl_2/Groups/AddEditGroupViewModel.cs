@@ -10,8 +10,10 @@ namespace ATEK.AccessControl_2.Groups
 {
     public class AddEditGroupViewModel : BindableBase
     {
-        private readonly IAccessControlRepository repo;
         private bool editMode;
+        private Group editingGroup = null;
+        private SimpleEditableGroup group;
+        private readonly IAccessControlRepository repo;
 
         public AddEditGroupViewModel(IAccessControlRepository repo)
         {
@@ -20,13 +22,44 @@ namespace ATEK.AccessControl_2.Groups
             SaveCommand = new RelayCommand(OnSave, CanSave);
         }
 
+        //=====================================================================
+
+        #region Commands
+
         public RelayCommand CancelCommand { get; private set; }
         public RelayCommand SaveCommand { get; private set; }
 
+        #endregion Commands
+
+        //=====================================================================
+
+        #region Actions
+
         public event Action Done = delegate { };
 
-        private Group editingGroup = null;
-        private SimpleEditableGroup group;
+        #endregion Actions
+
+        //=====================================================================
+
+        #region Properties
+
+        public SimpleEditableGroup Group
+        {
+            get { return group; }
+            set { SetProperty(ref group, value); }
+        }
+
+        public bool EditMode
+        {
+            get { return editMode; }
+            set { SetProperty(ref editMode, value); }
+        }
+
+        #endregion Properties
+
+        //=====================================================================
+
+        #region Methods
 
         private void OnCancel()
         {
@@ -84,7 +117,8 @@ namespace ATEK.AccessControl_2.Groups
             }
         }
 
-        public SimpleEditableGroup Group { get { return group; } set { SetProperty(ref group, value); } }
-        public bool EditMode { get { return editMode; } set { SetProperty(ref editMode, value); } }
+        #endregion Methods
+
+        //=====================================================================
     }
 }

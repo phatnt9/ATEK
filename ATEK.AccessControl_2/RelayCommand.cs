@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATEK.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace ATEK.AccessControl_2
     {
         private Action _TargetExecuteMethod;
         private Func<bool> _TargetCanExecuteMethod;
+        private Action<Profile> onEditProfile;
 
         public RelayCommand(Action executeMethod)
         {
@@ -21,6 +23,11 @@ namespace ATEK.AccessControl_2
         {
             _TargetExecuteMethod = executeMethod;
             _TargetCanExecuteMethod = canExecuteMethod;
+        }
+
+        public RelayCommand(Action<Profile> onEditProfile)
+        {
+            this.onEditProfile = onEditProfile;
         }
 
         public void RaiseCanExecuteChanged()

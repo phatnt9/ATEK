@@ -76,11 +76,6 @@ namespace ATEK.AccessControl_2.Classes
 
         public void LoadData()
         {
-            Console.WriteLine("ClassesView load data.");
-            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    return;
-            //}
             allClasses = repo.GetClasses().ToList();
             Classes = new ObservableCollection<Class>(allClasses);
         }

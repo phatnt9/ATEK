@@ -24,10 +24,12 @@ namespace ATEK.AccessControl_2.Main
         private ImportProfilesViewModel importProfilesViewModel;
         private GatesViewModel gatesViewModel;
         private ClassesViewModel classesViewModel;
-        private AddEditClassViewModel addEditClassViewModel;
         private GroupsViewModel groupsViewModel;
-        private AddEditGroupViewModel addEditGroupViewModel;
         private ManageGroupViewModel manageGroupViewModel;
+        private bool isBackGroundWorkerBusy;
+        private AddEditProfileViewModel addEditProfileViewModel;
+        private AddEditClassViewModel addEditClassViewModel;
+        private AddEditGroupViewModel addEditGroupViewModel;
 
         public MainViewModel()
         {
@@ -38,6 +40,8 @@ namespace ATEK.AccessControl_2.Main
 
             ProfilesViewModel = ContainerHelper.Container.Resolve<ProfilesViewModel>();
             ProfilesViewModel.ImportProfilesRequested += NavToImportProfiles;
+            ProfilesViewModel.AddProfileRequested += NavToAddProfiles;
+            ProfilesViewModel.EditProfileRequested += NavToEditProfiles;
 
             GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
 
@@ -50,6 +54,9 @@ namespace ATEK.AccessControl_2.Main
             GroupsViewModel.EditGroupRequested += NavToEditGroup;
             GroupsViewModel.ManageGroupRequested += NavToManageGroup;
 
+            AddEditProfileViewModel = ContainerHelper.Container.Resolve<AddEditProfileViewModel>();
+            AddEditProfileViewModel.Done += OnNavProfiles;
+
             AddEditClassViewModel = ContainerHelper.Container.Resolve<AddEditClassViewModel>();
             AddEditClassViewModel.Done += OnNavClasses;
 
@@ -58,9 +65,54 @@ namespace ATEK.AccessControl_2.Main
 
             ManageGroupViewModel = ContainerHelper.Container.Resolve<ManageGroupViewModel>();
             ManageGroupViewModel.Done += OnNavGroups;
+            ManageGroupViewModel.StartBackgroundProgress += OnStartProgress;
+            ManageGroupViewModel.StopBackgroundProgress += OnStopProgress;
 
             ImportProfilesViewModel = ContainerHelper.Container.Resolve<ImportProfilesViewModel>();
             ImportProfilesViewModel.Done += OnNavProfiles;
+            ImportProfilesViewModel.StartBackgroundProgress += OnStartProgress;
+            ImportProfilesViewModel.StopBackgroundProgress += OnStopProgress;
+        }
+
+        //=====================================================================
+
+        #region Commands
+
+        public RelayCommand NavToProfilesCommand { get; private set; }
+        public RelayCommand NavToGatesCommand { get; private set; }
+        public RelayCommand NavToClassesCommand { get; private set; }
+        public RelayCommand NavToGroupsCommand { get; private set; }
+
+        #endregion Commands
+
+        //=====================================================================
+
+        //=====================================================================
+
+        #region Methods
+
+        private void NavToAddProfiles(Profile profile)
+        {
+            AddEditProfileViewModel.EditMode = false;
+            AddEditProfileViewModel.SetProfile(profile);
+            CurrentViewModel = AddEditProfileViewModel;
+        }
+
+        private void NavToEditProfiles(Profile profile)
+        {
+            AddEditProfileViewModel.EditMode = true;
+            AddEditProfileViewModel.SetProfile(profile);
+            CurrentViewModel = AddEditProfileViewModel;
+        }
+
+        private void OnStartProgress()
+        {
+            IsBackGroundWorkerBusy = true;
+        }
+
+        private void OnStopProgress()
+        {
+            IsBackGroundWorkerBusy = false;
         }
 
         private void NavToAddClass(Class @class)
@@ -97,11 +149,6 @@ namespace ATEK.AccessControl_2.Main
             CurrentViewModel = ManageGroupViewModel;
         }
 
-        public RelayCommand NavToProfilesCommand { get; private set; }
-        public RelayCommand NavToGatesCommand { get; private set; }
-        public RelayCommand NavToClassesCommand { get; private set; }
-        public RelayCommand NavToGroupsCommand { get; private set; }
-
         public void LoadData()
         {
             CurrentViewModel = ProfilesViewModel;
@@ -132,6 +179,18 @@ namespace ATEK.AccessControl_2.Main
             CurrentViewModel = GroupsViewModel;
         }
 
+        #endregion Methods
+
+        //=====================================================================
+
+        #region Properties
+
+        public bool IsBackGroundWorkerBusy
+        {
+            get { return isBackGroundWorkerBusy; }
+            set { SetProperty(ref isBackGroundWorkerBusy, value); }
+        }
+
         public BindableBase CurrentViewModel
         {
             get { return currentViewModel; }
@@ -142,6 +201,12 @@ namespace ATEK.AccessControl_2.Main
         {
             get { return addEditClassViewModel; }
             set { SetProperty(ref addEditClassViewModel, value); }
+        }
+
+        public AddEditProfileViewModel AddEditProfileViewModel
+        {
+            get { return addEditProfileViewModel; }
+            set { SetProperty(ref addEditProfileViewModel, value); }
         }
 
         public AddEditGroupViewModel AddEditGroupViewModel
@@ -185,5 +250,9 @@ namespace ATEK.AccessControl_2.Main
             get { return groupsViewModel; }
             set { SetProperty(ref groupsViewModel, value); }
         }
+
+        #endregion Properties
+
+        //=====================================================================
     }
 }

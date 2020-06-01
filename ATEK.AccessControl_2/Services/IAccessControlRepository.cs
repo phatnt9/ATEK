@@ -39,6 +39,8 @@ namespace ATEK.AccessControl_2.Services
 
         IEnumerable<Profile> GetProfiles();
 
+        Profile GetProfilesWithAllRelatedData(Profile profile);
+
         void AddProfile(Profile profile);
 
         void AddProfiles(IEnumerable<Profile> profiles);

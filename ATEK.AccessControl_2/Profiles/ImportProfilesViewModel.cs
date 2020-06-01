@@ -21,8 +21,8 @@ namespace ATEK.AccessControl_2.Profiles
     {
         private readonly IAccessControlRepository repo;
         private bool addProfilesChecked;
-        private string importProcess;
-        private int importProcessValue;
+        private string importProgress;
+        private int importProgressValue;
         private string importStatus;
         private string importFilePath;
         private string importFileFolder;
@@ -46,6 +46,33 @@ namespace ATEK.AccessControl_2.Profiles
             CancelCommand = new RelayCommand(OnCancel);
         }
 
+        //=====================================================================
+
+        #region Commands
+
+        public RelayCommand SelectFileCommand { get; private set; }
+        public RelayCommand StartImportCommand { get; private set; }
+        public RelayCommand StopImportCommand { get; private set; }
+        public RelayCommand CancelCommand { get; private set; }
+
+        #endregion Commands
+
+        //=====================================================================
+
+        #region Actions
+
+        public event Action Done = delegate { };
+
+        public event Action StartBackgroundProgress = delegate { };
+
+        public event Action StopBackgroundProgress = delegate { };
+
+        #endregion Actions
+
+        //=====================================================================
+
+        #region Methods
+
         private void OnStopImport()
         {
             if (importBackGroundWorker.WorkerSupportsCancellation)
@@ -54,11 +81,9 @@ namespace ATEK.AccessControl_2.Profiles
             }
         }
 
-        #region Methods
-
         private void OnStartImport()
         {
-            ImportProcessValue = 0;
+            ImportProgressValue = 0;
             if (string.IsNullOrEmpty(importFilePath))
             {
                 System.Windows.Forms.MessageBox.Show(String.Format(GlobalConstant.messageValidate, "File", "File"), GlobalConstant.messageTitileError, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -88,7 +113,7 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void ImportBackGroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            ImportProcessValue = e.ProgressPercentage;
+            ImportProgressValue = e.ProgressPercentage;
         }
 
         private void ImportBackGroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -109,14 +134,14 @@ namespace ATEK.AccessControl_2.Profiles
             }
             // general cleanup code, runs when there was an error or not.
             ImportFilePath = "";
-            ImportProcessValue = 0;
+            ImportProgressValue = 0;
             importBackGroundWorker.Dispose();
 
             //cleanup
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            //release com objects to fully kill excel process from running in the background
+            //release com objects to fully kill excel progress from running in the background
             Marshal.ReleaseComObject(xlRange);
             Marshal.ReleaseComObject(xlWorksheet);
 
@@ -456,7 +481,7 @@ namespace ATEK.AccessControl_2.Profiles
 
                 listProfiles.Add(profile);
 
-                //Finish process
+                //Finish progress
                 if (importBackGroundWorker.CancellationPending)
                 {
                     ImportStatus = "Stopped";
@@ -536,13 +561,10 @@ namespace ATEK.AccessControl_2.Profiles
 
         private bool CheckStringInputFromExcel(object value)
         {
-            //Console.WriteLine("====CheckString====");
             if (value != null)
             {
                 string str = value.ToString();
                 bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
-                //Console.WriteLine("str: " + str);
-                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
                 if (notNullOrWhiteSpace)
                 {
                     return true;
@@ -561,13 +583,10 @@ namespace ATEK.AccessControl_2.Profiles
 
         private bool CheckDateInputFromExcel(object value)
         {
-            //Console.WriteLine("====CheckDouble====");
             if (value != null)
             {
                 string str = value.ToString();
                 bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
-                //Console.WriteLine("str: " + str);
-                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
                 if (notNullOrWhiteSpace)
                 {
                     return true;
@@ -586,15 +605,11 @@ namespace ATEK.AccessControl_2.Profiles
 
         private bool CheckNumberInputFromExcel(object value)
         {
-            //Console.WriteLine("====CheckDouble====");
             if (value != null)
             {
                 string str = value.ToString();
                 bool isDigitsOnly = IsDigitsOnly(value.ToString());
                 bool notNullOrWhiteSpace = !string.IsNullOrWhiteSpace(value.ToString());
-                //Console.WriteLine("str: " + str);
-                //Console.WriteLine("isDigitsOnly: " + isDigitsOnly);
-                //Console.WriteLine("notNullOrWhiteSpace: " + notNullOrWhiteSpace);
                 if (isDigitsOnly && notNullOrWhiteSpace)
                 {
                     return true;
@@ -644,31 +659,13 @@ namespace ATEK.AccessControl_2.Profiles
 
         public void LoadData()
         {
-            Console.WriteLine("ImportProfilesView load data.");
-            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    return;
-            //}
             allClasses = repo.GetClasses().ToList();
             allGroups = repo.GetGroups().ToList();
         }
 
         #endregion Methods
 
-        #region Commands
-
-        public RelayCommand SelectFileCommand { get; private set; }
-        public RelayCommand StartImportCommand { get; private set; }
-        public RelayCommand StopImportCommand { get; private set; }
-        public RelayCommand CancelCommand { get; private set; }
-
-        #endregion Commands
-
-        #region Actions
-
-        public event Action Done = delegate { };
-
-        #endregion Actions
+        //=====================================================================
 
         #region Properties
 
@@ -678,6 +675,14 @@ namespace ATEK.AccessControl_2.Profiles
             set
             {
                 SetProperty(ref isBackGroundWorkerBusy, value);
+                if (isBackGroundWorkerBusy)
+                {
+                    StartBackgroundProgress();
+                }
+                else
+                {
+                    StopBackgroundProgress();
+                }
             }
         }
 
@@ -687,19 +692,19 @@ namespace ATEK.AccessControl_2.Profiles
             set { SetProperty(ref addProfilesChecked, value); }
         }
 
-        public string ImportProcess
+        public string ImportProgress
         {
-            get { return importProcess; }
-            set { SetProperty(ref importProcess, value); }
+            get { return importProgress; }
+            set { SetProperty(ref importProgress, value); }
         }
 
-        public int ImportProcessValue
+        public int ImportProgressValue
         {
-            get { return importProcessValue; }
+            get { return importProgressValue; }
             set
             {
-                SetProperty(ref importProcessValue, value);
-                ImportProcess = importProcessValue + "%";
+                SetProperty(ref importProgressValue, value);
+                ImportProgress = importProgressValue + "%";
             }
         }
 
@@ -716,5 +721,7 @@ namespace ATEK.AccessControl_2.Profiles
         }
 
         #endregion Properties
+
+        //=====================================================================
     }
 }

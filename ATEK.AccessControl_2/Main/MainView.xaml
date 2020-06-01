@@ -29,6 +29,9 @@
         <DataTemplate DataType="{x:Type classes:AddEditClassViewModel}">
             <classes:AddEditClassView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type profiles:AddEditProfileViewModel}">
+            <profiles:AddEditProfileView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type profiles:ImportProfilesViewModel}">
             <profiles:ImportProfilesView />
         </DataTemplate>
@@ -61,28 +64,28 @@
                     Margin="4,0"
                     Command="{Binding NavToProfilesCommand}"
                     Content="Profiles"
-                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                 <Button
                     Width="50"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToGatesCommand}"
                     Content="Gates"
-                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                 <Button
                     Width="50"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToClassesCommand}"
                     Content="Classes"
-                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                 <Button
                     Width="50"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToGroupsCommand}"
                     Content="Groups"
-                    Visibility="{Binding ImportProfilesViewModel.IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">

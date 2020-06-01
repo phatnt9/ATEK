@@ -12,19 +12,39 @@ namespace ATEK.AccessControl_2.Groups
     public class GroupsViewModel : BindableBase
     {
         private readonly IAccessControlRepository repo;
-        private List<Group> allGroups;
-        private ObservableCollection<Group> groups;
         private Group selectedGroup;
+        private List<Class> allClasses;
+        private List<Group> allGroups;
+        private List<Profile> allGroupProfiles;
+        private ObservableCollection<Class> classes;
+        private ObservableCollection<Group> groups;
         private ObservableCollection<Profile> groupProfiles;
+
+        private int searchGroupProfilesByClass;
+        private string searchGroupProfilesInput;
 
         public GroupsViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
             AddGroupCommand = new RelayCommand(OnAddGroup);
             EditGroupCommand = new RelayCommand<Group>(OnEditGroup);
-            RemoveGroupCommand = new RelayCommand<Group>(OnRemoveGroup);
             ManageGroupCommand = new RelayCommand<Group>(OnManageGroup);
+            RemoveGroupCommand = new RelayCommand<Group>(OnRemoveGroup);
         }
+
+        //=====================================================================
+
+        #region Commands
+
+        public RelayCommand AddGroupCommand { get; private set; }
+        public RelayCommand<Group> EditGroupCommand { get; private set; }
+        public RelayCommand<Group> ManageGroupCommand { get; private set; }
+        public RelayCommand<Group> RemoveGroupCommand { get; private set; }
+        public RelayCommand CancelCommand { get; private set; }
+
+        #endregion Commands
+
+        //=====================================================================
 
         #region Actions
 
@@ -36,15 +56,9 @@ namespace ATEK.AccessControl_2.Groups
 
         #endregion Actions
 
-        #region Commands
+        //=====================================================================
 
-        public RelayCommand AddGroupCommand { get; private set; }
-        public RelayCommand CancelCommand { get; private set; }
-        public RelayCommand<Group> EditGroupCommand { get; private set; }
-        public RelayCommand<Group> ManageGroupCommand { get; private set; }
-        public RelayCommand<Group> RemoveGroupCommand { get; private set; }
-
-        #endregion Commands
+        #region Properties
 
         public ObservableCollection<Group> Groups
         {
@@ -58,10 +72,7 @@ namespace ATEK.AccessControl_2.Groups
             set
             {
                 SetProperty(ref selectedGroup, value);
-                if (selectedGroup != null)
-                {
-                    LoadGroupProfiles(selectedGroup.Id);
-                }
+                LoadGroupProfiles(selectedGroup.Id);
             }
         }
 
@@ -71,24 +82,120 @@ namespace ATEK.AccessControl_2.Groups
             set { SetProperty(ref groupProfiles, value); }
         }
 
+        public int SearchGroupProfilesByClass
+        {
+            get { return searchGroupProfilesByClass; }
+            set
+            {
+                SetProperty(ref searchGroupProfilesByClass, value);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+        }
+
+        public string SearchGroupProfilesInput
+        {
+            get { return searchGroupProfilesInput; }
+            set
+            {
+                SetProperty(ref searchGroupProfilesInput, value);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+        }
+
+        public ObservableCollection<Class> Classes
+        {
+            get { return classes; }
+            set { SetProperty(ref classes, value); }
+        }
+
+        #endregion Properties
+
+        //=====================================================================
+
+        #region Methods
+
         public void LoadData()
         {
-            Console.WriteLine("GroupsView load data.");
-            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    return;
-            //}
-            allGroups = repo.GetGroups().ToList();
-            Groups = new ObservableCollection<Group>(allGroups);
+            LoadClasses();
+            LoadGroups();
             if (selectedGroup != null)
             {
                 LoadGroupProfiles(selectedGroup.Id);
             }
         }
 
+        private void LoadClasses()
+        {
+            allClasses = repo.GetClasses().ToList();
+            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+            Classes = new ObservableCollection<Class>(allClasses);
+        }
+
+        private void LoadGroups()
+        {
+            allGroups = repo.GetGroups().ToList();
+            Groups = new ObservableCollection<Group>(allGroups);
+        }
+
         private void LoadGroupProfiles(int groupId)
         {
-            GroupProfiles = new ObservableCollection<Profile>(repo.LoadGroupProfiles(groupId));
+            allGroupProfiles = repo.LoadGroupProfiles(groupId).ToList();
+            GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+        }
+
+        private void FilterGroupProfiles(string searchInput, int classId)
+        {
+            if (SelectedGroup != null && GroupProfiles != null)
+            {
+                if (string.IsNullOrWhiteSpace(searchInput))
+                {
+                    if (classId == 0)
+                    {
+                        GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+                        return;
+                    }
+                    else
+                    {
+                        GroupProfiles = new ObservableCollection<Profile>(
+                      allGroupProfiles.Where(c =>
+                      (
+                      c.ClassId == classId
+                      )
+                      ));
+                    }
+                }
+                else
+                {
+                    if (classId == 0)
+                    {
+                        GroupProfiles = new ObservableCollection<Profile>(
+                       allGroupProfiles.Where(c =>
+                       (
+                       (
+                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Adno.ToLower().Contains(searchInput.ToLower())
+                       )
+                       )
+                       ));
+                    }
+                    else
+                    {
+                        GroupProfiles = new ObservableCollection<Profile>(
+                       allGroupProfiles.Where(c =>
+                       (
+                        c.ClassId == classId &&
+                       (
+                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Adno.ToLower().Contains(searchInput.ToLower())
+                       )
+                       )
+                       ));
+                    }
+                }
+            }
         }
 
         private void OnAddGroup()
@@ -113,5 +220,9 @@ namespace ATEK.AccessControl_2.Groups
             repo.RemoveGroups(deletes);
             LoadData();
         }
+
+        #endregion Methods
+
+        //=====================================================================
     }
 }
