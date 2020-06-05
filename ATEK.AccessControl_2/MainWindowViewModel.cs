@@ -47,7 +47,8 @@ namespace ATEK.AccessControl_2
 
         public void LoadView()
         {
-            CurrentViewModel = loginViewModel;
+            //CurrentViewModel = loginViewModel;
+            CurrentViewModel = mainViewModel;
         }
     }
 }

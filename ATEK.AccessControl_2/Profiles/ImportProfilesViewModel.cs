@@ -201,7 +201,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 2;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Pinno 8
                 if (CheckNumberInputFromExcel(xlRange.Cells[i, 8].Value2))
@@ -214,7 +214,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 8;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Adno 3
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 3].Value2))
@@ -227,7 +227,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 3;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Gender 4
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 4].Value2))
@@ -240,7 +240,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 4;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Date of Birth 5
                 if (CheckDateInputFromExcel(xlRange.Cells[i, 5].Value2))
@@ -253,7 +253,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 5;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Date of Issue 6
                 if (CheckDateInputFromExcel(xlRange.Cells[i, 6].Value2))
@@ -266,7 +266,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 6;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Image 7
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 7].Value2))
@@ -279,7 +279,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 7;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Class 9
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 9].Value2))
@@ -307,7 +307,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 9;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Group 10
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 10].Value2))
@@ -335,7 +335,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 10;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Email 11
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 11].Value2))
@@ -348,7 +348,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 11;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Address 12
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 12].Value2))
@@ -361,7 +361,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 12;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Phone 13
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 13].Value2))
@@ -374,7 +374,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 13;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Status 14
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 14].Value2))
@@ -387,7 +387,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 14;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Expire Date 15
                 if (CheckDateInputFromExcel(xlRange.Cells[i, 15].Value2))
@@ -403,7 +403,7 @@ namespace ATEK.AccessControl_2.Profiles
                         errorColumnIndex = 15;
                         errorRowIndex = i;
                         hasError = true;
-                        break;
+                        //break;
                     }
                 }
                 else
@@ -412,7 +412,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 15;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Automatic Suspension 16
                 if (CheckStringInputFromExcel(xlRange.Cells[i, 16].Value2))
@@ -442,7 +442,7 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 17;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Date Created 18
                 if (CheckDateInputFromExcel(xlRange.Cells[i, 18].Value2))
@@ -464,7 +464,7 @@ namespace ATEK.AccessControl_2.Profiles
                             errorColumnIndex = 18;
                             errorRowIndex = i;
                             hasError = true;
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -474,13 +474,32 @@ namespace ATEK.AccessControl_2.Profiles
                     errorColumnIndex = 18;
                     errorRowIndex = i;
                     hasError = true;
-                    break;
+                    //break;
                 }
                 //Date Modified 19
-                profile.DateCreated = DateTime.Now;
+                profile.DateModified = DateTime.Now;
 
-                listProfiles.Add(profile);
-
+                if (!hasError)
+                {
+                    if (AddProfilesChecked)
+                    {
+                        if (!repo.AddProfile(profile))
+                        {
+                            Console.WriteLine($"Loi add Profile.{profile.Name},{profile.Pinno}");
+                        }
+                    }
+                    else
+                    {
+                        repo.UpdateProfile(profile);
+                    }
+                }
+                else
+                {
+                    string errorMessage = $"Invalid data in Row:{errorRowIndex}, Column:{errorColumn}(index:{errorColumnIndex})";
+                    System.Windows.Forms.MessageBox.Show(errorMessage, "Invalid Data!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                //listProfiles.Add(profile);
                 //Finish progress
                 if (importBackGroundWorker.CancellationPending)
                 {
@@ -497,12 +516,12 @@ namespace ATEK.AccessControl_2.Profiles
                 return;
             }
 
-            if (listProfiles.Count > 0)
-            {
-                ImportStatus = "Importing";
-                repo.AddProfiles(listProfiles);
-                ImportStatus = "Finished";
-            }
+            //if (listProfiles.Count > 0)
+            //{
+            //    ImportStatus = "Importing";
+            //    repo.AddProfiles(listProfiles);
+            //    ImportStatus = "Finished";
+            //}
         }
 
         private DateTime? ParseDateTimeFormCell(string sDate)
@@ -511,15 +530,15 @@ namespace ATEK.AccessControl_2.Profiles
             double dateD;
             try
             {
-                ngayThang = DateTime.ParseExact(sDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                dateD = double.Parse(sDate);
+                var dateTime = DateTime.FromOADate(dateD).ToString("MMMM dd, yyyy");
+                ngayThang = DateTime.Parse(dateTime);
             }
             catch
             {
                 try
                 {
-                    dateD = double.Parse(sDate);
-                    var dateTime = DateTime.FromOADate(dateD).ToString("MMMM dd, yyyy");
-                    ngayThang = DateTime.Parse(dateTime);
+                    ngayThang = DateTime.ParseExact(sDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 }
                 catch { }
             }

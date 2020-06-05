@@ -200,14 +200,6 @@
       <DependentUpon>ImportProfilesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Profiles\ImportProfilesViewModel.cs" />
-    <Compile Include="Profiles\ProfileOfflineView.xaml.cs">
-      <DependentUpon>ProfileOfflineView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Profiles\ProfileOfflineViewModel.cs" />
-    <Compile Include="Profiles\ProfileOnlineView.xaml.cs">
-      <DependentUpon>ProfileOnlineView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Profiles\ProfileOnlineViewModel.cs" />
     <Compile Include="Profiles\SimpleEditableProfile.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Services\AccessControlRepository.cs" />
@@ -275,14 +267,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Profiles\ImportProfilesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Profiles\ProfileOfflineView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Profiles\ProfileOnlineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,7 +1,9 @@
 ﻿using ATEK.AccessControl_2.Services;
+using ATEK.Data.Migrations;
 using ATEK.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,8 +14,11 @@ namespace ATEK.AccessControl_2.Profiles
     {
         private readonly IAccessControlRepository repo;
         private Profile editingProfile = null;
+        private List<Class> allClasses;
         private SimpleEditableProfile profile;
+        private ObservableCollection<Class> classes;
         private bool editMode;
+        private string addEditProblem;
 
         public AddEditProfileViewModel(IAccessControlRepository repo)
         {
@@ -54,10 +59,28 @@ namespace ATEK.AccessControl_2.Profiles
             if (UpdateProfile(Profile, editingProfile))
             {
                 if (EditMode)
+                {
+                    editingProfile.DateModified = DateTime.Today;
                     repo.UpdateProfile(editingProfile);
+                    Done();
+                }
                 else
-                    repo.AddProfile(editingProfile);
-                Done();
+                {
+                    editingProfile.DateCreated = DateTime.Today;
+                    editingProfile.DateModified = DateTime.Today;
+                    if (editingProfile.Status == null)
+                    {
+                        editingProfile.Status = "Active";
+                    }
+                    if (!repo.AddProfile(editingProfile))
+                    {
+                        AddEditProblem = "Cannot Save Profile";
+                    }
+                    else
+                    {
+                        Done();
+                    }
+                }
             }
         }
 
@@ -88,18 +111,21 @@ namespace ATEK.AccessControl_2.Profiles
                 target.Pinno = source.Pinno;
                 target.Adno = source.Adno;
                 target.Name = source.Name;
-                target.Class = source.Class;
-                target.ClassId = source.ClassId;
                 target.Gender = source.Gender;
                 target.DateOfBirth = source.DateOfBirth;
+                target.DateOfIssue = source.DateOfIssue;
                 target.Email = source.Email;
                 target.Address = source.Address;
                 target.Phone = source.Phone;
+                target.Status = source.Status;
                 target.Image = source.Image;
                 target.DateToLock = source.DateToLock;
                 target.CheckDateToLock = source.CheckDateToLock;
-                target.CheckDateToLock = source.CheckDateToLock;
                 target.LicensePlate = source.LicensePlate;
+                target.DateCreated = source.DateCreated;
+                target.DateModified = source.DateModified;
+                target.Class = source.Class;
+                target.ClassId = source.ClassId;
             }
         }
 
@@ -108,19 +134,33 @@ namespace ATEK.AccessControl_2.Profiles
             target.Pinno = source.Pinno;
             target.Adno = source.Adno;
             target.Name = source.Name;
-            target.Class = source.Class;
-            target.ClassId = source.ClassId;
             target.Gender = source.Gender;
             target.DateOfBirth = source.DateOfBirth;
+            target.DateOfIssue = source.DateOfIssue;
             target.Email = source.Email;
             target.Address = source.Address;
             target.Phone = source.Phone;
+            target.Status = source.Status;
             target.Image = source.Image;
             target.DateToLock = source.DateToLock;
             target.CheckDateToLock = source.CheckDateToLock;
-            target.CheckDateToLock = source.CheckDateToLock;
             target.LicensePlate = source.LicensePlate;
+            target.DateCreated = source.DateCreated;
+            target.DateModified = source.DateModified;
+            target.Class = source.Class;
+            target.ClassId = source.ClassId;
             return true;
+        }
+
+        public void LoadData()
+        {
+            LoadClasses();
+        }
+
+        private void LoadClasses()
+        {
+            allClasses = repo.GetClasses().ToList();
+            Classes = new ObservableCollection<Class>(allClasses);
         }
 
         #endregion Methods
@@ -128,6 +168,18 @@ namespace ATEK.AccessControl_2.Profiles
         //=====================================================================
 
         #region Properties
+
+        public string AddEditProblem
+        {
+            get { return addEditProblem; }
+            set { SetProperty(ref addEditProblem, value); }
+        }
+
+        public ObservableCollection<Class> Classes
+        {
+            get { return classes; }
+            set { SetProperty(ref classes, value); }
+        }
 
         public SimpleEditableProfile Profile
         {

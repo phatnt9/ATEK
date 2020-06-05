@@ -39,11 +39,17 @@ namespace ATEK.AccessControl_2.Services
 
         IEnumerable<Profile> GetProfiles();
 
-        Profile GetProfilesWithAllRelatedData(Profile profile);
+        Profile GetProfileWithGroupsAndGates(int profileId);
 
-        void AddProfile(Profile profile);
+        IEnumerable<Profile> GetProfileWithGroupsAndGates();
 
-        void AddProfiles(IEnumerable<Profile> profiles);
+        IEnumerable<Group> LoadGroupsOfProfile(int profileId);
+
+        IEnumerable<Gate> LoadGatesOfProfile(int profileId);
+
+        bool AddProfile(Profile profile);
+
+        bool AddProfiles(IEnumerable<Profile> profiles);
 
         void UpdateProfile(Profile profile);
 
@@ -57,17 +63,9 @@ namespace ATEK.AccessControl_2.Services
 
         void AddClass(Class @class);
 
-        void AddProfileToClass(int classId, Profile profile);
-
-        void AddProfilesToClass(int classId, IEnumerable<Profile> profiles);
-
         void UpdateClass(Class @class);
 
         void RemoveClasses(IEnumerable<Class> classes);
-
-        int CheckClassNameValid(string className);
-
-        IEnumerable<Profile> LoadClassProfiles(int classId);
 
         #endregion Classes
     }

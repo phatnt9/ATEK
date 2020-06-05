@@ -31,33 +31,71 @@ namespace ATEK.AccessControl_2.Services
             return _context.Profiles.ToList();
         }
 
-        public Profile GetProfilesWithAllRelatedData(Profile profile)
+        public Profile GetProfileWithGroupsAndGates(int profileId)
         {
-            return _context.Profiles
-                 .Include(p => p.Class)
-                 .Include(p => p.ProfileGates)
-                 .ThenInclude(p => p.Gate)
-                 .Include(p => p.ProfileGroups)
-                 .ThenInclude(p => p.Group)
-                 .FirstOrDefault(p => p.Id == profile.Id);
+            return _context.Profiles.Include(p => p.ProfileGates).Include(p => p.ProfileGroups).FirstOrDefault(p => p.Id == profileId);
         }
 
-        public void AddProfile(Profile profile)
+        public IEnumerable<Profile> GetProfileWithGroupsAndGates()
         {
-            _context.Profiles.Add(profile);
-            _context.SaveChanges();
+            return _context.Profiles.Include(p => p.ProfileGates).Include(p => p.ProfileGroups).ToList();
         }
 
-        public void AddProfiles(IEnumerable<Profile> profiles)
+        public IEnumerable<Group> LoadGroupsOfProfile(int profileId)
+        {
+            var profile = _context.Profiles.Where(p => p.Id == profileId)
+             .Select(p => new
+             {
+                 Profile = p,
+                 Groups = p.ProfileGroups.Select(pg => pg.Group)
+             }).FirstOrDefault();
+            return profile.Groups;
+        }
+
+        public IEnumerable<Gate> LoadGatesOfProfile(int profileId)
+        {
+            var profile = _context.Profiles.Where(p => p.Id == profileId)
+             .Select(p => new
+             {
+                 Profile = p,
+                 Gates = p.ProfileGates.Select(pg => pg.Gate)
+             }).FirstOrDefault();
+            return profile.Gates;
+        }
+
+        public bool AddProfile(Profile profile)
+        {
+            try
+            {
+                _context.Profiles.Add(profile);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (HandleException(ex))
+                {
+                    _context.Profiles.Remove(profile);
+                }
+                return false;
+            }
+        }
+
+        public bool AddProfiles(IEnumerable<Profile> profiles)
         {
             try
             {
                 _context.Profiles.AddRange(profiles);
                 _context.SaveChanges();
+                return true;
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                if (HandleException(ex))
+                {
+                    _context.Profiles.RemoveRange(profiles);
+                }
+                return false;
             }
         }
 
@@ -108,39 +146,6 @@ namespace ATEK.AccessControl_2.Services
             _context.SaveChanges();
         }
 
-        public int CheckClassNameValid(string className)
-        {
-            var @class = _context.Classes.FirstOrDefault((c) => c.Name == className);
-            if (@class != null)
-            {
-                return @class.Id;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public void AddProfilesToClass(int classId, IEnumerable<Profile> profiles)
-        {
-            var @class = _context.Classes.Find(classId);
-            @class.Profiles.AddRange(profiles);
-            _context.SaveChanges();
-        }
-
-        public void AddProfileToClass(int classId, Profile profile)
-        {
-            var @class = _context.Classes.Find(classId);
-            @class.Profiles.Add(profile);
-            _context.SaveChanges();
-        }
-
-        public IEnumerable<Profile> LoadClassProfiles(int classId)
-        {
-            Class @class = _context.Classes.Include(c => c.Profiles).SingleOrDefault(c => c.Id == classId);
-            return @class.Profiles;
-        }
-
         #endregion Classes
 
         #region Groups
@@ -154,7 +159,6 @@ namespace ATEK.AccessControl_2.Services
         {
             return _context.Groups
                 .Include(g => g.ProfileGroups)
-                .ThenInclude(g => g.Profile)
                 .First(g => g.Id == groupId);
         }
 
@@ -197,22 +201,50 @@ namespace ATEK.AccessControl_2.Services
             _context.Add(addItem);
             _context.SaveChanges();
             return true;
+
             //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
             //if (data != null)
             //{
-            //    Console.WriteLine($"Co ne.{profile.Id}");
+            //    Console.WriteLine($"Add Co ne.{profile.Id}");
+            //    Console.WriteLine(_context.Entry(data).State.ToString());
             //    _context.Entry(data).State = EntityState.Added;
             //    _context.SaveChanges();
             //    return true;
             //}
             //else
             //{
-            //    Console.WriteLine($"Ko co.{profile.Id}");
+            //    Console.WriteLine($"Add Ko co.{profile.Id}");
             //    var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
             //    _context.Add(addItem);
+            //    Console.WriteLine(_context.Entry(addItem).State.ToString());
             //    _context.SaveChanges();
             //    return true;
             //}
+        }
+
+        public bool RemoveProfileFromGroup(Group group, Profile profile)
+        {
+            //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
+            //_context.Entry(data).State = EntityState.Deleted;
+            //_context.SaveChanges();
+            //return true;
+
+            var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
+            if (data != null)
+            {
+                Console.WriteLine($"Remove Co ne.{profile.Id}");
+                _context.Entry(data).State = EntityState.Deleted;
+                _context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Remove Ko co.{profile.Id}");
+                var removeItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
+                _context.Remove(removeItem);
+                _context.SaveChanges();
+                return true;
+            }
         }
 
         public async Task AddProfilesToGroupAsync(Group group, IEnumerable<Profile> collection)
@@ -235,30 +267,6 @@ namespace ATEK.AccessControl_2.Services
                     await _context.SaveChangesAsync();
                 }
             }
-        }
-
-        public bool RemoveProfileFromGroup(Group group, Profile profile)
-        {
-            var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
-            _context.Entry(data).State = EntityState.Deleted;
-            _context.SaveChanges();
-            return true;
-            //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
-            //if (data != null)
-            //{
-            //    Console.WriteLine($"Remove Co ne.{profile.Id}");
-            //    _context.Entry(data).State = EntityState.Deleted;
-            //    _context.SaveChanges();
-            //    return true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"Remove Ko co.{profile.Id}");
-            //    var removeItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
-            //    _context.Remove(removeItem);
-            //    _context.SaveChanges();
-            //    return true;
-            //}
         }
 
         public async Task RemoveProfilesFromGroupAsync(Group group, IEnumerable<Profile> collection)
@@ -285,7 +293,7 @@ namespace ATEK.AccessControl_2.Services
 
         #endregion Groups
 
-        public virtual void HandleException(Exception exception)
+        public virtual bool HandleException(Exception exception)
         {
             Console.WriteLine("ERROR IN DATABASE CONTEXT");
             SqlException innerException = exception.InnerException as SqlException;
@@ -297,13 +305,13 @@ namespace ATEK.AccessControl_2.Services
                         {
                             Console.WriteLine(innerException.Message);
                             Console.WriteLine("Duplicated Pinno");
-                            break;
+                            return true;
                         }
                     case 2627:
                         {
                             Console.WriteLine(innerException.Message);
                             Console.WriteLine("Duplicated GroupProfiles");
-                            break;
+                            return true;
                         }
                     default:
                         {

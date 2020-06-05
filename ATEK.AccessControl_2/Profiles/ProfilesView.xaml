@@ -69,7 +69,6 @@
                             VerticalContentAlignment="Center"
                             DisplayMemberPath="Name"
                             ItemsSource="{Binding Classes}"
-                            SelectedIndex="0"
                             SelectedValue="{Binding SearchProfilesByClass}"
                             SelectedValuePath="Id" />
                     </Grid>
@@ -84,6 +83,7 @@
                 <Grid Grid.Row="2">
                     <DataGrid
                         x:Name="profiles_dg_profiles"
+                        Margin="4,0"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
                         IsReadOnly="True"
@@ -91,36 +91,6 @@
                         SelectedItem="{Binding SelectedProfile}"
                         SelectionUnit="FullRow">
                         <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Pinno}"
-                                Header="Pinno"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Name}"
-                                Header="Name"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Adno}"
-                                Header="Adno"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Class.Name}"
-                                Header="Class"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding LicensePlate}"
-                                Header="LicensePlate"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Status}"
-                                Header="Status"
-                                IsReadOnly="True" />
                             <DataGridTemplateColumn Width="70" Header="Edit">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -132,11 +102,72 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Pinno}"
+                                Header="Pinno" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Name}"
+                                Header="Name" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Adno}"
+                                Header="Adno" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Class.Name}"
+                                Header="Class" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Status}"
+                                Header="Status" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Email}"
+                                Header="Email" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Address}"
+                                Header="Address" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Phone}"
+                                Header="Phone" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding LicensePlate}"
+                                Header="License Plate" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Gender}"
+                                Header="Gender" />
+                            <DataGridCheckBoxColumn Binding="{Binding CheckDateToLock}" Header="Auto Lock" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding DateToLock, StringFormat=\{0:dd/MM/yyyy\}}"
+                                Header="Date To Lock" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding DateOfBirth, StringFormat=\{0:dd/MM/yyyy\}}"
+                                Header="Date Of Birth" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding DateOfIssue, StringFormat=\{0:dd/MM/yyyy\}}"
+                                Header="Date Of Issue" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding DateCreated, StringFormat=\{0:dd/MM/yyyy\}}"
+                                Header="Date Created" />
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding DateModified, StringFormat=\{0:dd/MM/yyyy\}}"
+                                Header="Date Modified" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
                 <Grid Grid.Row="3">
-                    <ProgressBar />
+                    <ProgressBar Margin="4,0" />
                 </Grid>
                 <Grid Grid.Row="4">
                     <StackPanel Orientation="Horizontal">
@@ -193,16 +224,103 @@
                             Width="50"
                             Height="20"
                             Margin="4,0"
-                            Content="Offline" />
+                            Content="..." />
                         <Button
                             Width="50"
                             Height="20"
                             Margin="4,0"
-                            Content="Online" />
+                            Content="..." />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <ContentControl />
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="4" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="50" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <ComboBox
+                                    Height="20"
+                                    Margin="4,0"
+                                    VerticalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding Groups}"
+                                    SelectedValue="{Binding GroupAddToProfile}" />
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Button
+                                    Height="20"
+                                    Margin="4,0"
+                                    Command="{Binding AddGroupToProfileCommand}"
+                                    Content="Add" />
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <DataGrid
+                                Margin="4,0"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding ProfileGroups}"
+                                SelectionUnit="FullRow">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="*"
+                                        Binding="{Binding Name}"
+                                        Header="Group" />
+                                    <DataGridTemplateColumn Width="70" Header="Remove">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button
+                                                    Margin="5"
+                                                    Command="{Binding DataContext.RemoveGroupFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="Remove" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Grid>
+                    <GridSplitter
+                        Grid.Row="1"
+                        VerticalAlignment="Stretch"
+                        Background="#F1F1F1" />
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="50" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <ComboBox Height="20" Margin="4,0" />
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Button
+                                    Height="20"
+                                    Margin="4,0"
+                                    Content="Add" />
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <DataGrid Margin="4,0" />
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid Grid.Row="3" />
                 <Grid Grid.Row="4" />

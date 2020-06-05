@@ -103,7 +103,6 @@
                             VerticalContentAlignment="Center"
                             DisplayMemberPath="Name"
                             ItemsSource="{Binding Classes}"
-                            SelectedIndex="0"
                             SelectedValue="{Binding SearchGroupProfilesByClass}"
                             SelectedValuePath="Id" />
                     </Grid>

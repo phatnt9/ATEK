@@ -3,13 +3,19 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Models="clr-namespace:ATEK.Domain.Models;assembly=ATEK.Domain"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:conv="clr-namespace:ATEK.AccessControl_2.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ATEK.AccessControl_2.Profiles"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="650"
+    d:DesignWidth="900"
     mc:Ignorable="d">
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:CallMethodAction MethodName="LoadData" TargetObject="{Binding}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
     <UserControl.Resources>
         <conv:NegatableBooleanToVisibilityConverter x:Key="VisConverter" />
         <conv:NegatableBooleanToVisibilityConverter x:Key="NegVisConverter" Negate="True" />
@@ -27,300 +33,222 @@
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" />
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Center">
+                <Label
+                    Content="{Binding AddEditProblem}"
+                    FontSize="16"
+                    Foreground="Red" />
+            </StackPanel>
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
-                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Grid
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    DataContext="{Binding Profile}">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Pinno:" />
-                    <Label
-                        x:Name="pinnoLabel"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="{Binding Pinno}" />
-                    <Label
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Adno:" />
-                    <TextBox
-                        x:Name="adnoTextBox"
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Adno, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Name:" />
-                    <TextBox
-                        x:Name="nameTextBox"
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Name, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Date Created:" />
-                    <Label
-                        x:Name="dateCreatedLabel"
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="{Binding DateCreated}" />
-                    <Label
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Date Modified:" />
-                    <Label
-                        x:Name="dateModifiedLabel"
-                        Grid.Row="4"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="{Binding DateModified}" />
-
-                    <Label
-                        Grid.Row="5"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Date Of Birth:" />
-                    <DatePicker
-                        x:Name="dateOfBirthDatePicker"
-                        Grid.Row="5"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        SelectedDate="{Binding DateOfBirth, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="6"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Date Of Issue:" />
-                    <DatePicker
-                        x:Name="dateOfIssueDatePicker"
-                        Grid.Row="6"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        SelectedDate="{Binding DateOfIssue, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="7"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Date To Lock:" />
-                    <DatePicker
-                        x:Name="dateToLockDatePicker"
-                        Grid.Row="7"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        SelectedDate="{Binding DateToLock, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                    <Grid Grid.Row="0" />
+                    <Grid Grid.Row="1">
+                        <ScrollViewer>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <StackPanel HorizontalAlignment="Right">
+                                        <Label
+                                            Height="26"
+                                            HorizontalAlignment="Right"
+                                            Content="Date of Birth (*):" />
+                                        <Label
+                                            Height="26"
+                                            HorizontalAlignment="Right"
+                                            Content="Date Issue (*):" />
+                                        <Label
+                                            Height="26"
+                                            HorizontalAlignment="Right"
+                                            Content="Auto Suspend:" />
+                                        <Label
+                                            Height="26"
+                                            HorizontalAlignment="Right"
+                                            Content="Date to Suspend:" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <StackPanel>
+                                        <DatePicker
+                                            Height="22"
+                                            Margin="5,2"
+                                            VerticalContentAlignment="Center"
+                                            SelectedDate="{Binding Profile.DateOfBirth, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                        <DatePicker
+                                            Height="22"
+                                            Margin="5,2"
+                                            VerticalContentAlignment="Center"
+                                            SelectedDate="{Binding Profile.DateOfIssue, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                        <CheckBox
+                                            Height="22"
+                                            Margin="5,2"
+                                            VerticalContentAlignment="Center"
+                                            IsChecked="{Binding Profile.CheckDateToLock, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                        <DatePicker
+                                            Height="22"
+                                            Margin="5,2"
+                                            VerticalContentAlignment="Center"
+                                            SelectedDate="{Binding Profile.DateToLock, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid Grid.Column="1">
-                <Grid
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    DataContext="{Binding Profile}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Email:" />
-                    <TextBox
-                        x:Name="emailTextBox"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Email, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Phone:" />
-                    <TextBox
-                        x:Name="phoneTextBox"
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Phone, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Address:" />
-                    <TextBox
-                        x:Name="addressTextBox"
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Address, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="License Plate:" />
-                    <TextBox
-                        x:Name="licensePlateTextBox"
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="23"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding LicensePlate, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Gender:" />
-                    <ComboBox
-                        x:Name="genderComboBox"
-                        Grid.Row="4"
-                        Grid.Column="1"
-                        Width="120"
-                        Height="Auto"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        DisplayMemberPath="Gender">
-                        <ComboBoxItem>Male</ComboBoxItem>
-                        <ComboBoxItem>Female</ComboBoxItem>
-                    </ComboBox>
-                    <Label
-                        Grid.Row="5"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Check Date To Lock:" />
-                    <CheckBox
-                        x:Name="checkDateToLockCheckBox"
-                        Grid.Row="5"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content=""
-                        IsChecked="{Binding CheckDateToLock, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
-                    <Label
-                        Grid.Row="6"
-                        Grid.Column="0"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Image:" />
-                    <TextBlock
-                        x:Name="imageTextBlock"
-                        Grid.Row="6"
-                        Grid.Column="1"
-                        Margin="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding Image}" />
-                </Grid>
+                <ScrollViewer>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <StackPanel HorizontalAlignment="Right">
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Pin No (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Ad No (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Name (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Class (*):" />
+
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Gender (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Email:" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Address:" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Phone:" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Status (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="Image (*):" />
+                                <Label
+                                    Height="26"
+                                    HorizontalAlignment="Right"
+                                    Content="License Plate:" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <StackPanel>
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Pinno, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Adno, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Name, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <ComboBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding Classes}"
+                                    SelectedItem="{Binding Profile.Class}" />
+                                <ComboBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <ComboBoxItem>Male</ComboBoxItem>
+                                    <ComboBoxItem>Female</ComboBoxItem>
+                                </ComboBox>
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Email, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Address, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Phone, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                <ComboBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.Status, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}">
+                                    <ComboBoxItem>Active</ComboBoxItem>
+                                    <ComboBoxItem>Suspended</ComboBoxItem>
+                                </ComboBox>
+                                <Grid Height="22" Margin="5,2">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <TextBox
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            Text="{Binding Profile.Image, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <Button
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding ReplaceProfileImageCommand}"
+                                            Content="..." />
+                                    </Grid>
+                                </Grid>
+                                <TextBox
+                                    Height="22"
+                                    Margin="5,2"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding Profile.LicensePlate, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
             </Grid>
-            <Grid Grid.Column="2" />
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

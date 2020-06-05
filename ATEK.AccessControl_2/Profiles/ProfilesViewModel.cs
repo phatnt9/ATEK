@@ -17,17 +17,26 @@ namespace ATEK.AccessControl_2.Profiles
     {
         private readonly IAccessControlRepository repo;
         private List<Profile> allProfiles;
+        private List<Group> allGroups;
         private List<Class> allClasses;
+        private List<Group> allProfileGroups;
+        private List<Gate> allProfileGates;
         private ObservableCollection<Profile> profiles;
         private Profile selectedProfile;
         private string searchProfilesInput;
         private ObservableCollection<Class> classes;
         private int searchProfilesByClass;
+        private ObservableCollection<Group> groups;
+        private Group groupAddToProfile;
+        private ObservableCollection<Group> profileGroups;
+        private ObservableCollection<Gate> profileGates;
 
         public ProfilesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
             AddProfileCommand = new RelayCommand(OnAddProfile);
+            AddGroupToProfileCommand = new RelayCommand(OnAddGroupToProfile, CanAddGroupToProfile);
+            RemoveGroupFromProfileCommand = new RelayCommand<Group>(OnRemoveGroupFromProfile, CanRemoveGroupFromProfile);
             EditProfileCommand = new RelayCommand<Profile>(OnEditProfile);
             RemoveProfilesCommand = new RelayCommand<object>(OnRemoveProfiles);
             RefreshProfilesCommand = new RelayCommand(OnRefreshProfiles);
@@ -39,6 +48,8 @@ namespace ATEK.AccessControl_2.Profiles
         #region Commands
 
         public RelayCommand AddProfileCommand { get; private set; }
+        public RelayCommand AddGroupToProfileCommand { get; private set; }
+        public RelayCommand<Group> RemoveGroupFromProfileCommand { get; private set; }
         public RelayCommand<Profile> EditProfileCommand { get; private set; }
         public RelayCommand<object> RemoveProfilesCommand { get; private set; }
         public RelayCommand RefreshProfilesCommand { get; private set; }
@@ -64,51 +75,59 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void FilterProfiles(string searchInput, int classId)
         {
-            if (string.IsNullOrWhiteSpace(searchInput))
+            if (allProfiles != null)
             {
-                if (classId == 0)
+                if (string.IsNullOrWhiteSpace(searchInput))
                 {
-                    Profiles = new ObservableCollection<Profile>(allProfiles);
-                    return;
+                    if (classId == 0)
+                    {
+                        Profiles = new ObservableCollection<Profile>(allProfiles);
+                        return;
+                    }
+                    else
+                    {
+                        Profiles = new ObservableCollection<Profile>(
+                      allProfiles.Where(c =>
+                      (
+                      c.ClassId == classId
+                      )
+                      ));
+                    }
                 }
                 else
                 {
-                    Profiles = new ObservableCollection<Profile>(
-                  allProfiles.Where(c =>
-                  (
-                  c.ClassId == classId
-                  )
-                  ));
-                }
-            }
-            else
-            {
-                if (classId == 0)
-                {
-                    Profiles = new ObservableCollection<Profile>(
-                   allProfiles.Where(c =>
-                   (
-                   (
-                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
-                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
-                   c.Adno.ToLower().Contains(searchInput.ToLower())
-                   )
-                   )
-                   ));
-                }
-                else
-                {
-                    Profiles = new ObservableCollection<Profile>(
-                   allProfiles.Where(c =>
-                   (
-                    c.ClassId == classId &&
-                   (
-                   c.Name.ToLower().Contains(searchInput.ToLower()) ||
-                   c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
-                   c.Adno.ToLower().Contains(searchInput.ToLower())
-                   )
-                   )
-                   ));
+                    if (classId == 0)
+                    {
+                        Profiles = new ObservableCollection<Profile>(
+                       allProfiles.Where(c =>
+                       (
+                       (
+                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Gender.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Email.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Address.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Phone.ToLower().Contains(searchInput.ToLower()) ||
+                       c.LicensePlate.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Adno.ToLower().Contains(searchInput.ToLower())
+                       )
+                       )
+                       ));
+                    }
+                    else
+                    {
+                        Profiles = new ObservableCollection<Profile>(
+                       allProfiles.Where(c =>
+                       (
+                        c.ClassId == classId &&
+                       (
+                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                       c.Adno.ToLower().Contains(searchInput.ToLower())
+                       )
+                       )
+                       ));
+                    }
                 }
             }
         }
@@ -121,27 +140,91 @@ namespace ATEK.AccessControl_2.Profiles
         public void LoadData()
         {
             LoadProfiles();
+            LoadGroups();
             LoadClasses();
+            LoadProfileGroupsAndGates();
         }
 
         private void LoadProfiles()
         {
             allProfiles = repo.GetProfiles().ToList();
-            Console.WriteLine("Number of Profile:" + allProfiles.Count);
+            if (allProfiles.Count == 0)
+            {
+                SelectedProfile = null;
+            }
             Profiles = new ObservableCollection<Profile>(allProfiles);
+        }
+
+        private void LoadGroups()
+        {
+            allGroups = repo.GetGroups().ToList();
+            if (allGroups.Count == 0)
+            {
+                GroupAddToProfile = null;
+            }
+            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            Console.WriteLine("Number of Class:" + allClasses.Count);
             allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
             Classes = new ObservableCollection<Class>(allClasses);
+            FilterProfiles(searchProfilesInput, searchProfilesByClass);
         }
 
         private void OnAddProfile()
         {
             AddProfileRequested(new Profile());
+        }
+
+        private void OnAddGroupToProfile()
+        {
+            if (!allProfileGroups.Exists(g => (g.Id == groupAddToProfile.Id)))
+            {
+                if (!repo.AddProfileToGroup(groupAddToProfile, selectedProfile))
+                {
+                    Console.WriteLine("Add Group vao Profile khong thanh cong.");
+                }
+                else
+                {
+                    if (selectedProfile != null)
+                    {
+                        LoadProfileGroupsAndGates();
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Group nay da ton tai.");
+            }
+        }
+
+        private bool CanAddGroupToProfile()
+        {
+            bool result = (selectedProfile != null) && (groupAddToProfile != null);
+            return result;
+        }
+
+        private void OnRemoveGroupFromProfile(Group profileGroup)
+        {
+            if (!repo.RemoveProfileFromGroup(profileGroup, selectedProfile))
+            {
+                Console.WriteLine("Remove Profile khong thanh cong.");
+            }
+            else
+            {
+                if (selectedProfile != null)
+                {
+                    LoadProfileGroupsAndGates();
+                }
+            }
+        }
+
+        private bool CanRemoveGroupFromProfile(Group profileGroup)
+        {
+            bool result = (selectedProfile != null);
+            return result;
         }
 
         private void OnEditProfile(Profile profile)
@@ -168,11 +251,45 @@ namespace ATEK.AccessControl_2.Profiles
             }
         }
 
+        public void LoadProfileGroupsAndGates()
+        {
+            if (selectedProfile != null)
+            {
+                allProfileGroups = repo.LoadGroupsOfProfile(selectedProfile.Id).ToList();
+                allProfileGates = repo.LoadGatesOfProfile(selectedProfile.Id).ToList();
+                ProfileGroups = new ObservableCollection<Group>(allProfileGroups);
+                ProfileGates = new ObservableCollection<Gate>(allProfileGates);
+                Console.WriteLine($"Select profile has {selectedProfile.ProfileGroups.Count} groups and {selectedProfile.ProfileGates.Count} gates");
+            }
+        }
+
         #endregion Methods
 
         //=====================================================================
 
         #region Properties
+
+        public ObservableCollection<Group> ProfileGroups
+        {
+            get { return profileGroups; }
+            set { SetProperty(ref profileGroups, value); }
+        }
+
+        public ObservableCollection<Gate> ProfileGates
+        {
+            get { return profileGates; }
+            set { SetProperty(ref profileGates, value); }
+        }
+
+        public Group GroupAddToProfile
+        {
+            get { return groupAddToProfile; }
+            set
+            {
+                SetProperty(ref groupAddToProfile, value);
+                AddGroupToProfileCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         public string SearchProfilesInput
         {
@@ -190,6 +307,12 @@ namespace ATEK.AccessControl_2.Profiles
             set { SetProperty(ref profiles, value); }
         }
 
+        public ObservableCollection<Group> Groups
+        {
+            get { return groups; }
+            set { SetProperty(ref groups, value); }
+        }
+
         public ObservableCollection<Class> Classes
         {
             get { return classes; }
@@ -199,7 +322,16 @@ namespace ATEK.AccessControl_2.Profiles
         public Profile SelectedProfile
         {
             get { return selectedProfile; }
-            set { SetProperty(ref selectedProfile, value); }
+            set
+            {
+                SetProperty(ref selectedProfile, value);
+                if (selectedProfile != null)
+                {
+                    LoadProfileGroupsAndGates();
+                }
+                AddGroupToProfileCommand.RaiseCanExecuteChanged();
+                RemoveGroupFromProfileCommand.RaiseCanExecuteChanged();
+            }
         }
 
         public int SearchProfilesByClass

@@ -72,7 +72,10 @@ namespace ATEK.AccessControl_2.Groups
             set
             {
                 SetProperty(ref selectedGroup, value);
-                LoadGroupProfiles(selectedGroup.Id);
+                if (selectedGroup != null)
+                {
+                    LoadGroupProfiles(selectedGroup.Id);
+                }
             }
         }
 
@@ -129,6 +132,7 @@ namespace ATEK.AccessControl_2.Groups
             allClasses = repo.GetClasses().ToList();
             allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
             Classes = new ObservableCollection<Class>(allClasses);
+            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
         }
 
         private void LoadGroups()
@@ -146,53 +150,56 @@ namespace ATEK.AccessControl_2.Groups
 
         private void FilterGroupProfiles(string searchInput, int classId)
         {
-            if (SelectedGroup != null && GroupProfiles != null)
+            if (allGroupProfiles != null)
             {
-                if (string.IsNullOrWhiteSpace(searchInput))
+                if (SelectedGroup != null && GroupProfiles != null)
                 {
-                    if (classId == 0)
+                    if (string.IsNullOrWhiteSpace(searchInput))
                     {
-                        GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
-                        return;
+                        if (classId == 0)
+                        {
+                            GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+                            return;
+                        }
+                        else
+                        {
+                            GroupProfiles = new ObservableCollection<Profile>(
+                          allGroupProfiles.Where(c =>
+                          (
+                          c.ClassId == classId
+                          )
+                          ));
+                        }
                     }
                     else
                     {
-                        GroupProfiles = new ObservableCollection<Profile>(
-                      allGroupProfiles.Where(c =>
-                      (
-                      c.ClassId == classId
-                      )
-                      ));
-                    }
-                }
-                else
-                {
-                    if (classId == 0)
-                    {
-                        GroupProfiles = new ObservableCollection<Profile>(
-                       allGroupProfiles.Where(c =>
-                       (
-                       (
-                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
-                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
-                       c.Adno.ToLower().Contains(searchInput.ToLower())
-                       )
-                       )
-                       ));
-                    }
-                    else
-                    {
-                        GroupProfiles = new ObservableCollection<Profile>(
-                       allGroupProfiles.Where(c =>
-                       (
-                        c.ClassId == classId &&
-                       (
-                       c.Name.ToLower().Contains(searchInput.ToLower()) ||
-                       c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
-                       c.Adno.ToLower().Contains(searchInput.ToLower())
-                       )
-                       )
-                       ));
+                        if (classId == 0)
+                        {
+                            GroupProfiles = new ObservableCollection<Profile>(
+                           allGroupProfiles.Where(c =>
+                           (
+                           (
+                           c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                           c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                           c.Adno.ToLower().Contains(searchInput.ToLower())
+                           )
+                           )
+                           ));
+                        }
+                        else
+                        {
+                            GroupProfiles = new ObservableCollection<Profile>(
+                           allGroupProfiles.Where(c =>
+                           (
+                            c.ClassId == classId &&
+                           (
+                           c.Name.ToLower().Contains(searchInput.ToLower()) ||
+                           c.Pinno.ToLower().Contains(searchInput.ToLower()) ||
+                           c.Adno.ToLower().Contains(searchInput.ToLower())
+                           )
+                           )
+                           ));
+                        }
                     }
                 }
             }

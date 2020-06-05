@@ -14,21 +14,21 @@ namespace ATEK.AccessControl_2.Profiles
         private string pinno;
         private string adno;
         private string name;
-        private Class @class;
-        private int classId;
         private string gender;
         private DateTime dateOfBirth;
+        private DateTime dateOfIssue;
         private string email;
         private string address;
         private string phone;
+        private string status;
         private string image;
         private DateTime dateToLock;
         private bool checkDateToLock;
         private string licensePlate;
-
-        public SimpleEditableProfile()
-        {
-        }
+        private DateTime dateCreated;
+        private DateTime dateModified;
+        private Class @class;
+        private int classId;
 
         public int Id { get { return id; } set { SetProperty(ref id, value); } }
 
@@ -42,15 +42,13 @@ namespace ATEK.AccessControl_2.Profiles
         public string Name { get { return name; } set { SetProperty(ref name, value); } }
 
         [Required]
-        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
-
-        public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
-
-        [Required]
         public string Gender { get { return gender; } set { SetProperty(ref gender, value); } }
 
         [Required]
         public DateTime DateOfBirth { get { return dateOfBirth; } set { SetProperty(ref dateOfBirth, value); } }
+
+        [Required]
+        public DateTime DateOfIssue { get { return dateOfIssue; } set { SetProperty(ref dateOfIssue, value); } }
 
         [EmailAddress]
         public string Email { get { return email; } set { SetProperty(ref email, value); } }
@@ -60,6 +58,9 @@ namespace ATEK.AccessControl_2.Profiles
 
         [Phone]
         public string Phone { get { return phone; } set { SetProperty(ref phone, value); } }
+
+        [Required]
+        public string Status { get { return status; } set { SetProperty(ref status, value); } }
 
         [Required]
         public string Image { get { return image; } set { SetProperty(ref image, value); } }
@@ -72,5 +73,17 @@ namespace ATEK.AccessControl_2.Profiles
 
         [Required]
         public string LicensePlate { get { return licensePlate; } set { SetProperty(ref licensePlate, value); } }
+
+        [Required]
+        public DateTime DateCreated { get { return dateCreated; } set { SetProperty(ref dateCreated, value); } }
+
+        [Required]
+        public DateTime DateModified { get { return dateModified; } set { SetProperty(ref dateModified, value); } }
+
+        [Required]
+        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
+
+        [Required]
+        public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
     }
 }
