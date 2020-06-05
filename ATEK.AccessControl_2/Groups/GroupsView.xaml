@@ -120,7 +120,7 @@
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
                         IsReadOnly="True"
-                        ItemsSource="{Binding Path=GroupProfiles, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                        ItemsSource="{Binding GroupProfiles}"
                         SelectionUnit="FullRow">
                         <DataGrid.Columns>
                             <DataGridTextColumn

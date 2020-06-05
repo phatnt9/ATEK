@@ -22,14 +22,16 @@ namespace ATEK.AccessControl_2.Profiles
         private List<Group> allProfileGroups;
         private List<Gate> allProfileGates;
         private ObservableCollection<Profile> profiles;
-        private Profile selectedProfile;
-        private string searchProfilesInput;
-        private ObservableCollection<Class> classes;
-        private int searchProfilesByClass;
         private ObservableCollection<Group> groups;
-        private Group groupAddToProfile;
+        private ObservableCollection<Class> classes;
         private ObservableCollection<Group> profileGroups;
         private ObservableCollection<Gate> profileGates;
+
+        private Profile selectedProfile;
+        private Group groupAddToProfile;
+
+        private string searchProfilesInput;
+        private int searchProfilesByClass;
 
         public ProfilesViewModel(IAccessControlRepository repo)
         {

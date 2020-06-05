@@ -526,7 +526,6 @@ namespace ATEK.AccessControl_2.Groups
                 {
                     foreach (var item in collection)
                     {
-                        var groupProfile = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
                         if (!group.ProfileGroups.Exists(g => (g.ProfileId == item.Id)))
                         {
                             list.Add(item);

@@ -13,11 +13,11 @@ namespace ATEK.AccessControl_2.Groups
     {
         private readonly IAccessControlRepository repo;
         private Group selectedGroup;
-        private List<Class> allClasses;
         private List<Group> allGroups;
+        private List<Class> allClasses;
         private List<Profile> allGroupProfiles;
-        private ObservableCollection<Class> classes;
         private ObservableCollection<Group> groups;
+        private ObservableCollection<Class> classes;
         private ObservableCollection<Profile> groupProfiles;
 
         private int searchGroupProfilesByClass;
@@ -119,12 +119,18 @@ namespace ATEK.AccessControl_2.Groups
 
         public void LoadData()
         {
-            LoadClasses();
             LoadGroups();
+            LoadClasses();
             if (selectedGroup != null)
             {
                 LoadGroupProfiles(selectedGroup.Id);
             }
+        }
+
+        private void LoadGroups()
+        {
+            allGroups = repo.GetGroups().ToList();
+            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         private void LoadClasses()
@@ -133,12 +139,6 @@ namespace ATEK.AccessControl_2.Groups
             allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
             Classes = new ObservableCollection<Class>(allClasses);
             FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
-        }
-
-        private void LoadGroups()
-        {
-            allGroups = repo.GetGroups().ToList();
-            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         private void LoadGroupProfiles(int groupId)

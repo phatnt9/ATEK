@@ -18,7 +18,6 @@ namespace ATEK.AccessControl_2.Classes
         private List<Class> allClasses;
         private ObservableCollection<Class> classes;
         private Class selectedClass;
-        private ObservableCollection<Profile> classProfiles;
 
         public ClassesViewModel(IAccessControlRepository repo)
         {
@@ -57,33 +56,13 @@ namespace ATEK.AccessControl_2.Classes
             set
             {
                 SetProperty(ref selectedClass, value);
-                //if (selectedClass != null)
-                //{
-                //    LoadClassProfiles(selectedClass.Id);
-                //}
-                //else
-                //{
-                //    ClassProfiles.Clear();
-                //}
             }
-        }
-
-        public ObservableCollection<Profile> ClassProfiles
-        {
-            get { return classProfiles; }
-            set { SetProperty(ref classProfiles, value); }
         }
 
         public void LoadData()
         {
             allClasses = repo.GetClasses().ToList();
             Classes = new ObservableCollection<Class>(allClasses);
-        }
-
-        private void LoadClassProfiles(int classId)
-        {
-            //ClassProfiles = new ObservableCollection<Profile>(repo.LoadClassProfiles(classId));
-            ClassProfiles = new ObservableCollection<Profile>(SelectedClass.Profiles);
         }
 
         private void OnAddClass()
