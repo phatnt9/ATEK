@@ -30,88 +30,43 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="0" />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <DataGrid
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    ItemsSource="{Binding Classes}"
-                    SelectedItem="{Binding SelectedClass}"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Name}"
-                            Header="Name"
-                            IsReadOnly="True" />
-                        <DataGridTemplateColumn Width="Auto" Header="Edit">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button
-                                        Margin="5"
-                                        Command="{Binding DataContext.EditClassCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Edit" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="Auto" Header="Remove">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button
-                                        Margin="5"
-                                        Command="{Binding DataContext.RemoveClassCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Remove" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-            <Grid Grid.Column="1">
-                <DataGrid
-                    CanUserAddRows="False"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding ClassProfiles}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding Pinno}"
-                            Header="Pinno"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding Name}"
-                            Header="Name"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding Adno}"
-                            Header="Adno"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding Class.Name}"
-                            Header="Class"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding LicensePlate}"
-                            Header="LicensePlate"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
-                            Binding="{Binding Status}"
-                            Header="Status"
-                            IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
+            <DataGrid
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                ItemsSource="{Binding Classes}"
+                SelectedItem="{Binding SelectedClass}"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Name}"
+                        Header="Name"
+                        IsReadOnly="True" />
+                    <DataGridTemplateColumn Width="Auto" Header="Edit">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Margin="5"
+                                    Command="{Binding DataContext.EditClassCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Edit" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="Auto" Header="Remove">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Margin="5"
+                                    Command="{Binding DataContext.RemoveClassCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Remove" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </UserControl>

@@ -76,11 +76,15 @@ namespace ATEK.AccessControl_2.Classes
 
         private void OnRemoveClass(Class @class)
         {
-            Console.WriteLine("ascasca");
-            //List<Class> deletes = new List<Class>();
-            //deletes.Add(@class);
-            //repo.RemoveClasses(deletes);
-            //LoadData();
+            string message = "Delete class will remove all its associated profiles. Are you sure?";
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show(message, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                List<Class> deletes = new List<Class>();
+                deletes.Add(@class);
+                repo.RemoveClasses(deletes);
+                LoadData();
+            }
         }
     }
 }
