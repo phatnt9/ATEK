@@ -38,7 +38,6 @@ namespace ATEK.AccessControl_2.Classes
         #region Commands
 
         public RelayCommand AddClassCommand { get; private set; }
-        public RelayCommand CancelCommand { get; private set; }
         public RelayCommand<Class> EditClassCommand { get; private set; }
         public RelayCommand<Class> RemoveClassCommand { get; private set; }
 
@@ -77,10 +76,11 @@ namespace ATEK.AccessControl_2.Classes
 
         private void OnRemoveClass(Class @class)
         {
-            List<Class> deletes = new List<Class>();
-            deletes.Add(@class);
-            repo.RemoveClasses(deletes);
-            LoadData();
+            Console.WriteLine("ascasca");
+            //List<Class> deletes = new List<Class>();
+            //deletes.Add(@class);
+            //repo.RemoveClasses(deletes);
+            //LoadData();
         }
     }
 }

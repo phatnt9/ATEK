@@ -17,315 +17,351 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*" />
-            <ColumnDefinition Width="0*" />
+            <ColumnDefinition Width="4" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*" />
-                <ColumnDefinition Width="4" />
-                <ColumnDefinition Width="2*" />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="25" />
-                    <RowDefinition />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="25" />
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Command="{Binding AddProfileCommand}"
-                            Content="Add" />
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Command="{Binding RemoveProfilesCommand}"
-                            CommandParameter="{Binding ElementName=profiles_dg_profiles, Path=SelectedItems}"
-                            Content="Remove" />
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Command="{Binding RefreshProfilesCommand}"
-                            Content="Refresh" />
-                    </StackPanel>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <ComboBox
-                            Width="Auto"
-                            Height="20"
-                            Margin="4,0"
-                            VerticalContentAlignment="Center"
-                            DisplayMemberPath="Name"
-                            ItemsSource="{Binding Classes}"
-                            SelectedValue="{Binding SearchProfilesByClass}"
-                            SelectedValuePath="Id" />
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <TextBox
-                            Height="20"
-                            Margin="4,0"
-                            Text="{Binding SearchProfilesInput, UpdateSourceTrigger=PropertyChanged}"
-                            TextAlignment="Center" />
-                    </Grid>
-                </Grid>
-                <Grid Grid.Row="2">
-                    <DataGrid
-                        x:Name="profiles_dg_profiles"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="25" />
+                <RowDefinition />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="25" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button
+                        Width="50"
+                        Height="20"
                         Margin="4,0"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding Profiles}"
-                        SelectedItem="{Binding SelectedProfile}"
-                        SelectionUnit="FullRow">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="70" Header="Edit">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button
-                                            Margin="5"
-                                            Command="{Binding DataContext.EditProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                            CommandParameter="{Binding}"
-                                            Content="Edit" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Pinno}"
-                                Header="Pinno" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Name}"
-                                Header="Name" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Adno}"
-                                Header="Adno" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Class.Name}"
-                                Header="Class" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Status}"
-                                Header="Status" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Email}"
-                                Header="Email" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Address}"
-                                Header="Address" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Phone}"
-                                Header="Phone" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding LicensePlate}"
-                                Header="License Plate" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Gender}"
-                                Header="Gender" />
-                            <DataGridCheckBoxColumn Binding="{Binding CheckDateToLock}" Header="Auto Lock" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding DateToLock, StringFormat=\{0:dd/MM/yyyy\}}"
-                                Header="Date To Lock" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding DateOfBirth, StringFormat=\{0:dd/MM/yyyy\}}"
-                                Header="Date Of Birth" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding DateOfIssue, StringFormat=\{0:dd/MM/yyyy\}}"
-                                Header="Date Of Issue" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding DateCreated, StringFormat=\{0:dd/MM/yyyy\}}"
-                                Header="Date Created" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding DateModified, StringFormat=\{0:dd/MM/yyyy\}}"
-                                Header="Date Modified" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        Command="{Binding AddProfileCommand}"
+                        Content="Add" />
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Command="{Binding RemoveProfilesCommand}"
+                        CommandParameter="{Binding ElementName=profiles_dg_profiles, Path=SelectedItems}"
+                        Content="Remove" />
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Command="{Binding RefreshProfilesCommand}"
+                        Content="Refresh" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <ComboBox
+                        Width="Auto"
+                        Height="20"
+                        Margin="4,0"
+                        VerticalContentAlignment="Center"
+                        DisplayMemberPath="Name"
+                        ItemsSource="{Binding Classes}"
+                        SelectedValue="{Binding SearchProfilesByClass}"
+                        SelectedValuePath="Id" />
                 </Grid>
-                <Grid Grid.Row="3">
-                    <ProgressBar Margin="4,0" />
-                </Grid>
-                <Grid Grid.Row="4">
-                    <StackPanel Orientation="Horizontal">
-
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Command="{Binding ImportProfilesCommand}"
-                            Content="Import" />
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Content="Export" />
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Content="Stop" />
-                        <TextBlock
-                            Width="60"
-                            VerticalAlignment="Center"
-                            Background="DeepSkyBlue"
-                            Foreground="White"
-                            Text="{Binding ElementName=profiles_dg_profiles, Path=Items.Count}"
-                            TextAlignment="Center" />
-                        <TextBlock
-                            Width="60"
-                            VerticalAlignment="Center"
-                            Background="LimeGreen"
-                            Foreground="White"
-                            Text="{Binding ElementName=profiles_dg_profiles, Path=SelectedItems.Count}"
-                            TextAlignment="Center" />
-                    </StackPanel>
+                <Grid Grid.Column="1">
+                    <TextBox
+                        Height="20"
+                        Margin="4,0"
+                        Text="{Binding SearchProfilesInput, UpdateSourceTrigger=PropertyChanged}"
+                        TextAlignment="Center" />
                 </Grid>
             </Grid>
-            <GridSplitter
-                Grid.Column="1"
-                HorizontalAlignment="Stretch"
-                Background="#F1F1F1" />
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="25" />
-                    <RowDefinition />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="25" />
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0" />
-                <Grid Grid.Row="1">
-                    <StackPanel Orientation="Horizontal">
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Content="..." />
-                        <Button
-                            Width="50"
-                            Height="20"
-                            Margin="4,0"
-                            Content="..." />
-                    </StackPanel>
-                </Grid>
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="4" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="25" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="50" />
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0">
-                                <ComboBox
-                                    Height="20"
-                                    Margin="4,0"
-                                    VerticalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{Binding Groups}"
-                                    SelectedValue="{Binding GroupAddToProfile}" />
-                            </Grid>
-                            <Grid Grid.Column="1">
-                                <Button
-                                    Height="20"
-                                    Margin="4,0"
-                                    Command="{Binding AddGroupToProfileCommand}"
-                                    Content="Add" />
-                            </Grid>
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <DataGrid
-                                Margin="4,0"
-                                AutoGenerateColumns="False"
-                                CanUserAddRows="False"
-                                IsReadOnly="True"
-                                ItemsSource="{Binding ProfileGroups}"
-                                SelectionUnit="FullRow">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn
-                                        Width="*"
-                                        Binding="{Binding Name}"
-                                        Header="Group" />
-                                    <DataGridTemplateColumn Width="70" Header="Remove">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button
-                                                    Margin="5"
-                                                    Command="{Binding DataContext.RemoveGroupFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                                    CommandParameter="{Binding}"
-                                                    Content="Remove" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </Grid>
-                    <GridSplitter
-                        Grid.Row="1"
-                        VerticalAlignment="Stretch"
-                        Background="#F1F1F1" />
-                    <Grid Grid.Row="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="25" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="50" />
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0">
-                                <ComboBox Height="20" Margin="4,0" />
-                            </Grid>
-                            <Grid Grid.Column="1">
-                                <Button
-                                    Height="20"
-                                    Margin="4,0"
-                                    Content="Add" />
-                            </Grid>
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <DataGrid Margin="4,0" />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Row="3" />
-                <Grid Grid.Row="4" />
+            <Grid Grid.Row="2">
+                <DataGrid
+                    x:Name="profiles_dg_profiles"
+                    Margin="4,0"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Profiles}"
+                    SelectedItem="{Binding SelectedProfile}"
+                    SelectionUnit="FullRow">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="70" Header="Edit">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="5"
+                                        Command="{Binding DataContext.EditProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Edit" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Pinno}"
+                            Header="Pinno" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Name}"
+                            Header="Name" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Adno}"
+                            Header="Adno" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Class.Name}"
+                            Header="Class" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Status}"
+                            Header="Status" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Email}"
+                            Header="Email" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Address}"
+                            Header="Address" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Phone}"
+                            Header="Phone" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding LicensePlate}"
+                            Header="License Plate" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Gender}"
+                            Header="Gender" />
+                        <DataGridCheckBoxColumn Binding="{Binding CheckDateToLock}" Header="Auto Lock" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding DateToLock, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Header="Date To Lock" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding DateOfBirth, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Header="Date Of Birth" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding DateOfIssue, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Header="Date Of Issue" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding DateCreated, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Header="Date Created" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding DateModified, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Header="Date Modified" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <Grid Grid.Row="3">
+                <ProgressBar Margin="4,0" />
+            </Grid>
+            <Grid Grid.Row="4">
+                <StackPanel Orientation="Horizontal">
+
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Command="{Binding ImportProfilesCommand}"
+                        Content="Import" />
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Content="Export" />
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Content="Stop" />
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="DeepSkyBlue"
+                        Foreground="White"
+                        Text="{Binding ElementName=profiles_dg_profiles, Path=Items.Count}"
+                        TextAlignment="Center" />
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="LimeGreen"
+                        Foreground="White"
+                        Text="{Binding ElementName=profiles_dg_profiles, Path=SelectedItems.Count}"
+                        TextAlignment="Center" />
+                </StackPanel>
             </Grid>
         </Grid>
-        <Grid Grid.Column="1" />
+        <GridSplitter
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            Background="Transparent" />
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition />
+                <RowDefinition Height="25" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Content="Test Firebase" />
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Content="..." />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
+                <TabControl>
+                    <TabItem Header="Details">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" />
+                            <Grid Grid.Row="1" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Manage" IsSelected="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="4" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <ComboBox
+                                            Height="20"
+                                            Margin="4,0"
+                                            VerticalContentAlignment="Center"
+                                            DisplayMemberPath="Name"
+                                            ItemsSource="{Binding Groups}"
+                                            SelectedValue="{Binding GroupAddToProfile}" />
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <Button
+                                            Height="20"
+                                            Margin="4,0"
+                                            Command="{Binding AddGroupToProfileCommand}"
+                                            Content="Add" />
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <DataGrid
+                                        Margin="4,0"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        IsReadOnly="True"
+                                        ItemsSource="{Binding ProfileGroups}"
+                                        SelectionUnit="FullRow">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding Name}"
+                                                Header="Group" />
+                                            <DataGridTemplateColumn Width="70" Header="Remove">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button
+                                                            Margin="5"
+                                                            Command="{Binding DataContext.RemoveGroupFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="Remove" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Grid>
+                            <GridSplitter
+                                Grid.Row="1"
+                                VerticalAlignment="Stretch"
+                                Background="#F1F1F1" />
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <ComboBox
+                                            Height="20"
+                                            Margin="4,0"
+                                            VerticalContentAlignment="Center"
+                                            DisplayMemberPath="Name"
+                                            ItemsSource="{Binding Gates}"
+                                            SelectedValue="{Binding GateAddToProfile}" />
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <Button
+                                            Height="20"
+                                            Margin="4,0"
+                                            Command="{Binding AddGateToProfileCommand}"
+                                            Content="Add" />
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <DataGrid
+                                        Margin="4,0"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        IsReadOnly="True"
+                                        ItemsSource="{Binding ProfileGates}"
+                                        SelectionUnit="FullRow">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding Name}"
+                                                Header="Gate" />
+                                            <DataGridTemplateColumn Width="70" Header="Remove">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button
+                                                            Margin="5"
+                                                            Command="{Binding DataContext.RemoveGateFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="Remove" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+            <Grid Grid.Row="2" />
+        </Grid>
     </Grid>
 </UserControl>

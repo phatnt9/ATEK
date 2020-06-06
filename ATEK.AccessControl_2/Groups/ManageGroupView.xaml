@@ -125,13 +125,17 @@
                 <Grid Grid.Row="3">
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <TextBlock
-                            Width="100"
+                            Width="60"
                             VerticalAlignment="Center"
+                            Background="DeepSkyBlue"
+                            Foreground="White"
                             Text="{Binding ElementName=dg_profiles, Path=Items.Count}"
                             TextAlignment="Center" />
                         <TextBlock
-                            Width="100"
+                            Width="60"
                             VerticalAlignment="Center"
+                            Background="LimeGreen"
+                            Foreground="White"
                             Text="{Binding ElementName=dg_profiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button
@@ -242,13 +246,17 @@
                 <Grid Grid.Row="3">
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <TextBlock
-                            Width="100"
+                            Width="60"
                             VerticalAlignment="Center"
+                            Background="DeepSkyBlue"
+                            Foreground="White"
                             Text="{Binding ElementName=dg_groupProfiles, Path=Items.Count}"
                             TextAlignment="Center" />
                         <TextBlock
-                            Width="100"
+                            Width="60"
                             VerticalAlignment="Center"
+                            Background="LimeGreen"
+                            Foreground="White"
                             Text="{Binding ElementName=dg_groupProfiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button

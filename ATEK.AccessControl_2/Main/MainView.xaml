@@ -69,16 +69,17 @@
                     Width="50"
                     Height="20"
                     Margin="4,0"
-                    Command="{Binding NavToGatesCommand}"
-                    Content="Gates"
+                    Command="{Binding NavToClassesCommand}"
+                    Content="Classes"
                     Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                 <Button
                     Width="50"
                     Height="20"
                     Margin="4,0"
-                    Command="{Binding NavToClassesCommand}"
-                    Content="Classes"
+                    Command="{Binding NavToGatesCommand}"
+                    Content="Gates"
                     Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+
                 <Button
                     Width="50"
                     Height="20"

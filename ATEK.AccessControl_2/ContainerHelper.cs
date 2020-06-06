@@ -19,6 +19,8 @@ namespace ATEK.AccessControl_2
             _container = new UnityContainer();
             _container.RegisterType<IAccessControlRepository, AccessControlRepository>(
                 new ContainerControlledLifetimeManager());
+            _container.RegisterType<IFirebaseControlRepository, FirebaseControlRepository>(
+               new ContainerControlledLifetimeManager());
         }
 
         public static IUnityContainer Container

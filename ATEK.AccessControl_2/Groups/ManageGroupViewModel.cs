@@ -308,7 +308,7 @@ namespace ATEK.AccessControl_2.Groups
 
         public void SetGroup(Group group)
         {
-            Group = repo.GetGroupWithAllRelatedData(group.Id);
+            Group = group;
         }
 
         public void LoadData()
@@ -335,7 +335,7 @@ namespace ATEK.AccessControl_2.Groups
 
         public void LoadGroupProfiles()
         {
-            allGroupProfiles = repo.LoadGroupProfiles(group.Id).ToList();
+            allGroupProfiles = repo.LoadProfilesOfGroup(group.Id).ToList();
             GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
             FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
         }
@@ -423,7 +423,7 @@ namespace ATEK.AccessControl_2.Groups
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                if (!repo.AddProfileToGroup(group, listProfiles[i]))
+                if (!repo.AddProfileGroup(listProfiles[i], group))
                 {
                     Console.WriteLine("Select Profile khong thanh cong.");
                 }
@@ -503,7 +503,7 @@ namespace ATEK.AccessControl_2.Groups
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                if (!repo.RemoveProfileFromGroup(group, listProfiles[i]))
+                if (!repo.RemoveProfileGroup(listProfiles[i], group))
                 {
                     Console.WriteLine("Remove Profile khong thanh cong.");
                 }
@@ -512,61 +512,6 @@ namespace ATEK.AccessControl_2.Groups
                     return;
                 }
                 (sender as BackgroundWorker).ReportProgress((i * 100) / listProfiles.Count);
-            }
-        }
-
-        private async void OnSelectProfilesAsync(object obj)
-        {
-            if (obj != null)
-            {
-                List<Profile> list = new List<Profile>();
-                System.Collections.IList items = (System.Collections.IList)obj;
-                var collection = items.Cast<Profile>();
-                if (collection.Count() > 0)
-                {
-                    foreach (var item in collection)
-                    {
-                        if (!group.ProfileGroups.Exists(g => (g.ProfileId == item.Id)))
-                        {
-                            list.Add(item);
-                        }
-                    }
-                    if (list.Count() > 0)
-                    {
-                        await repo.AddProfilesToGroupAsync(group, list);
-                        LoadGroupProfiles();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Co Select ma bi trung het roi");
-                    }
-                }
-            }
-        }
-
-        private async void OnDeleteGroupProfilesAsync(object obj)
-        {
-            if (obj != null)
-            {
-                List<Profile> list = new List<Profile>();
-                System.Collections.IList items = (System.Collections.IList)obj;
-                var collection = items.Cast<Profile>();
-                if (collection.Count() > 0)
-                {
-                    foreach (var item in collection)
-                    {
-                        list.Add(item);
-                    }
-                    if (list.Count() > 0)
-                    {
-                        await repo.RemoveProfilesFromGroupAsync(group, list);
-                        LoadGroupProfiles();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Co Delete ma bi trung het roi");
-                    }
-                }
             }
         }
 

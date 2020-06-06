@@ -9,64 +9,48 @@ namespace ATEK.AccessControl_2.Services
 {
     public interface IAccessControlRepository
     {
+        void TestFirebase();
+
         void SaveChanges();
-
-        #region Groups
-
-        IEnumerable<Group> GetGroups();
-
-        Group GetGroupWithAllRelatedData(int groupId);
-
-        void AddGroup(Group group);
-
-        void UpdateGroup(Group group);
-
-        void RemoveGroups(IEnumerable<Group> groups);
-
-        IEnumerable<Profile> LoadGroupProfiles(int groupId);
-
-        bool AddProfileToGroup(Group group, Profile profile);
-
-        Task AddProfilesToGroupAsync(Group group, IEnumerable<Profile> collection);
-
-        bool RemoveProfileFromGroup(Group group, Profile profile);
-
-        Task RemoveProfilesFromGroupAsync(Group group, IEnumerable<Profile> collection);
-
-        #endregion Groups
-
-        #region Profiles
 
         IEnumerable<Profile> GetProfiles();
 
-        Profile GetProfileWithGroupsAndGates(int profileId);
+        IEnumerable<Class> GetClasses();
 
-        IEnumerable<Profile> GetProfileWithGroupsAndGates();
+        IEnumerable<Gate> GetGates();
+
+        IEnumerable<Group> GetGroups();
+
+        bool AddProfile(Profile profile);
+
+        void AddClass(Class @class);
+
+        void AddGroup(Group group);
+
+        bool AddProfileGroup(Profile profile, Group group);
+
+        bool AddProfileGate(Profile profile, Gate gate);
+
+        void UpdateProfile(Profile profile);
+
+        void UpdateClass(Class @class);
+
+        void UpdateGroup(Group group);
+
+        void RemoveProfiles(IEnumerable<Profile> profiles);
+
+        void RemoveClasses(IEnumerable<Class> classes);
+
+        void RemoveGroups(IEnumerable<Group> groups);
+
+        bool RemoveProfileGroup(Profile profile, Group group);
+
+        bool RemoveProfileGate(Profile profile, Gate gate);
+
+        IEnumerable<Profile> LoadProfilesOfGroup(int groupId);
 
         IEnumerable<Group> LoadGroupsOfProfile(int profileId);
 
         IEnumerable<Gate> LoadGatesOfProfile(int profileId);
-
-        bool AddProfile(Profile profile);
-
-        bool AddProfiles(IEnumerable<Profile> profiles);
-
-        void UpdateProfile(Profile profile);
-
-        void RemoveProfiles(IEnumerable<Profile> profiles);
-
-        #endregion Profiles
-
-        #region Classes
-
-        IEnumerable<Class> GetClasses();
-
-        void AddClass(Class @class);
-
-        void UpdateClass(Class @class);
-
-        void RemoveClasses(IEnumerable<Class> classes);
-
-        #endregion Classes
     }
 }

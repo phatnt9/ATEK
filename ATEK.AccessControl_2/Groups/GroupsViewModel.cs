@@ -40,7 +40,6 @@ namespace ATEK.AccessControl_2.Groups
         public RelayCommand<Group> EditGroupCommand { get; private set; }
         public RelayCommand<Group> ManageGroupCommand { get; private set; }
         public RelayCommand<Group> RemoveGroupCommand { get; private set; }
-        public RelayCommand CancelCommand { get; private set; }
 
         #endregion Commands
 
@@ -119,8 +118,8 @@ namespace ATEK.AccessControl_2.Groups
 
         public void LoadData()
         {
-            LoadGroups();
             LoadClasses();
+            LoadGroups();
             if (selectedGroup != null)
             {
                 LoadGroupProfiles(selectedGroup.Id);
@@ -143,7 +142,7 @@ namespace ATEK.AccessControl_2.Groups
 
         private void LoadGroupProfiles(int groupId)
         {
-            allGroupProfiles = repo.LoadGroupProfiles(groupId).ToList();
+            allGroupProfiles = repo.LoadProfilesOfGroup(groupId).ToList();
             GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
             FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
         }

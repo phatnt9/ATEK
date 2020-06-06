@@ -15,28 +15,30 @@
         </b:EventTrigger>
     </b:Interaction.Triggers>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition />
-            <RowDefinition Height="30" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button
-                    Width="50"
-                    Height="20"
-                    Margin="4,0"
-                    Command="{Binding AddGroupCommand}"
-                    Content="Add" />
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Command="{Binding AddGroupCommand}"
+                        Content="Add" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
                 <DataGrid
+                    x:Name="dg_groups"
+                    Margin="4,0"
                     AutoGenerateColumns="False"
                     CanUserAddRows="False"
                     ItemsSource="{Binding Groups}"
@@ -85,87 +87,116 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <ComboBox
-                            Width="Auto"
-                            Height="20"
-                            Margin="4,0"
-                            VerticalContentAlignment="Center"
-                            DisplayMemberPath="Name"
-                            ItemsSource="{Binding Classes}"
-                            SelectedValue="{Binding SearchGroupProfilesByClass}"
-                            SelectedValuePath="Id" />
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <TextBox
-                            Height="20"
-                            Margin="4,0"
-                            Text="{Binding SearchGroupProfilesInput, UpdateSourceTrigger=PropertyChanged}"
-                            TextAlignment="Center" />
-                    </Grid>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <DataGrid
-                        x:Name="dg_groupProfiles"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding GroupProfiles}"
-                        SelectionUnit="FullRow">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Pinno}"
-                                Header="Pinno"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Name}"
-                                Header="Name"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Adno}"
-                                Header="Adno"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Class.Name}"
-                                Header="Class"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding LicensePlate}"
-                                Header="LicensePlate"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Status}"
-                                Header="Status"
-                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="DeepSkyBlue"
+                        Foreground="White"
+                        Text="{Binding ElementName=dg_groups, Path=Items.Count}"
+                        TextAlignment="Center" />
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="LimeGreen"
+                        Foreground="White"
+                        Text="{Binding ElementName=dg_groups, Path=SelectedItems.Count}"
+                        TextAlignment="Center" />
+                </StackPanel>
             </Grid>
         </Grid>
-        <Grid Grid.Row="2">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button
-                    Width="50"
-                    Margin="3"
-                    Command="{Binding CancelCommand}"
-                    Content="Cancel" />
-            </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <ComboBox
+                        Width="Auto"
+                        Height="20"
+                        Margin="4,0"
+                        VerticalContentAlignment="Center"
+                        DisplayMemberPath="Name"
+                        ItemsSource="{Binding Classes}"
+                        SelectedValue="{Binding SearchGroupProfilesByClass}"
+                        SelectedValuePath="Id" />
+                </Grid>
+                <Grid Grid.Column="1">
+                    <TextBox
+                        Height="20"
+                        Margin="4,0"
+                        Text="{Binding SearchGroupProfilesInput, UpdateSourceTrigger=PropertyChanged}"
+                        TextAlignment="Center" />
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
+                <DataGrid
+                    x:Name="dg_groupProfiles"
+                    Margin="4,0"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding GroupProfiles}"
+                    SelectionUnit="FullRow">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Pinno}"
+                            Header="Pinno"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Name}"
+                            Header="Name"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Adno}"
+                            Header="Adno"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Class.Name}"
+                            Header="Class"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding LicensePlate}"
+                            Header="LicensePlate"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Status}"
+                            Header="Status"
+                            IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="DeepSkyBlue"
+                        Foreground="White"
+                        Text="{Binding ElementName=dg_groupProfiles, Path=Items.Count}"
+                        TextAlignment="Center" />
+                    <TextBlock
+                        Width="60"
+                        VerticalAlignment="Center"
+                        Background="LimeGreen"
+                        Foreground="White"
+                        Text="{Binding ElementName=dg_groupProfiles, Path=SelectedItems.Count}"
+                        TextAlignment="Center" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

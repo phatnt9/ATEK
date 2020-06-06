@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ATEK.AccessControl_2.Services
@@ -13,10 +12,18 @@ namespace ATEK.AccessControl_2.Services
     public class AccessControlRepository : IAccessControlRepository
     {
         private AccessControlContext _context;
+        private readonly IFirebaseControlRepository firebase;
 
-        public AccessControlRepository()
+        public AccessControlRepository(IFirebaseControlRepository _firebase)
         {
             _context = new AccessControlContext();
+            firebase = _firebase;
+            //TestFirebase();
+        }
+
+        public void TestFirebase()
+        {
+            throw new NotImplementedException();
         }
 
         public void SaveChanges()
@@ -24,43 +31,24 @@ namespace ATEK.AccessControl_2.Services
             _context.SaveChanges();
         }
 
-        #region Profiles
-
         public IEnumerable<Profile> GetProfiles()
-        {
-            return _context.Profiles.ToList();
-        }
-
-        public Profile GetProfileWithGroupsAndGates(int profileId)
-        {
-            return _context.Profiles.Include(p => p.ProfileGates).Include(p => p.ProfileGroups).FirstOrDefault(p => p.Id == profileId);
-        }
-
-        public IEnumerable<Profile> GetProfileWithGroupsAndGates()
         {
             return _context.Profiles.Include(p => p.ProfileGates).Include(p => p.ProfileGroups).ToList();
         }
 
-        public IEnumerable<Group> LoadGroupsOfProfile(int profileId)
+        public IEnumerable<Class> GetClasses()
         {
-            var profile = _context.Profiles.Where(p => p.Id == profileId)
-             .Select(p => new
-             {
-                 Profile = p,
-                 Groups = p.ProfileGroups.Select(pg => pg.Group)
-             }).FirstOrDefault();
-            return profile.Groups;
+            return _context.Classes.Include(c => c.Profiles).ToList();
         }
 
-        public IEnumerable<Gate> LoadGatesOfProfile(int profileId)
+        public IEnumerable<Gate> GetGates()
         {
-            var profile = _context.Profiles.Where(p => p.Id == profileId)
-             .Select(p => new
-             {
-                 Profile = p,
-                 Gates = p.ProfileGates.Select(pg => pg.Gate)
-             }).FirstOrDefault();
-            return profile.Gates;
+            return _context.Gates.Include(g => g.ProfileGates).ToList();
+        }
+
+        public IEnumerable<Group> GetGroups()
+        {
+            return _context.Groups.Include(g => g.ProfileGroups).ToList();
         }
 
         public bool AddProfile(Profile profile)
@@ -81,85 +69,10 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
-        public bool AddProfiles(IEnumerable<Profile> profiles)
-        {
-            try
-            {
-                _context.Profiles.AddRange(profiles);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                if (HandleException(ex))
-                {
-                    _context.Profiles.RemoveRange(profiles);
-                }
-                return false;
-            }
-        }
-
-        public void UpdateProfile(Profile profile)
-        {
-            if (!_context.Profiles.Local.Any(c => c.Id == profile.Id))
-            {
-                _context.Profiles.Attach(profile);
-            }
-            _context.Entry(profile).State = EntityState.Modified;
-            _context.SaveChanges();
-        }
-
-        public void RemoveProfiles(IEnumerable<Profile> profiles)
-        {
-            _context.RemoveRange(profiles);
-            _context.SaveChanges();
-        }
-
-        #endregion Profiles
-
-        #region Classes
-
-        public IEnumerable<Class> GetClasses()
-        {
-            return _context.Classes.ToList();
-        }
-
         public void AddClass(Class @class)
         {
             _context.Classes.Add(@class);
             _context.SaveChanges();
-        }
-
-        public void UpdateClass(Class @class)
-        {
-            if (!_context.Classes.Local.Any(c => c.Id == @class.Id))
-            {
-                _context.Classes.Attach(@class);
-            }
-            _context.Entry(@class).State = EntityState.Modified;
-            _context.SaveChanges();
-        }
-
-        public void RemoveClasses(IEnumerable<Class> classes)
-        {
-            _context.RemoveRange(classes);
-            _context.SaveChanges();
-        }
-
-        #endregion Classes
-
-        #region Groups
-
-        public IEnumerable<Group> GetGroups()
-        {
-            return _context.Groups.ToList();
-        }
-
-        public Group GetGroupWithAllRelatedData(int groupId)
-        {
-            return _context.Groups
-                .Include(g => g.ProfileGroups)
-                .First(g => g.Id == groupId);
         }
 
         public void AddGroup(Group group)
@@ -168,34 +81,7 @@ namespace ATEK.AccessControl_2.Services
             _context.SaveChanges();
         }
 
-        public void UpdateGroup(Group group)
-        {
-            if (!_context.Groups.Local.Any(c => c.Id == group.Id))
-            {
-                _context.Groups.Attach(group);
-            }
-            _context.Entry(group).State = EntityState.Modified;
-            _context.SaveChanges();
-        }
-
-        public void RemoveGroups(IEnumerable<Group> groups)
-        {
-            _context.RemoveRange(groups);
-            _context.SaveChanges();
-        }
-
-        public IEnumerable<Profile> LoadGroupProfiles(int groupId)
-        {
-            var group = _context.Groups.Where(g => g.Id == groupId)
-                .Select(g => new
-                {
-                    Group = g,
-                    Profiles = g.ProfileGroups.Select(pg => pg.Profile)
-                }).FirstOrDefault();
-            return group.Profiles;
-        }
-
-        public bool AddProfileToGroup(Group group, Profile profile)
+        public bool AddProfileGroup(Profile profile, Group group)
         {
             var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = profile.Id };
             _context.Add(addItem);
@@ -222,7 +108,63 @@ namespace ATEK.AccessControl_2.Services
             //}
         }
 
-        public bool RemoveProfileFromGroup(Group group, Profile profile)
+        public bool AddProfileGate(Profile profile, Gate gate)
+        {
+            var addItem = new ProfileGate() { GateId = gate.Id, ProfileId = profile.Id };
+            _context.Add(addItem);
+            _context.SaveChanges();
+            return true;
+        }
+
+        public void UpdateProfile(Profile profile)
+        {
+            if (!_context.Profiles.Local.Any(c => c.Id == profile.Id))
+            {
+                _context.Profiles.Attach(profile);
+            }
+            _context.Entry(profile).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void UpdateClass(Class @class)
+        {
+            if (!_context.Classes.Local.Any(c => c.Id == @class.Id))
+            {
+                _context.Classes.Attach(@class);
+            }
+            _context.Entry(@class).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void UpdateGroup(Group group)
+        {
+            if (!_context.Groups.Local.Any(c => c.Id == group.Id))
+            {
+                _context.Groups.Attach(group);
+            }
+            _context.Entry(group).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void RemoveProfiles(IEnumerable<Profile> profiles)
+        {
+            _context.RemoveRange(profiles);
+            _context.SaveChanges();
+        }
+
+        public void RemoveClasses(IEnumerable<Class> classes)
+        {
+            _context.RemoveRange(classes);
+            _context.SaveChanges();
+        }
+
+        public void RemoveGroups(IEnumerable<Group> groups)
+        {
+            _context.RemoveRange(groups);
+            _context.SaveChanges();
+        }
+
+        public bool RemoveProfileGroup(Profile profile, Group group)
         {
             //var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == profile.Id);
             //_context.Entry(data).State = EntityState.Deleted;
@@ -247,51 +189,58 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
-        public async Task AddProfilesToGroupAsync(Group group, IEnumerable<Profile> collection)
+        public bool RemoveProfileGate(Profile profile, Gate gate)
         {
-            Console.WriteLine("ADD:");
-            foreach (var item in collection)
+            var data = gate.ProfileGates.FirstOrDefault(g => g.ProfileId == profile.Id);
+            if (data != null)
             {
-                var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == item.Id);
-                if (data != null)
-                {
-                    Console.WriteLine($"Add Co ne.{item.Id}");
-                    _context.Entry(data).State = EntityState.Added;
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    Console.WriteLine($"Add Ko co.{item.Id}");
-                    var addItem = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
-                    _context.Add(addItem);
-                    await _context.SaveChangesAsync();
-                }
+                Console.WriteLine($"Remove Co ne.{profile.Id}");
+                _context.Entry(data).State = EntityState.Deleted;
+                _context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Remove Ko co.{profile.Id}");
+                var removeItem = new ProfileGate() { GateId = gate.Id, ProfileId = profile.Id };
+                _context.Remove(removeItem);
+                _context.SaveChanges();
+                return true;
             }
         }
 
-        public async Task RemoveProfilesFromGroupAsync(Group group, IEnumerable<Profile> collection)
+        public IEnumerable<Profile> LoadProfilesOfGroup(int groupId)
         {
-            Console.WriteLine("REMOVE:");
-            foreach (var item in collection)
-            {
-                var data = group.ProfileGroups.FirstOrDefault(g => g.ProfileId == item.Id);
-                if (data != null)
+            var group = _context.Groups.AsQueryable().Where(g => g.Id == groupId)
+                .Select(g => new
                 {
-                    Console.WriteLine($"Co ne.{item.Id}");
-                    _context.Entry(data).State = EntityState.Deleted;
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    Console.WriteLine($"Ko co.{item.Id}");
-                    var removeItem = new ProfileGroup() { GroupId = group.Id, ProfileId = item.Id };
-                    _context.Remove(removeItem);
-                    await _context.SaveChangesAsync();
-                }
-            }
+                    Group = g,
+                    Profiles = g.ProfileGroups.Select(pg => pg.Profile)
+                }).FirstOrDefault();
+            return group.Profiles;
         }
 
-        #endregion Groups
+        public IEnumerable<Group> LoadGroupsOfProfile(int profileId)
+        {
+            var profile = _context.Profiles.AsQueryable().Where(p => p.Id == profileId)
+             .Select(p => new
+             {
+                 Profile = p,
+                 Groups = p.ProfileGroups.Select(pg => pg.Group)
+             }).FirstOrDefault();
+            return profile.Groups;
+        }
+
+        public IEnumerable<Gate> LoadGatesOfProfile(int profileId)
+        {
+            var profile = _context.Profiles.AsQueryable().Where(p => p.Id == profileId)
+             .Select(p => new
+             {
+                 Profile = p,
+                 Gates = p.ProfileGates.Select(pg => pg.Gate)
+             }).FirstOrDefault();
+            return profile.Gates;
+        }
 
         public virtual bool HandleException(Exception exception)
         {

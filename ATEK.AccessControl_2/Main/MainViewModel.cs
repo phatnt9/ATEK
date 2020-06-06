@@ -151,6 +151,7 @@ namespace ATEK.AccessControl_2.Main
 
         public void LoadData()
         {
+            //CurrentViewModel = ClassesViewModel;
             CurrentViewModel = ProfilesViewModel;
         }
 
