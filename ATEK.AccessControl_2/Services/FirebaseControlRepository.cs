@@ -72,23 +72,36 @@ namespace ATEK.AccessControl_2.Services
             //await docRef.SetAsync(profileData);
         }
 
-        public async void ReadData()
+        public async Task<List<Profile>> LoadProfiles()
         {
-            CollectionReference usersRef = db.Collection("users");
+            List<Profile> profiles = new List<Profile>();
+            CollectionReference usersRef = db.Collection(_firebaseProfilesCollection);
             QuerySnapshot snapshot = await usersRef.GetSnapshotAsync();
             foreach (DocumentSnapshot document in snapshot.Documents)
             {
-                Console.WriteLine("User: {0}", document.Id);
+                var profile = new Profile();
                 Dictionary<string, object> documentDictionary = document.ToDictionary();
-                Console.WriteLine("First: {0}", documentDictionary["First"]);
-                if (documentDictionary.ContainsKey("Middle"))
-                {
-                    Console.WriteLine("Middle: {0}", documentDictionary["Middle"]);
-                }
-                Console.WriteLine("Last: {0}", documentDictionary["Last"]);
-                Console.WriteLine("Born: {0}", documentDictionary["Born"]);
-                Console.WriteLine();
+                profile.Id = int.Parse(documentDictionary["Id"].ToString());
+                profile.Pinno = documentDictionary["Pinno"].ToString();
+                profile.Adno = documentDictionary["Adno"].ToString();
+                profile.Name = documentDictionary["Name"].ToString();
+                profile.Gender = documentDictionary["Gender"].ToString();
+                profile.DateOfBirth = DateTime.Parse(documentDictionary["DateOfBirth"].ToString());
+                profile.DateOfIssue = DateTime.Parse(documentDictionary["DateOfIssue"].ToString());
+                profile.Email = documentDictionary["Email"].ToString();
+                profile.Address = documentDictionary["Address"].ToString();
+                profile.Phone = documentDictionary["Phone"].ToString();
+                profile.Status = documentDictionary["Status"].ToString();
+                profile.Image = documentDictionary["Image"].ToString();
+                profile.DateToLock = DateTime.Parse(documentDictionary["DateToLock"].ToString());
+                profile.CheckDateToLock = bool.Parse(documentDictionary["CheckDateToLock"].ToString());
+                profile.LicensePlate = documentDictionary["LicensePlate"].ToString();
+                profile.DateCreated = DateTime.Parse(documentDictionary["DateCreated"].ToString());
+                profile.DateModified = DateTime.Parse(documentDictionary["DateModified"].ToString());
+                //profile.Class = int.Parse(documentDictionary["Id"].ToString());
+                profile.ClassId = int.Parse(documentDictionary["ClassId"].ToString());
             }
+            return profiles;
         }
 
         public object AuthExplicit(string projectId, string jsonPath)
@@ -106,9 +119,10 @@ namespace ATEK.AccessControl_2.Services
             return null;
         }
 
-        public void ReadDataFromFireBase()
+        public async void ReadDataFromFireBase()
         {
-            ReadData();
+            Task<List<Profile>> waitProfile = LoadProfiles();
+            List<Profile> profiles = await waitProfile;
         }
     }
 }

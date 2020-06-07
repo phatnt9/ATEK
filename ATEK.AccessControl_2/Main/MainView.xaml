@@ -52,41 +52,158 @@
     </b:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal">
                 <Button
-                    Width="50"
+                    Width="60"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToProfilesCommand}"
-                    Content="Profiles"
-                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}">
+                    <DockPanel>
+                        <Ellipse
+                            Width="10"
+                            Height="10"
+                            Margin="3,0"
+                            Fill="LimeGreen">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames
+                                                    FillBehavior="HoldEnd"
+                                                    RepeatBehavior="Forever"
+                                                    Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                    Duration="0:0:2">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:0" Value="LimeGreen" />
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Transparent" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                        <TextBlock>Profiles</TextBlock>
+                    </DockPanel>
+                </Button>
+
                 <Button
-                    Width="50"
+                    Width="60"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToClassesCommand}"
-                    Content="Classes"
-                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}">
+                    <DockPanel>
+                        <Ellipse
+                            Width="10"
+                            Height="10"
+                            Margin="3,0"
+                            Fill="LimeGreen">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames
+                                                    FillBehavior="HoldEnd"
+                                                    RepeatBehavior="Forever"
+                                                    Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                    Duration="0:0:2">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:0" Value="LimeGreen" />
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Transparent" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                        <TextBlock>Classes</TextBlock>
+                    </DockPanel>
+                </Button>
                 <Button
-                    Width="50"
+                    Width="60"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToGatesCommand}"
-                    Content="Gates"
-                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}">
+                    <DockPanel>
+                        <Ellipse
+                            Width="10"
+                            Height="10"
+                            Margin="3,0"
+                            Fill="LimeGreen">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames
+                                                    FillBehavior="HoldEnd"
+                                                    RepeatBehavior="Forever"
+                                                    Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                    Duration="0:0:2">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:0" Value="LimeGreen" />
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Transparent" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                        <TextBlock>Gates</TextBlock>
+                    </DockPanel>
+                </Button>
 
                 <Button
-                    Width="50"
+                    Width="60"
                     Height="20"
                     Margin="4,0"
                     Command="{Binding NavToGroupsCommand}"
-                    Content="Groups"
-                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                    Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}">
+                    <DockPanel>
+                        <Ellipse
+                            Width="10"
+                            Height="10"
+                            Margin="3,0"
+                            Fill="LimeGreen">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames
+                                                    FillBehavior="HoldEnd"
+                                                    RepeatBehavior="Forever"
+                                                    Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                    Duration="0:0:2">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:0" Value="LimeGreen" />
+                                                        <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Transparent" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                        <TextBlock>Groups</TextBlock>
+                    </DockPanel>
+                </Button>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">

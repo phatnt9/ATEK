@@ -20,6 +20,15 @@ namespace ATEK.AccessControl_2
             NavMainCommand = new RelayCommand<string>(OnNavMain);
         }
 
+        public RelayCommand<string> NavLoginCommand { get; private set; }
+        public RelayCommand<string> NavMainCommand { get; private set; }
+
+        public void LoadData()
+        {
+            //CurrentViewModel = loginViewModel;
+            CurrentViewModel = mainViewModel;
+        }
+
         private void OnNavMain(string obj)
         {
             if (CurrentViewModel.GetType() != typeof(MainViewModel))
@@ -36,19 +45,10 @@ namespace ATEK.AccessControl_2
             }
         }
 
-        public RelayCommand<string> NavLoginCommand { get; private set; }
-        public RelayCommand<string> NavMainCommand { get; private set; }
-
         public BindableBase CurrentViewModel
         {
             get { return currentViewModel; }
             set { SetProperty(ref currentViewModel, value); }
-        }
-
-        public void LoadView()
-        {
-            //CurrentViewModel = loginViewModel;
-            CurrentViewModel = mainViewModel;
         }
     }
 }
