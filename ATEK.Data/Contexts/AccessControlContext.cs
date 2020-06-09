@@ -26,6 +26,7 @@ namespace ATEK.Data.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Profile>().HasIndex(u => u.Pinno).IsUnique();
+            modelBuilder.Entity<Gate>().HasIndex(u => u.FirebaseId).IsUnique();
             modelBuilder.Entity<ProfileGate>().HasKey(s => new { s.ProfileId, s.GateId });
             modelBuilder.Entity<ProfileGroup>().HasKey(s => new { s.ProfileId, s.GroupId });
         }

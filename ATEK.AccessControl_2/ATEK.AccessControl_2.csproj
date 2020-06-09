@@ -266,12 +266,10 @@
     <Compile Include="Profiles\SimpleEditableProfile.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Services\AccessControlRepository.cs" />
-    <Compile Include="Services\FirebaseControlRepository.cs" />
     <Compile Include="Services\IAccessControlRepository.cs" />
     <Compile Include="Login\LoginViewModel.cs" />
     <Compile Include="Main\MainViewModel.cs" />
     <Compile Include="Profiles\ProfilesViewModel.cs" />
-    <Compile Include="Services\IFirebaseControlRepository.cs" />
     <Compile Include="ValidatableBindableBase.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="Login\LoginView.xaml.cs">

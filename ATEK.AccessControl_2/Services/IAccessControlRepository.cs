@@ -9,7 +9,9 @@ namespace ATEK.AccessControl_2.Services
 {
     public interface IAccessControlRepository
     {
-        void TestFirebase();
+        void Firebase_AddProfileAsync(Profile profile);
+
+        IEnumerable<Gate> Firebase_GetGates();
 
         void SaveChanges();
 
@@ -23,31 +25,39 @@ namespace ATEK.AccessControl_2.Services
 
         bool AddProfile(Profile profile);
 
-        void AddClass(Class @class);
+        bool AddClass(Class @class);
 
-        void AddGroup(Group group);
+        bool AddGate(Gate gate);
+
+        bool AddGroup(Group group);
 
         bool AddProfileGroup(Profile profile, Group group);
 
         bool AddProfileGate(Profile profile, Gate gate);
 
-        void UpdateProfile(Profile profile);
+        bool UpdateProfile(Profile profile);
 
-        void UpdateClass(Class @class);
+        bool UpdateClass(Class @class);
 
-        void UpdateGroup(Group group);
+        bool UpdateGate(Gate gate);
 
-        void RemoveProfiles(IEnumerable<Profile> profiles);
+        bool UpdateGroup(Group group);
 
-        void RemoveClasses(IEnumerable<Class> classes);
+        bool RemoveProfiles(IEnumerable<Profile> profiles);
 
-        void RemoveGroups(IEnumerable<Group> groups);
+        bool RemoveClasses(IEnumerable<Class> classes);
+
+        bool RemoveGates(IEnumerable<Gate> gates);
+
+        bool RemoveGroups(IEnumerable<Group> groups);
 
         bool RemoveProfileGroup(Profile profile, Group group);
 
         bool RemoveProfileGate(Profile profile, Gate gate);
 
         IEnumerable<Profile> LoadProfilesOfGroup(int groupId);
+
+        IEnumerable<Profile> LoadProfilesOfGate(int gateId);
 
         IEnumerable<Group> LoadGroupsOfProfile(int profileId);
 

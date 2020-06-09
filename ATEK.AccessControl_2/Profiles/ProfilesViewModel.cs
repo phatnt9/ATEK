@@ -44,6 +44,8 @@ namespace ATEK.AccessControl_2.Profiles
         public ProfilesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
+            FirebaseCommand = new RelayCommand(OnFirebaseCommand);
+
             AddProfileCommand = new RelayCommand(OnAddProfile);
             EditProfileCommand = new RelayCommand<Profile>(OnEditProfile);
             RemoveProfilesCommand = new RelayCommand<object>(OnRemoveProfiles);
@@ -61,6 +63,7 @@ namespace ATEK.AccessControl_2.Profiles
 
         #region Commands
 
+        public RelayCommand FirebaseCommand { get; private set; }
         public RelayCommand AddProfileCommand { get; private set; }
         public RelayCommand<Profile> EditProfileCommand { get; private set; }
         public RelayCommand<object> RemoveProfilesCommand { get; private set; }
@@ -90,6 +93,14 @@ namespace ATEK.AccessControl_2.Profiles
         //=====================================================================
 
         #region Methods
+
+        private void OnFirebaseCommand()
+        {
+            //foreach (var p in allProfiles)
+            //{
+            //    repo.Firebase_AddProfileAsync(p);
+            //}
+        }
 
         public void LoadData()
         {
@@ -176,8 +187,7 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void OnRefreshProfiles()
         {
-            repo.TestFirebase();
-            //LoadProfiles();
+            LoadProfiles();
         }
 
         private void OnImportProfiles()

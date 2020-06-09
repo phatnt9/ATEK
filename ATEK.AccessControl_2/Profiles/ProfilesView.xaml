@@ -216,7 +216,8 @@
                         Width="50"
                         Height="20"
                         Margin="4,0"
-                        Content="Test Firebase" />
+                        Content="Firebase"
+                        Command="{Binding FirebaseCommand}" />
                     <Button
                         Width="50"
                         Height="20"

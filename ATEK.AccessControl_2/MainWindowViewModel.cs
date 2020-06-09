@@ -2,6 +2,7 @@
 using ATEK.AccessControl_2.Main;
 using System;
 using System.Collections.Generic;
+using Unity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +13,11 @@ namespace ATEK.AccessControl_2
     {
         private BindableBase currentViewModel;
         private LoginViewModel loginViewModel = new LoginViewModel();
-        private MainViewModel mainViewModel = new MainViewModel();
+        private MainViewModel mainViewModel;
 
         public MainWindowViewModel()
         {
+            MainViewModel = ContainerHelper.Container.Resolve<MainViewModel>();
             NavLoginCommand = new RelayCommand<string>(OnNavLogin);
             NavMainCommand = new RelayCommand<string>(OnNavMain);
         }
@@ -26,14 +28,14 @@ namespace ATEK.AccessControl_2
         public void LoadData()
         {
             //CurrentViewModel = loginViewModel;
-            CurrentViewModel = mainViewModel;
+            CurrentViewModel = MainViewModel;
         }
 
         private void OnNavMain(string obj)
         {
             if (CurrentViewModel.GetType() != typeof(MainViewModel))
             {
-                CurrentViewModel = mainViewModel;
+                CurrentViewModel = MainViewModel;
             }
         }
 
@@ -49,6 +51,12 @@ namespace ATEK.AccessControl_2
         {
             get { return currentViewModel; }
             set { SetProperty(ref currentViewModel, value); }
+        }
+
+        public MainViewModel MainViewModel
+        {
+            get { return mainViewModel; }
+            set { SetProperty(ref mainViewModel, value); }
         }
     }
 }

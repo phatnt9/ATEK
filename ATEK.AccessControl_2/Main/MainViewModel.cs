@@ -30,9 +30,11 @@ namespace ATEK.AccessControl_2.Main
         private AddEditProfileViewModel addEditProfileViewModel;
         private AddEditClassViewModel addEditClassViewModel;
         private AddEditGroupViewModel addEditGroupViewModel;
+        private readonly IAccessControlRepository repo;
 
-        public MainViewModel()
+        public MainViewModel(IAccessControlRepository repo)
         {
+            this.repo = repo;
             NavToProfilesCommand = new RelayCommand(OnNavProfiles);
             NavToGatesCommand = new RelayCommand(OnNavGates);
             NavToClassesCommand = new RelayCommand(OnNavClasses);

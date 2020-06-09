@@ -4,14 +4,16 @@ using ATEK.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ATEK.Data.Migrations
 {
     [DbContext(typeof(AccessControlContext))]
-    partial class ProfileContextModelSnapshot : ModelSnapshot
+    [Migration("20200607084921_AddFirebaseIdToGate")]
+    partial class AddFirebaseIdToGate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +44,7 @@ namespace ATEK.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirebaseId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -54,10 +56,6 @@ namespace ATEK.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FirebaseId")
-                        .IsUnique()
-                        .HasFilter("[FirebaseId] IS NOT NULL");
 
                     b.ToTable("Gates");
                 });
