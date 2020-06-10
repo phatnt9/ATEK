@@ -240,6 +240,10 @@
       <DependentUpon>GatesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Gates\GatesViewModel.cs" />
+    <Compile Include="Gates\ManageGateView.xaml.cs">
+      <DependentUpon>ManageGateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gates\ManageGateViewModel.cs" />
     <Compile Include="GlobalConstant.cs" />
     <Compile Include="Groups\AddEditGroupView.xaml.cs">
       <DependentUpon>AddEditGroupView.xaml</DependentUpon>
@@ -290,6 +294,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Gates\GatesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gates\ManageGateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

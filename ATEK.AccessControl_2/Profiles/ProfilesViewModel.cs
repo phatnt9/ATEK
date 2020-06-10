@@ -44,7 +44,7 @@ namespace ATEK.AccessControl_2.Profiles
         public ProfilesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
-            FirebaseCommand = new RelayCommand(OnFirebaseCommand);
+            //FirebaseCommand = new RelayCommand(OnFirebaseCommand);
 
             AddProfileCommand = new RelayCommand(OnAddProfile);
             EditProfileCommand = new RelayCommand<Profile>(OnEditProfile);
@@ -96,10 +96,10 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void OnFirebaseCommand()
         {
-            //foreach (var p in allProfiles)
-            //{
-            //    repo.Firebase_AddProfileAsync(p);
-            //}
+            foreach (var p in allProfiles)
+            {
+                repo.Firebase_AddProfileAsync(p);
+            }
         }
 
         public void LoadData()

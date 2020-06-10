@@ -45,6 +45,28 @@
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="*"
+                            Binding="{Binding Status}"
+                            Header="Name"
+                            IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="Online">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#39B54A" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="Offline">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#BE2328" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn
+                            Width="*"
                             Binding="{Binding FirebaseId}"
                             Header="FirebaseId"
                             IsReadOnly="True" />

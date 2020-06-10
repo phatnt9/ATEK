@@ -11,6 +11,10 @@ namespace ATEK.AccessControl_2.Services
     {
         void Firebase_AddProfileAsync(Profile profile);
 
+        void Firebase_AddProfileGateAsync(Profile profile, Gate gate);
+
+        void Firebase_DeleteProfileGateAsync(Profile profile, Gate gate);
+
         IEnumerable<Gate> Firebase_GetGates();
 
         void SaveChanges();

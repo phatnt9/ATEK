@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ATEK.Domain.Models
 {
+    [FirestoreData]
     public class Gate : ModelBase
     {
         private int id;
@@ -17,7 +18,6 @@ namespace ATEK.Domain.Models
             ProfileGates = new List<ProfileGate>();
         }
 
-        [FirestoreProperty]
         public int Id
         {
             get { return id; }

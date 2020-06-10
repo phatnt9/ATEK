@@ -23,6 +23,9 @@
         <DataTemplate DataType="{x:Type gates:GatesViewModel}">
             <gates:GatesView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type gates:ManageGateViewModel}">
+            <gates:ManageGateView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type classes:ClassesViewModel}">
             <classes:ClassesView />
         </DataTemplate>

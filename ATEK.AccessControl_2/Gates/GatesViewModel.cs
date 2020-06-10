@@ -143,12 +143,29 @@ namespace ATEK.AccessControl_2.Gates
             {
                 if (!allGates.Exists(g => g.FirebaseId == fbGate.FirebaseId))
                 {
-                    Console.WriteLine("This Gate doesn't existed in database.");
+                    Console.WriteLine($"This Gate {fbGate.FirebaseId} doesn't existed in database.");
+                    fbGate.Status = "Online";
                     repo.AddGate(fbGate);
                 }
                 else
                 {
-                    Console.WriteLine("This Gate existed in database.");
+                    Console.WriteLine($"This Gate {fbGate.FirebaseId} existed in database.");
+                }
+            }
+            allGates = repo.GetGates().ToList();
+            foreach (var gate in allGates)
+            {
+                if (!allGates_Firebase.Exists(g => g.FirebaseId == gate.FirebaseId))
+                {
+                    Console.WriteLine($"This Gate {gate.FirebaseId} doesn't existed in firebase.");
+                    gate.Status = "Offline";
+                    repo.UpdateGate(gate);
+                }
+                else
+                {
+                    Console.WriteLine($"This Gate {gate.FirebaseId} existed in firebase.");
+                    gate.Status = "Online";
+                    repo.UpdateGate(gate);
                 }
             }
             allGates = repo.GetGates().ToList();

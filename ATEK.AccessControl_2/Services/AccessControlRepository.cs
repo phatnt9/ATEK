@@ -14,6 +14,8 @@ using Google.Cloud.Firestore.V1;
 using System.Threading;
 using DocumentChange = Google.Cloud.Firestore.DocumentChange;
 using System.Windows;
+using System.Collections.ObjectModel;
+using Microsoft.Office.Core;
 
 namespace ATEK.AccessControl_2.Services
 {
@@ -67,44 +69,36 @@ namespace ATEK.AccessControl_2.Services
         public async void Firebase_AddProfileAsync(Profile profile)
         {
             DocumentReference profileRef = db.Collection(_firebaseProfilesCollection).Document(profile.Pinno);
+            await profileRef.SetAsync(profile);
             CollectionReference profileGroupsRef = profileRef.Collection("ProfileGroups");
             CollectionReference profileGatesRef = profileRef.Collection("ProfileGates");
-            Dictionary<string, object> profileData = new Dictionary<string, object>
-            {
-                { nameof(profile.Id), profile.Id },
-                { nameof(profile.Pinno), profile.Pinno },
-                { nameof(profile.Adno), profile.Adno },
-                { nameof(profile.Name), profile.Name },
-                //{ nameof(profile.Gender), profile.Gender },
-                //{ nameof(profile.DateOfBirth), DateTime.SpecifyKind(profile.DateOfBirth, DateTimeKind.Utc) },
-                //{ nameof(profile.DateOfIssue), DateTime.SpecifyKind(profile.DateOfIssue, DateTimeKind.Utc) },
-                //{ nameof(profile.Email), profile.Email },
-                //{ nameof(profile.Address), profile.Address },
-                //{ nameof(profile.Phone), profile.Phone },
-                { nameof(profile.Status), profile.Status },
-                { nameof(profile.Image), profile.Image },
-                { nameof(profile.DateToLock), DateTime.SpecifyKind(profile.DateToLock, DateTimeKind.Utc) },
-                { nameof(profile.CheckDateToLock), profile.CheckDateToLock },
-                { nameof(profile.LicensePlate), profile.LicensePlate },
-                //{ nameof(profile.DateCreated),DateTime.SpecifyKind(profile.DateCreated, DateTimeKind.Utc) },
-                //{ nameof(profile.DateModified), DateTime.SpecifyKind(profile.DateModified, DateTimeKind.Utc) },
-                { nameof(profile.Class), profile.Class.Name },
-                //{ nameof(profile.ClassId), profile.ClassId }
-            };
-            await profileRef.SetAsync(profileData);
 
-            foreach (var pg in profile.ProfileGroups)
-            {
-                Dictionary<string, object> profileGroupsData = new Dictionary<string, object>();
-                profileGroupsData.Add(nameof(pg.Group.Name), pg.Group.Name);
-                await profileGroupsRef.AddAsync(profileGroupsData);
-            }
-            foreach (var pg in profile.ProfileGates)
-            {
-                Dictionary<string, object> profileGatesData = new Dictionary<string, object>();
-                profileGatesData.Add(nameof(pg.Gate.Name), pg.Gate.Name);
-                await profileGatesRef.AddAsync(profileGatesData);
-            }
+            //foreach (var pg in profile.ProfileGroups)
+            //{
+            //    Dictionary<string, object> profileGroupsData = new Dictionary<string, object>();
+            //    profileGroupsData.Add(nameof(pg.Group.Name), pg.Group.Name);
+            //    await profileGroupsRef.AddAsync(profileGroupsData);
+            //}
+            //foreach (var pg in profile.ProfileGates)
+            //{
+            //    Dictionary<string, object> profileGatesData = new Dictionary<string, object>();
+            //    profileGatesData.Add(nameof(pg.Gate.Name), pg.Gate.Name);
+            //    await profileGatesRef.AddAsync(profileGatesData);
+            //}
+        }
+
+        public async void Firebase_AddProfileGateAsync(Profile profile, Gate gate)
+        {
+            DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+            DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+            await profileGatesRef.SetAsync(profile);
+        }
+
+        public async void Firebase_DeleteProfileGateAsync(Profile profile, Gate gate)
+        {
+            DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+            DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+            await profileGatesRef.DeleteAsync();
         }
 
         public IEnumerable<Gate> Firebase_GetGates()
@@ -181,7 +175,7 @@ namespace ATEK.AccessControl_2.Services
 
         public void OnFirebaseGatesChange(QuerySnapshot snapShots)
         {
-            Console.WriteLine("Callback received documentd snapshot.");
+            Console.WriteLine("Callback received document snapshot.");
             foreach (DocumentChange change in snapShots.Changes)
             {
                 if (change.ChangeType.ToString() == "Added")
@@ -678,4 +672,28 @@ namespace ATEK.AccessControl_2.Services
             //    _context.SaveChanges();
             //    return true;
             //}
+
+//Dictionary<string, object> profileData = new Dictionary<string, object>
+            //{
+            //    { nameof(profile.Id), profile.Id },
+            //    { nameof(profile.Pinno), profile.Pinno },
+            //    { nameof(profile.Adno), profile.Adno },
+            //    { nameof(profile.Name), profile.Name },
+            //    { nameof(profile.Gender), profile.Gender },
+            //    { nameof(profile.DateOfBirth), DateTime.SpecifyKind(profile.DateOfBirth, DateTimeKind.Utc) },
+            //    { nameof(profile.DateOfIssue), DateTime.SpecifyKind(profile.DateOfIssue, DateTimeKind.Utc) },
+            //    { nameof(profile.Email), profile.Email },
+            //    { nameof(profile.Address), profile.Address },
+            //    { nameof(profile.Phone), profile.Phone },
+            //    { nameof(profile.Status), profile.Status },
+            //    { nameof(profile.Image), profile.Image },
+            //    { nameof(profile.DateToLock), DateTime.SpecifyKind(profile.DateToLock, DateTimeKind.Utc) },
+            //    { nameof(profile.CheckDateToLock), profile.CheckDateToLock },
+            //    { nameof(profile.LicensePlate), profile.LicensePlate },
+            //    { nameof(profile.DateCreated),DateTime.SpecifyKind(profile.DateCreated, DateTimeKind.Utc) },
+            //    { nameof(profile.DateModified), DateTime.SpecifyKind(profile.DateModified, DateTimeKind.Utc) },
+            //    { nameof(profile.Class), profile.Class.Name },
+            //    { nameof(profile.ClassId), profile.ClassId }
+            //};
+            //await profileRef.SetAsync(profileData);
  */

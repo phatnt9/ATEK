@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Google.Cloud.Firestore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.Text;
 
 namespace ATEK.Domain.Models
 {
+    [FirestoreData]
     public class Profile : ModelBase
     {
         private int id;
@@ -37,13 +39,35 @@ namespace ATEK.Domain.Models
         }
 
         public int Id { get { return id; } set { SetProperty(ref id, value); } }
+
+        [FirestoreProperty]
         public string Pinno { get { return pinno; } set { SetProperty(ref pinno, value); } }
+
+        [FirestoreProperty]
         public string Adno { get { return adno; } set { SetProperty(ref adno, value); } }
+
+        [FirestoreProperty]
         public string Name { get { return name; } set { SetProperty(ref name, value); } }
+
+        [FirestoreProperty]
         public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
+
         public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
         public string Gender { get { return gender; } set { SetProperty(ref gender, value); } }
-        public DateTime DateOfBirth { get { return dateOfBirth; } set { SetProperty(ref dateOfBirth, value); } }
+
+        [FirestoreProperty]
+        public DateTime DateOfBirth
+        {
+            get
+            {
+                return DateTime.SpecifyKind(dateOfBirth, DateTimeKind.Utc);
+            }
+            set
+            {
+                SetProperty(ref dateOfBirth, value);
+            }
+        }
+
         public DateTime DateOfIssue { get { return dateOfIssue; } set { SetProperty(ref dateOfIssue, value); } }
         public string Email { get { return email; } set { SetProperty(ref email, value); } }
         public string Address { get { return address; } set { SetProperty(ref address, value); } }

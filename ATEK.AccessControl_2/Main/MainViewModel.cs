@@ -26,6 +26,7 @@ namespace ATEK.AccessControl_2.Main
         private ClassesViewModel classesViewModel;
         private GroupsViewModel groupsViewModel;
         private ManageGroupViewModel manageGroupViewModel;
+        private ManageGateViewModel manageGateViewModel;
         private bool isBackGroundWorkerBusy;
         private AddEditProfileViewModel addEditProfileViewModel;
         private AddEditClassViewModel addEditClassViewModel;
@@ -45,11 +46,12 @@ namespace ATEK.AccessControl_2.Main
             ProfilesViewModel.AddProfileRequested += NavToAddProfiles;
             ProfilesViewModel.EditProfileRequested += NavToEditProfiles;
 
-            GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
-
             ClassesViewModel = ContainerHelper.Container.Resolve<ClassesViewModel>();
             ClassesViewModel.AddClassRequested += NavToAddClass;
             ClassesViewModel.EditClassRequested += NavToEditClass;
+
+            GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
+            GatesViewModel.ManageGateRequested += NavToManageGate;
 
             GroupsViewModel = ContainerHelper.Container.Resolve<GroupsViewModel>();
             GroupsViewModel.AddGroupRequested += NavToAddGroup;
@@ -69,6 +71,11 @@ namespace ATEK.AccessControl_2.Main
             ManageGroupViewModel.Done += OnNavGroups;
             ManageGroupViewModel.StartBackgroundProgress += OnStartProgress;
             ManageGroupViewModel.StopBackgroundProgress += OnStopProgress;
+
+            ManageGateViewModel = ContainerHelper.Container.Resolve<ManageGateViewModel>();
+            ManageGateViewModel.Done += OnNavGates;
+            ManageGateViewModel.StartBackgroundProgress += OnStartProgress;
+            ManageGateViewModel.StopBackgroundProgress += OnStopProgress;
 
             ImportProfilesViewModel = ContainerHelper.Container.Resolve<ImportProfilesViewModel>();
             ImportProfilesViewModel.Done += OnNavProfiles;
@@ -145,6 +152,12 @@ namespace ATEK.AccessControl_2.Main
             CurrentViewModel = AddEditGroupViewModel;
         }
 
+        private void NavToManageGate(Gate gate)
+        {
+            ManageGateViewModel.SetGate(gate);
+            CurrentViewModel = ManageGateViewModel;
+        }
+
         private void NavToManageGroup(Group group)
         {
             ManageGroupViewModel.SetGroup(group);
@@ -216,6 +229,12 @@ namespace ATEK.AccessControl_2.Main
         {
             get { return addEditGroupViewModel; }
             set { SetProperty(ref addEditGroupViewModel, value); }
+        }
+
+        public ManageGateViewModel ManageGateViewModel
+        {
+            get { return manageGateViewModel; }
+            set { SetProperty(ref manageGateViewModel, value); }
         }
 
         public ManageGroupViewModel ManageGroupViewModel
