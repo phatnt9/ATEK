@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ATEK.AccessControl_2.Gates
 {
@@ -120,7 +121,7 @@ namespace ATEK.AccessControl_2.Gates
         public void LoadData()
         {
             LoadClasses();
-            LoadGates();
+            LoadGatesAsync();
             if (selectedGate != null)
             {
                 LoadGateProfiles(selectedGate.Id);
@@ -135,41 +136,50 @@ namespace ATEK.AccessControl_2.Gates
             FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
         }
 
-        private void LoadGates()
+        private async void LoadGatesAsync()
         {
             allGates = repo.GetGates().ToList();
-            allGates_Firebase = repo.Firebase_GetGates().ToList();
-            foreach (var fbGate in allGates_Firebase)
+            var result = await repo.Firebase_GetGatesAsync();
+            if (result != null)
             {
-                if (!allGates.Exists(g => g.FirebaseId == fbGate.FirebaseId))
+                allGates_Firebase = result.ToList();
+                foreach (var fbGate in allGates_Firebase)
                 {
-                    Console.WriteLine($"This Gate {fbGate.FirebaseId} doesn't existed in database.");
-                    fbGate.Status = "Online";
-                    repo.AddGate(fbGate);
+                    if (!allGates.Exists(g => g.FirebaseId == fbGate.FirebaseId))
+                    {
+                        Console.WriteLine($"This Gate {fbGate.FirebaseId} doesn't existed in database.");
+                        fbGate.Status = "Online";
+                        repo.AddGate(fbGate);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"This Gate {fbGate.FirebaseId} existed in database.");
+                    }
                 }
-                else
+                allGates = repo.GetGates().ToList();
+                foreach (var gate in allGates)
                 {
-                    Console.WriteLine($"This Gate {fbGate.FirebaseId} existed in database.");
+                    if (!allGates_Firebase.Exists(g => g.FirebaseId == gate.FirebaseId))
+                    {
+                        Console.WriteLine($"This Gate {gate.FirebaseId} doesn't existed in firebase.");
+                        gate.Status = "Offline";
+                        repo.UpdateGate(gate);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"This Gate {gate.FirebaseId} existed in firebase.");
+                        gate.Status = "Online";
+                        repo.UpdateGate(gate);
+                    }
                 }
+                allGates = repo.GetGates().ToList();
+                Gates = new ObservableCollection<Gate>(allGates);
             }
-            allGates = repo.GetGates().ToList();
-            foreach (var gate in allGates)
+            else
             {
-                if (!allGates_Firebase.Exists(g => g.FirebaseId == gate.FirebaseId))
-                {
-                    Console.WriteLine($"This Gate {gate.FirebaseId} doesn't existed in firebase.");
-                    gate.Status = "Offline";
-                    repo.UpdateGate(gate);
-                }
-                else
-                {
-                    Console.WriteLine($"This Gate {gate.FirebaseId} existed in firebase.");
-                    gate.Status = "Online";
-                    repo.UpdateGate(gate);
-                }
+                MessageBox.Show("Error Load Gates");
+                Gates = new ObservableCollection<Gate>();
             }
-            allGates = repo.GetGates().ToList();
-            Gates = new ObservableCollection<Gate>(allGates);
         }
 
         private void LoadGateProfiles(int gateId)

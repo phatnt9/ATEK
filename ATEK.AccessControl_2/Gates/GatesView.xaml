@@ -40,13 +40,18 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Width="*"
+                            Binding="{Binding Id}"
+                            Header="Id"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="*"
                             Binding="{Binding Name}"
                             Header="Name"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Status}"
-                            Header="Name"
+                            Header="Status"
                             IsReadOnly="True">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="{x:Type DataGridCell}">
@@ -89,6 +94,17 @@
                                         Command="{Binding DataContext.ManageGateCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding}"
                                         Content="Manage" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" Header="Remove">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="5"
+                                        Command="{Binding DataContext.RemoveGateCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Remove" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

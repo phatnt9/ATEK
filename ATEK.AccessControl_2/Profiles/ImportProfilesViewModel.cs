@@ -28,6 +28,7 @@ namespace ATEK.AccessControl_2.Profiles
         private string importFileFolder;
         private BackgroundWorker importBackGroundWorker;
         private bool isBackGroundWorkerBusy;
+        private List<Profile> allProfiles;
         private List<Class> allClasses;
         private List<Group> allGroups;
         private Excel.Application xlApp;
@@ -181,8 +182,8 @@ namespace ATEK.AccessControl_2.Profiles
 
             for (int i = 2; i <= rowCount; i++)
             {
+                Console.WriteLine($"Reading line {i}");
                 ImportStatus = "Reading";
-                profile = new Profile();
                 className = "";
                 groupName = "";
                 errorColumn = "";
@@ -190,99 +191,128 @@ namespace ATEK.AccessControl_2.Profiles
                 errorRowIndex = 0;
                 hasError = false;
 
+                if (!AddProfilesChecked)
+                {
+                    //Pinno 8
+                    if (!hasError && CheckNumberInputFromExcel(xlRange.Cells[i, 8].Value2))
+                    {
+                        Profile pr = allProfiles.Find(p => p.Pinno == xlRange.Cells[i, 8].Value2.ToString());
+                        if (pr != null)
+                        {
+                            profile = pr;
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("Can not found profile to update.");
+                            errorColumn = "Pinno";
+                            errorColumnIndex = 8;
+                            errorRowIndex = i;
+                            hasError = true;
+                        }
+                    }
+                    else if (!hasError)
+                    {
+                        errorColumn = "Pinno";
+                        errorColumnIndex = 8;
+                        errorRowIndex = i;
+                        hasError = true;
+                    }
+                }
+                else
+                {
+                    profile = new Profile();
+                }
+
                 //Name 2
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 2].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 2].Value2))
                 {
                     profile.Name = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Name";
                     errorColumnIndex = 2;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Pinno 8
-                if (CheckNumberInputFromExcel(xlRange.Cells[i, 8].Value2))
+                if (AddProfilesChecked)
                 {
-                    profile.Pinno = xlRange.Cells[i, 8].Value2.ToString();
+                    if (!hasError && CheckNumberInputFromExcel(xlRange.Cells[i, 8].Value2))
+                    {
+                        profile.Pinno = xlRange.Cells[i, 8].Value2.ToString();
+                    }
+                    else if (!hasError)
+                    {
+                        errorColumn = "Pinno";
+                        errorColumnIndex = 8;
+                        errorRowIndex = i;
+                        hasError = true;
+                    }
                 }
-                else
-                {
-                    errorColumn = "Pinno";
-                    errorColumnIndex = 8;
-                    errorRowIndex = i;
-                    hasError = true;
-                    //break;
-                }
+
                 //Adno 3
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 3].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 3].Value2))
                 {
                     profile.Adno = xlRange.Cells[i, 3].Value2.ToString().ToUpper();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Adno";
                     errorColumnIndex = 3;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Gender 4
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 4].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 4].Value2))
                 {
-                    profile.Gender = (xlRange.Cells[i, 4].Value2.ToString().ToUpper() == "MALE" ? "Male" : "Female");
+                    profile.Gender = (xlRange.Cells[i, 4].Value2.ToString().ToUpper() == "MALE" ? "MALE" : "FEMALE");
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Gender";
                     errorColumnIndex = 4;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Date of Birth 5
-                if (CheckDateInputFromExcel(xlRange.Cells[i, 5].Value2))
+                if (!hasError && CheckDateInputFromExcel(xlRange.Cells[i, 5].Value2))
                 {
                     profile.DateOfBirth = ParseDateTimeFormCell(xlRange.Cells[i, 5].Value2.ToString());
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Date of Birth";
                     errorColumnIndex = 5;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Date of Issue 6
-                if (CheckDateInputFromExcel(xlRange.Cells[i, 6].Value2))
+                if (!hasError && CheckDateInputFromExcel(xlRange.Cells[i, 6].Value2))
                 {
                     profile.DateOfIssue = ParseDateTimeFormCell(xlRange.Cells[i, 6].Value2.ToString());
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Date of Issue";
                     errorColumnIndex = 6;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Image 7
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 7].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 7].Value2))
                 {
                     profile.Image = xlRange.Cells[i, 7].Value2.ToString();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Image";
                     errorColumnIndex = 7;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Class 9
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 9].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 9].Value2))
                 {
                     className = xlRange.Cells[i, 9].Value2.ToString();
                     int classId = CheckClassNameValid(className.ToUpper());
@@ -301,121 +331,118 @@ namespace ATEK.AccessControl_2.Profiles
                         //ImportProfileImage(importFileFolder, profile.IMAGE);
                     }
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Class";
                     errorColumnIndex = 9;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Group 10
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 10].Value2))
+                if (AddProfilesChecked)
                 {
-                    groupName = xlRange.Cells[i, 10].Value2.ToString();
-                    int groupId = CheckGroupNameValid(groupName.ToUpper());
-                    if (groupId == 0)
+                    if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 10].Value2))
                     {
-                        //Create New Group
-                        Group newGroup = new Group() { Name = groupName.ToUpper() };
-                        repo.AddGroup(newGroup);
-                        LoadData();
-                        profile.ProfileGroups.Add(new ProfileGroup() { GroupId = newGroup.Id });
-                        //ImportProfileImage(importFileFolder, profile.IMAGE);
+                        groupName = xlRange.Cells[i, 10].Value2.ToString();
+                        int groupId = CheckGroupNameValid(groupName.ToUpper());
+                        if (groupId == 0)
+                        {
+                            //Create New Group
+                            Group newGroup = new Group() { Name = groupName.ToUpper() };
+                            repo.AddGroup(newGroup);
+                            LoadData();
+                            profile.ProfileGroups.Add(new ProfileGroup() { GroupId = newGroup.Id });
+                            //ImportProfileImage(importFileFolder, profile.IMAGE);
+                        }
+                        else
+                        {
+                            profile.ProfileGroups.Add(new ProfileGroup() { GroupId = groupId });
+                            //ImportProfileImage(importFileFolder, profile.IMAGE);
+                        }
                     }
-                    else
+                    else if (!hasError)
                     {
-                        profile.ProfileGroups.Add(new ProfileGroup() { GroupId = groupId });
-                        //ImportProfileImage(importFileFolder, profile.IMAGE);
+                        errorColumn = "Group";
+                        errorColumnIndex = 10;
+                        errorRowIndex = i;
+                        hasError = true;
                     }
                 }
-                else
-                {
-                    errorColumn = "Group";
-                    errorColumnIndex = 10;
-                    errorRowIndex = i;
-                    hasError = true;
-                    //break;
-                }
+
                 //Email 11
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 11].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 11].Value2))
                 {
                     profile.Email = xlRange.Cells[i, 11].Value2.ToString();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Email";
                     errorColumnIndex = 11;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Address 12
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 12].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 12].Value2))
                 {
                     profile.Address = xlRange.Cells[i, 12].Value2.ToString();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Address";
                     errorColumnIndex = 12;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Phone 13
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 13].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 13].Value2))
                 {
                     profile.Phone = xlRange.Cells[i, 13].Value2.ToString();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Phone";
                     errorColumnIndex = 13;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Status 14
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 14].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 14].Value2))
                 {
-                    profile.Status = xlRange.Cells[i, 14].Value2.ToString();
+                    profile.Status = (xlRange.Cells[i, 14].Value2.ToString().ToUpper() == "ACTIVE" ? "ACTIVE" : "SUSPENDED");
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Status";
                     errorColumnIndex = 14;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
+
                 //Expire Date 15
-                if (CheckDateInputFromExcel(xlRange.Cells[i, 15].Value2))
+                if (!hasError && CheckDateInputFromExcel(xlRange.Cells[i, 15].Value2))
                 {
                     var expireDate = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
                     if (expireDate != null)
                     {
                         profile.DateToLock = expireDate;
                     }
-                    else
+                    else if (!hasError)
                     {
                         errorColumn = "Expire Date";
                         errorColumnIndex = 15;
                         errorRowIndex = i;
                         hasError = true;
-                        //break;
                     }
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Expire Date";
                     errorColumnIndex = 15;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Automatic Suspension 16
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 16].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 16].Value2))
                 {
                     bool checkDateToLock = false;
                     if (Boolean.TryParse(xlRange.Cells[i, 16].Value2.ToString(), out checkDateToLock))
@@ -432,20 +459,19 @@ namespace ATEK.AccessControl_2.Profiles
                     profile.CheckDateToLock = false;
                 }
                 //License Plate 17
-                if (CheckStringInputFromExcel(xlRange.Cells[i, 17].Value2))
+                if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 17].Value2))
                 {
                     profile.LicensePlate = xlRange.Cells[i, 17].Value2.ToString();
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "License Plate";
                     errorColumnIndex = 17;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Date Created 18
-                if (CheckDateInputFromExcel(xlRange.Cells[i, 18].Value2))
+                if (!hasError && CheckDateInputFromExcel(xlRange.Cells[i, 18].Value2))
                 {
                     if (addProfilesChecked)
                     {
@@ -458,23 +484,21 @@ namespace ATEK.AccessControl_2.Profiles
                         {
                             profile.DateCreated = dateCreated;
                         }
-                        else
+                        else if (!hasError)
                         {
                             errorColumn = "Date Created";
                             errorColumnIndex = 18;
                             errorRowIndex = i;
                             hasError = true;
-                            //break;
                         }
                     }
                 }
-                else
+                else if (!hasError)
                 {
                     errorColumn = "Date Created";
                     errorColumnIndex = 18;
                     errorRowIndex = i;
                     hasError = true;
-                    //break;
                 }
                 //Date Modified 19
                 profile.DateModified = DateTime.Now;
@@ -485,12 +509,17 @@ namespace ATEK.AccessControl_2.Profiles
                     {
                         if (!repo.AddProfile(profile))
                         {
-                            Console.WriteLine($"Loi add Profile.{profile.Name},{profile.Pinno}");
+                            System.Windows.MessageBox.Show($"Error adding Profile.{profile.Name},{profile.Pinno}");
+                            break;
                         }
                     }
                     else
                     {
-                        repo.UpdateProfile(profile);
+                        if (!repo.UpdateProfile(profile))
+                        {
+                            System.Windows.MessageBox.Show($"Error updating Profile.{profile.Name},{profile.Pinno}");
+                            break;
+                        }
                     }
                 }
                 else
@@ -499,7 +528,6 @@ namespace ATEK.AccessControl_2.Profiles
                     System.Windows.Forms.MessageBox.Show(errorMessage, "Invalid Data!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                //listProfiles.Add(profile);
                 //Finish progress
                 if (importBackGroundWorker.CancellationPending)
                 {
@@ -515,13 +543,6 @@ namespace ATEK.AccessControl_2.Profiles
                 System.Windows.Forms.MessageBox.Show(errorMessage, "Invalid Data!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            //if (listProfiles.Count > 0)
-            //{
-            //    ImportStatus = "Importing";
-            //    repo.AddProfiles(listProfiles);
-            //    ImportStatus = "Finished";
-            //}
         }
 
         private DateTime? ParseDateTimeFormCell(string sDate)
@@ -678,6 +699,7 @@ namespace ATEK.AccessControl_2.Profiles
 
         public void LoadData()
         {
+            allProfiles = repo.GetProfiles().ToList();
             allClasses = repo.GetClasses().ToList();
             allGroups = repo.GetGroups().ToList();
         }

@@ -9,13 +9,17 @@ namespace ATEK.AccessControl_2.Services
 {
     public interface IAccessControlRepository
     {
-        void Firebase_AddProfileAsync(Profile profile);
+        Task<bool> Firebase_AddClassesAsync(Class @class);
 
-        void Firebase_AddProfileGateAsync(Profile profile, Gate gate);
+        bool Firebase_AddProfileGate(Profile profile, Gate gate);
 
-        void Firebase_DeleteProfileGateAsync(Profile profile, Gate gate);
+        Task<bool> Firebase_AddProfileGateAsync(Profile profile, Gate gate);
 
-        IEnumerable<Gate> Firebase_GetGates();
+        bool Firebase_DeleteProfileGate(Profile profile, Gate gate);
+
+        Task<bool> Firebase_DeleteProfileGateAsync(Profile profile, Gate gate);
+
+        Task<IEnumerable<Gate>> Firebase_GetGatesAsync();
 
         void SaveChanges();
 

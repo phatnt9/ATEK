@@ -39,13 +39,13 @@
                                 Content="Add new Profiles"
                                 GroupName="addorupdate"
                                 IsChecked="{Binding AddProfilesChecked}"
-                                IsEnabled="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                                Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                             <RadioButton
                                 Name="rb_update"
                                 Margin="5"
                                 Content="Update Profiles"
                                 GroupName="addorupdate"
-                                IsEnabled="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
+                                Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1">

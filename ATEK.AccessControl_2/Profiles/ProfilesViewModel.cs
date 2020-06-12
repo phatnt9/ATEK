@@ -96,10 +96,6 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void OnFirebaseCommand()
         {
-            foreach (var p in allProfiles)
-            {
-                repo.Firebase_AddProfileAsync(p);
-            }
         }
 
         public void LoadData()

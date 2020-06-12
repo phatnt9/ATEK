@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ATEK.AccessControl_2.Gates
 {
@@ -423,14 +424,20 @@ namespace ATEK.AccessControl_2.Gates
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                if (!repo.AddProfileGate(listProfiles[i], gate))
+                //if (repo.Firebase_AddProfileGateAsync(listProfiles[i], gate).Result)
+                if (repo.Firebase_AddProfileGate(listProfiles[i], gate))
                 {
-                    Console.WriteLine("Select Profile khong thanh cong.");
+                    if (!repo.AddProfileGate(listProfiles[i], gate))
+                    {
+                        Console.WriteLine("Select Profile khong thanh cong.");
+                        repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate);
+                    }
                 }
                 else
                 {
-                    repo.Firebase_AddProfileGateAsync(listProfiles[i], gate);
+                    MessageBox.Show("Khong add len firebase duoc.");
                 }
+
                 if (selectBackGroundWorker.CancellationPending)
                 {
                     return;
@@ -507,13 +514,18 @@ namespace ATEK.AccessControl_2.Gates
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                if (!repo.RemoveProfileGate(listProfiles[i], gate))
+                //if (repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate).Result)
+                if (repo.Firebase_DeleteProfileGate(listProfiles[i], gate))
                 {
-                    Console.WriteLine("Remove Profile khong thanh cong.");
+                    if (!repo.RemoveProfileGate(listProfiles[i], gate))
+                    {
+                        Console.WriteLine("Remove Profile khong thanh cong.");
+                        repo.Firebase_AddProfileGateAsync(listProfiles[i], gate);
+                    }
                 }
                 else
                 {
-                    repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate);
+                    MessageBox.Show("Khong delete len firebase duoc.");
                 }
                 if (removeBackGroundWorker.CancellationPending)
                 {

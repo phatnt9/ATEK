@@ -50,35 +50,54 @@ namespace ATEK.Domain.Models
         public string Name { get { return name; } set { SetProperty(ref name, value); } }
 
         [FirestoreProperty]
-        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
-
         public int ClassId { get { return classId; } set { SetProperty(ref classId, value); } }
+
         public string Gender { get { return gender; } set { SetProperty(ref gender, value); } }
 
-        [FirestoreProperty]
         public DateTime DateOfBirth
         {
-            get
-            {
-                return DateTime.SpecifyKind(dateOfBirth, DateTimeKind.Utc);
-            }
-            set
-            {
-                SetProperty(ref dateOfBirth, value);
-            }
+            get { return DateTime.SpecifyKind(dateOfBirth, DateTimeKind.Utc); }
+            set { SetProperty(ref dateOfBirth, value); }
         }
 
-        public DateTime DateOfIssue { get { return dateOfIssue; } set { SetProperty(ref dateOfIssue, value); } }
+        public DateTime DateOfIssue
+        {
+            get { return DateTime.SpecifyKind(dateOfIssue, DateTimeKind.Utc); }
+            set { SetProperty(ref dateOfIssue, value); }
+        }
+
         public string Email { get { return email; } set { SetProperty(ref email, value); } }
         public string Address { get { return address; } set { SetProperty(ref address, value); } }
         public string Phone { get { return phone; } set { SetProperty(ref phone, value); } }
         public string Status { get { return status; } set { SetProperty(ref status, value); } }
         public string Image { get { return image; } set { SetProperty(ref image, value); } }
-        public DateTime DateToLock { get { return dateToLock; } set { SetProperty(ref dateToLock, value); } }
+
+        [FirestoreProperty]
+        public DateTime DateToLock
+        {
+            get { return DateTime.SpecifyKind(dateToLock, DateTimeKind.Utc); }
+            set { SetProperty(ref dateToLock, value); }
+        }
+
+        [FirestoreProperty]
         public bool CheckDateToLock { get { return checkDateToLock; } set { SetProperty(ref checkDateToLock, value); } }
+
+        [FirestoreProperty]
         public string LicensePlate { get { return licensePlate; } set { SetProperty(ref licensePlate, value); } }
-        public DateTime DateCreated { get { return dateCreated; } set { SetProperty(ref dateCreated, value); } }
-        public DateTime DateModified { get { return dateModified; } set { SetProperty(ref dateModified, value); } }
+
+        public DateTime DateCreated
+        {
+            get { return DateTime.SpecifyKind(dateCreated, DateTimeKind.Utc); }
+            set { SetProperty(ref dateCreated, value); }
+        }
+
+        public DateTime DateModified
+        {
+            get { return DateTime.SpecifyKind(dateModified, DateTimeKind.Utc); }
+            set { SetProperty(ref dateModified, value); }
+        }
+
+        public Class Class { get { return @class; } set { SetProperty(ref @class, value); } }
         public List<ProfileGate> ProfileGates { get { return profileGates; } set { SetProperty(ref profileGates, value); } }
         public List<ProfileGroup> ProfileGroups { get { return profileGroups; } set { SetProperty(ref profileGroups, value); } }
     }

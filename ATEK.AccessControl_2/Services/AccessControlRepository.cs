@@ -16,6 +16,7 @@ using DocumentChange = Google.Cloud.Firestore.DocumentChange;
 using System.Windows;
 using System.Collections.ObjectModel;
 using Microsoft.Office.Core;
+using System.CodeDom;
 
 namespace ATEK.AccessControl_2.Services
 {
@@ -24,8 +25,11 @@ namespace ATEK.AccessControl_2.Services
         private FirestoreDb db;
         private AccessControlContext _context;
         private string _firebaseProfilesCollection;
+        private string _firebaseClassesCollection;
         private string _firebaseGatesCollection;
+
         private string path = AppDomain.CurrentDomain.BaseDirectory + @"cloudfire.json";
+        //private string path = AppDomain.CurrentDomain.BaseDirectory + @"cloudfire_nguyen.json";
 
         public AccessControlRepository()
         {
@@ -36,141 +40,222 @@ namespace ATEK.AccessControl_2.Services
 
         #region Firebase
 
-        private void Firebase_SetCredential()
+        public async Task<bool> Firebase_AddClassesAsync(Class @class)
         {
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
-            db = FirestoreDb.Create("phatdemolockmode");
-        }
-
-        private object Firebase_AuthExplicit(string projectId, string jsonPath)
-        {
-            // Explicitly use service account credentials by specifying
-            // the private key file.
-            var credential = GoogleCredential.FromFile(jsonPath);
-            var storage = StorageClient.Create(credential);
-            // Make an authenticated API request.
-            string serviceAccountEmail = ((ServiceAccountCredential)credential.UnderlyingCredential).Id;
-            string serviceAccountName = serviceAccountEmail.Split('@')[0];
-            if (!serviceAccountName.Equals(Properties.Settings.Default.serviceAccountName))
+            try
             {
-                Properties.Settings.Default.serviceAccountName = serviceAccountName;
-                Properties.Settings.Default.Save();
-            }
-            _firebaseProfilesCollection = $"{Properties.Settings.Default.serviceAccountName}_profiles";
-            _firebaseGatesCollection = $"{Properties.Settings.Default.serviceAccountName}_gates";
-            var buckets = storage.ListBuckets(projectId);
-            foreach (var bucket in buckets)
-            {
-                Console.WriteLine(bucket.Name);
-            }
-            return null;
-        }
-
-        public async void Firebase_AddProfileAsync(Profile profile)
-        {
-            DocumentReference profileRef = db.Collection(_firebaseProfilesCollection).Document(profile.Pinno);
-            await profileRef.SetAsync(profile);
-            CollectionReference profileGroupsRef = profileRef.Collection("ProfileGroups");
-            CollectionReference profileGatesRef = profileRef.Collection("ProfileGates");
-
-            //foreach (var pg in profile.ProfileGroups)
-            //{
-            //    Dictionary<string, object> profileGroupsData = new Dictionary<string, object>();
-            //    profileGroupsData.Add(nameof(pg.Group.Name), pg.Group.Name);
-            //    await profileGroupsRef.AddAsync(profileGroupsData);
-            //}
-            //foreach (var pg in profile.ProfileGates)
-            //{
-            //    Dictionary<string, object> profileGatesData = new Dictionary<string, object>();
-            //    profileGatesData.Add(nameof(pg.Gate.Name), pg.Gate.Name);
-            //    await profileGatesRef.AddAsync(profileGatesData);
-            //}
-        }
-
-        public async void Firebase_AddProfileGateAsync(Profile profile, Gate gate)
-        {
-            DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-            DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
-            await profileGatesRef.SetAsync(profile);
-        }
-
-        public async void Firebase_DeleteProfileGateAsync(Profile profile, Gate gate)
-        {
-            DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-            DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
-            await profileGatesRef.DeleteAsync();
-        }
-
-        public IEnumerable<Gate> Firebase_GetGates()
-        {
-            List<Gate> gates = new List<Gate>();
-            CollectionReference gatesRef = db.Collection(_firebaseGatesCollection);
-            gatesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
-            List<DocumentSnapshot> documents = gatesRef.GetSnapshotAsync().Result.ToList();
-            foreach (var rawGate in documents)
-            {
-                if (rawGate.Exists)
+                DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
+                var writeResult = classRef.SetAsync(@class);
+                await writeResult;
+                switch (writeResult.Status)
                 {
-                    Gate gate = new Gate();
-                    gate.FirebaseId = rawGate.Id;
-                    Dictionary<string, object> gateData = rawGate.ToDictionary();
-                    foreach (KeyValuePair<string, object> pair in gateData)
-                    {
-                        switch (pair.Key)
+                    case TaskStatus.RanToCompletion:
                         {
-                            case "Name":
-                                {
-                                    gate.Name = pair.Value.ToString();
-                                    break;
-                                }
-                            case "Note":
-                                {
-                                    gate.Note = pair.Value.ToString();
-                                    break;
-                                }
-                            case "Status":
-                                {
-                                    gate.Status = pair.Value.ToString();
-                                    break;
-                                }
+                            return true;
                         }
-                    }
-                    gates.Add(gate);
+                    case TaskStatus.Faulted:
+                        {
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
                 }
             }
-            return gates;
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
         }
 
-        public List<Profile> Firebase_GetProfiles()
+        public bool Firebase_AddProfileGate(Profile profile, Gate gate)
         {
-            List<Profile> profiles = new List<Profile>();
-            CollectionReference profilesRef = db.Collection(_firebaseProfilesCollection);
-            QuerySnapshot snapshot = profilesRef.GetSnapshotAsync().Result;
-            foreach (DocumentSnapshot document in snapshot.Documents)
+            try
             {
-                var profile = new Profile();
-                Dictionary<string, object> documentDictionary = document.ToDictionary();
-                profile.Id = int.Parse(documentDictionary["Id"].ToString());
-                profile.Pinno = documentDictionary["Pinno"].ToString();
-                profile.Adno = documentDictionary["Adno"].ToString();
-                profile.Name = documentDictionary["Name"].ToString();
-                profile.Gender = documentDictionary["Gender"].ToString();
-                profile.DateOfBirth = DateTime.Parse(documentDictionary["DateOfBirth"].ToString());
-                profile.DateOfIssue = DateTime.Parse(documentDictionary["DateOfIssue"].ToString());
-                profile.Email = documentDictionary["Email"].ToString();
-                profile.Address = documentDictionary["Address"].ToString();
-                profile.Phone = documentDictionary["Phone"].ToString();
-                profile.Status = documentDictionary["Status"].ToString();
-                profile.Image = documentDictionary["Image"].ToString();
-                profile.DateToLock = DateTime.Parse(documentDictionary["DateToLock"].ToString());
-                profile.CheckDateToLock = bool.Parse(documentDictionary["CheckDateToLock"].ToString());
-                profile.LicensePlate = documentDictionary["LicensePlate"].ToString();
-                profile.DateCreated = DateTime.Parse(documentDictionary["DateCreated"].ToString());
-                profile.DateModified = DateTime.Parse(documentDictionary["DateModified"].ToString());
-                //profile.Class = int.Parse(documentDictionary["Id"].ToString());
-                profile.ClassId = int.Parse(documentDictionary["ClassId"].ToString());
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                var writeResult = profileGatesRef.SetAsync(profile);
+                writeResult.Wait();
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
             }
-            return profiles;
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> Firebase_AddProfileGateAsync(Profile profile, Gate gate)
+        {
+            try
+            {
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                var writeResult = profileGatesRef.SetAsync(profile);
+                await writeResult;
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public bool Firebase_DeleteProfileGate(Profile profile, Gate gate)
+        {
+            try
+            {
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                var writeResult = profileGatesRef.DeleteAsync();
+                writeResult.Wait();
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> Firebase_DeleteProfileGateAsync(Profile profile, Gate gate)
+        {
+            try
+            {
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                var writeResult = profileGatesRef.DeleteAsync();
+                await writeResult;
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<Gate>> Firebase_GetGatesAsync()
+        {
+            try
+            {
+                List<Gate> gates = new List<Gate>();
+                CollectionReference gatesRef = db.Collection(_firebaseGatesCollection);
+                gatesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
+                var querySnapshot = gatesRef.GetSnapshotAsync();
+                await querySnapshot;
+                switch (querySnapshot.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            List<DocumentSnapshot> documents = querySnapshot.Result.ToList();
+                            foreach (var rawGate in documents)
+                            {
+                                if (rawGate.Exists)
+                                {
+                                    Gate gate = new Gate();
+                                    gate.FirebaseId = rawGate.Id;
+                                    Dictionary<string, object> gateData = rawGate.ToDictionary();
+                                    foreach (KeyValuePair<string, object> pair in gateData)
+                                    {
+                                        switch (pair.Key)
+                                        {
+                                            case "Name":
+                                                {
+                                                    gate.Name = pair.Value.ToString();
+                                                    break;
+                                                }
+                                            case "Note":
+                                                {
+                                                    gate.Note = pair.Value.ToString();
+                                                    break;
+                                                }
+                                            case "Status":
+                                                {
+                                                    gate.Status = pair.Value.ToString();
+                                                    break;
+                                                }
+                                        }
+                                    }
+                                    gates.Add(gate);
+                                }
+                            }
+                            return gates;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return null;
+            }
         }
 
         public void OnFirebaseGatesChange(QuerySnapshot snapShots)
@@ -181,7 +266,7 @@ namespace ATEK.AccessControl_2.Services
                 if (change.ChangeType.ToString() == "Added")
                 {
                     Console.WriteLine("New gate: {0}", change.Document.Id);
-                    Console.WriteLine("Document exists? {0}", change.Document.Exists);
+                    //Console.WriteLine("Document exists? {0}", change.Document.Exists);
                     if (change.Document.Exists)
                     {
                         Console.WriteLine("Document data for {0}:", change.Document.Id);
@@ -221,20 +306,39 @@ namespace ATEK.AccessControl_2.Services
                     }
                 }
             }
-            //Console.WriteLine("Callback received documentd snapshot.");
-            //foreach (DocumentSnapshot docGate in snapShots.Documents)
-            //{
-            //    Console.WriteLine("Document exists? {0}", docGate.Exists);
-            //    if (docGate.Exists)
-            //    {
-            //        Console.WriteLine("Document data for {0} document:", docGate.Id);
-            //        Dictionary<string, object> city = docGate.ToDictionary();
-            //        foreach (KeyValuePair<string, object> pair in city)
-            //        {
-            //            Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            //        }
-            //    }
-            //}
+        }
+
+        private void Firebase_SetCredential()
+        {
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
+            db = FirestoreDb.Create("phatdemolockmode");
+            //db = FirestoreDb.Create("testaccesscontrol-4ccde");
+        }
+
+        private object Firebase_AuthExplicit(string projectId, string jsonPath)
+        {
+            // Explicitly use service account credentials by specifying
+            // the private key file.
+            var credential = GoogleCredential.FromFile(jsonPath);
+            var storage = StorageClient.Create(credential);
+            // Make an authenticated API request.
+            string serviceAccountEmail = ((ServiceAccountCredential)credential.UnderlyingCredential).Id;
+            string serviceAccountName = serviceAccountEmail.Split('@')[0];
+            if (!serviceAccountName.Equals(Properties.Settings.Default.serviceAccountName))
+            {
+                Properties.Settings.Default.serviceAccountName = serviceAccountName;
+                Properties.Settings.Default.Save();
+            }
+            _firebaseProfilesCollection = $"{Properties.Settings.Default.serviceAccountName}_profiles";
+            _firebaseClassesCollection = $"{Properties.Settings.Default.serviceAccountName}_classes";
+            _firebaseGatesCollection = $"{Properties.Settings.Default.serviceAccountName}_gates";
+            var buckets = storage.ListBuckets(projectId);
+            var test = buckets.GetEnumerator();
+            foreach (var bucket in buckets)
+            {
+                Console.WriteLine(bucket.Name);
+            }
+            return null;
         }
 
         #endregion Firebase
@@ -384,6 +488,7 @@ namespace ATEK.AccessControl_2.Services
                 {
                     _context.Profiles.Attach(profile);
                 }
+                //Console.WriteLine(_context.Entry(profile).State.ToString());
                 _context.Entry(profile).State = EntityState.Modified;
                 _context.SaveChanges();
                 return true;
@@ -620,32 +725,89 @@ namespace ATEK.AccessControl_2.Services
         public virtual bool HandleException(Exception exception)
         {
             MessageBox.Show("ERROR IN DATABASE CONTEXT");
-            SqlException innerException = exception.InnerException as SqlException;
-            if (innerException != null)
+            Console.WriteLine(exception.GetType().ToString());
+            switch (exception)
             {
-                switch (innerException.Number)
-                {
-                    case 2601:
+                case Grpc.Core.RpcException ex:
+                    {
+                        switch (ex.StatusCode)
                         {
-                            Console.WriteLine(innerException.Message);
-                            Console.WriteLine("Duplicated Pinno");
-                            return true;
+                            /*
+                             * Stream removed: Lan dau tien ko connect duoc firebase khi bi rut mang
+                             * Failed to connect to all addresses: Cac lan sau do deu bao ko connect duoc firebase
+                             */
+                            case Grpc.Core.StatusCode.Unknown:
+                                {
+                                    Console.WriteLine(ex.Status.Detail);
+                                    return true;
+                                }
+                            case Grpc.Core.StatusCode.Unavailable:
+                                {
+                                    Console.WriteLine(ex.Status.Detail);
+                                    return true;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
                         }
-                    case 2627:
+                    }
+                case AggregateException ex:
+                    {
+                        var innerException = ex.InnerException as Grpc.Core.RpcException;
+                        switch (innerException.StatusCode)
                         {
-                            Console.WriteLine(innerException.Message);
-                            Console.WriteLine("Duplicated GroupProfiles");
-                            return true;
+                            /*
+                             * Stream removed: Lan dau tien ko connect duoc firebase khi bi rut mang
+                             * Failed to connect to all addresses: Cac lan sau do deu bao ko connect duoc firebase
+                             */
+                            case Grpc.Core.StatusCode.Unknown:
+                                {
+                                    Console.WriteLine(innerException.Status.Detail);
+                                    return true;
+                                }
+                            case Grpc.Core.StatusCode.Unavailable:
+                                {
+                                    Console.WriteLine(innerException.Status.Detail);
+                                    return true;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
                         }
-                    default:
+                    }
+                case DbUpdateException ex:
+                    {
+                        var innerException = ex.InnerException as SqlException;
+                        if (innerException != null)
                         {
-                            throw new NotImplementedException();
+                            switch (innerException.Number)
+                            {
+                                case 2601:
+                                    {
+                                        Console.WriteLine(innerException.Message);
+                                        Console.WriteLine("Duplicated Pinno");
+                                        return true;
+                                    }
+                                case 2627:
+                                    {
+                                        Console.WriteLine(innerException.Message);
+                                        Console.WriteLine("Duplicated GroupProfiles");
+                                        return true;
+                                    }
+                                default:
+                                    {
+                                        throw new NotImplementedException();
+                                    }
+                            }
                         }
-                }
-            }
-            else
-            {
-                throw new NotImplementedException();
+                        throw new NotImplementedException();
+                    }
+                default:
+                    {
+                        throw new NotImplementedException();
+                    }
             }
         }
 
