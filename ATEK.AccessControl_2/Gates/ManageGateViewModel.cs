@@ -436,6 +436,7 @@ namespace ATEK.AccessControl_2.Gates
                 else
                 {
                     MessageBox.Show("Khong add len firebase duoc.");
+                    return;
                 }
 
                 if (selectBackGroundWorker.CancellationPending)
@@ -526,6 +527,7 @@ namespace ATEK.AccessControl_2.Gates
                 else
                 {
                     MessageBox.Show("Khong delete len firebase duoc.");
+                    return;
                 }
                 if (removeBackGroundWorker.CancellationPending)
                 {
