@@ -140,23 +140,23 @@
                         <DataGridCheckBoxColumn Binding="{Binding CheckDateToLock}" Header="Auto Lock" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding DateToLock, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Binding="{Binding DateToLock, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}"
                             Header="Date To Lock" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding DateOfBirth, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Binding="{Binding DateOfBirth, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}"
                             Header="Date Of Birth" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding DateOfIssue, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Binding="{Binding DateOfIssue, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}"
                             Header="Date Of Issue" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding DateCreated, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Binding="{Binding DateCreated, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}"
                             Header="Date Created" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding DateModified, StringFormat=\{0:dd/MM/yyyy\}}"
+                            Binding="{Binding DateModified, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}"
                             Header="Date Modified" />
                     </DataGrid.Columns>
                 </DataGrid>
@@ -216,13 +216,14 @@
                         Width="50"
                         Height="20"
                         Margin="4,0"
-                        Content="Firebase"
-                        Command="{Binding FirebaseCommand}" />
+                        Command="{Binding FirebaseOnCommand}"
+                        Content="SetTime" />
                     <Button
                         Width="50"
                         Height="20"
                         Margin="4,0"
-                        Content="..." />
+                        Command="{Binding FirebaseOffCommand}"
+                        Content="GetTime" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1">
@@ -234,7 +235,42 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" />
-                            <Grid Grid.Row="1" />
+                            <Grid Grid.Row="1">
+                                <StackPanel>
+                                    <DockPanel Height="30">
+                                        <ComboBox
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0" />
+                                        <Label>:</Label>
+                                        <ComboBox
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0" />
+                                        <Button
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0"
+                                            Content="Save" />
+                                    </DockPanel>
+                                    <DockPanel Height="30">
+                                        <ComboBox
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0" />
+                                        <Label>:</Label>
+                                        <ComboBox
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0" />
+                                        <Button
+                                            Width="50"
+                                            Height="20"
+                                            Margin="4,0"
+                                            Content="Save" />
+                                    </DockPanel>
+                                </StackPanel>
+                            </Grid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Manage" IsSelected="True">

@@ -38,9 +38,32 @@ namespace ATEK.AccessControl_2.Classes
             if (UpdateClass(Class, editingClass))
             {
                 if (EditMode)
-                    repo.UpdateClass(editingClass);
+                {
+                    if (repo.Firebase_UpdateClass(editingClass))
+                    {
+                        if (!repo.UpdateClass(editingClass))
+                        {
+                            repo.Firebase_AddClass(editingClass);
+                        }
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Error, Please check your internet");
+                    }
+                }
                 else
-                    repo.AddClass(editingClass);
+                {
+                    if (repo.AddClass(editingClass))
+                    {
+                        if (!repo.Firebase_AddClass(editingClass))
+                        {
+                            System.Windows.MessageBox.Show("Error, Please check your internet");
+                            var deletes = new List<Class>();
+                            deletes.Add(editingClass);
+                            repo.RemoveClasses(deletes);
+                        }
+                    }
+                }
                 Done();
             }
         }

@@ -70,6 +70,8 @@ namespace ATEK.Domain.Models
         public string Address { get { return address; } set { SetProperty(ref address, value); } }
         public string Phone { get { return phone; } set { SetProperty(ref phone, value); } }
         public string Status { get { return status; } set { SetProperty(ref status, value); } }
+
+        [FirestoreProperty]
         public string Image { get { return image; } set { SetProperty(ref image, value); } }
 
         [FirestoreProperty]

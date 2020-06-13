@@ -40,13 +40,39 @@ namespace ATEK.AccessControl_2.Services
 
         #region Firebase
 
-        public async Task<bool> Firebase_AddClassesAsync(Class @class)
+        public async void Firebase_SetTime()
+        {
+            DateTime data = DateTime.Now;
+            Dictionary<string, object> date = new Dictionary<string, object>
+            {
+                { "timeNow", DateTime.SpecifyKind(data, DateTimeKind.Utc)}
+            };
+            DocumentReference classRef = await db.Collection("TimeTest").AddAsync(date);
+        }
+
+        public async void Firebase_GetTime()
+        {
+            Query allCitiesQuery = db.Collection("TimeTest");
+            QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
+            {
+                Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
+                Dictionary<string, object> city = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in city)
+                {
+                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                }
+                Console.WriteLine("");
+            }
+        }
+
+        public bool Firebase_AddClass(Class @class)
         {
             try
             {
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
                 var writeResult = classRef.SetAsync(@class);
-                await writeResult;
+                writeResult.Wait(2000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -55,7 +81,67 @@ namespace ATEK.AccessControl_2.Services
                         }
                     case TaskStatus.Faulted:
                         {
-                            return false;
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public bool Firebase_UpdateClass(Class @class)
+        {
+            try
+            {
+                DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
+                var writeResult = classRef.UpdateAsync("Name", @class.Name);
+                writeResult.Wait(2000);
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public bool Firebase_RemoveClass(Class @class)
+        {
+            try
+            {
+                DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
+                var writeResult = classRef.DeleteAsync();
+                writeResult.Wait(2000);
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
                         }
                     default:
                         {
@@ -75,9 +161,9 @@ namespace ATEK.AccessControl_2.Services
             try
             {
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
                 var writeResult = profileGatesRef.SetAsync(profile);
-                writeResult.Wait();
+                writeResult.Wait(2000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -86,7 +172,68 @@ namespace ATEK.AccessControl_2.Services
                         }
                     case TaskStatus.Faulted:
                         {
-                            return false;
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public bool Firebase_RemoveProfileGate(Profile profile, Gate gate)
+        {
+            try
+            {
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
+                DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
+                var writeResult = profileGatesRef.DeleteAsync();
+                writeResult.Wait(2000);
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> Firebase_AddClassAsync(Class @class)
+        {
+            try
+            {
+                DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
+                var writeResult = classRef.SetAsync(@class);
+                await writeResult;
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
                         }
                     default:
                         {
@@ -106,7 +253,7 @@ namespace ATEK.AccessControl_2.Services
             try
             {
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
                 var writeResult = profileGatesRef.SetAsync(profile);
                 await writeResult;
                 switch (writeResult.Status)
@@ -117,7 +264,7 @@ namespace ATEK.AccessControl_2.Services
                         }
                     case TaskStatus.Faulted:
                         {
-                            return false;
+                            throw new NotImplementedException();
                         }
                     default:
                         {
@@ -132,43 +279,12 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
-        public bool Firebase_DeleteProfileGate(Profile profile, Gate gate)
+        public async Task<bool> Firebase_RemoveProfileGateAsync(Profile profile, Gate gate)
         {
             try
             {
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
-                var writeResult = profileGatesRef.DeleteAsync();
-                writeResult.Wait();
-                switch (writeResult.Status)
-                {
-                    case TaskStatus.RanToCompletion:
-                        {
-                            return true;
-                        }
-                    case TaskStatus.Faulted:
-                        {
-                            return false;
-                        }
-                    default:
-                        {
-                            throw new NotImplementedException();
-                        }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-                return false;
-            }
-        }
-
-        public async Task<bool> Firebase_DeleteProfileGateAsync(Profile profile, Gate gate)
-        {
-            try
-            {
-                DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
-                DocumentReference profileGatesRef = gateRef.Collection("ProfileGates").Document(profile.Pinno);
+                DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
                 var writeResult = profileGatesRef.DeleteAsync();
                 await writeResult;
                 switch (writeResult.Status)
@@ -179,7 +295,7 @@ namespace ATEK.AccessControl_2.Services
                         }
                     case TaskStatus.Faulted:
                         {
-                            return false;
+                            throw new NotImplementedException();
                         }
                     default:
                         {
@@ -198,7 +314,6 @@ namespace ATEK.AccessControl_2.Services
         {
             try
             {
-                List<Gate> gates = new List<Gate>();
                 CollectionReference gatesRef = db.Collection(_firebaseGatesCollection);
                 gatesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
                 var querySnapshot = gatesRef.GetSnapshotAsync();
@@ -207,6 +322,7 @@ namespace ATEK.AccessControl_2.Services
                 {
                     case TaskStatus.RanToCompletion:
                         {
+                            List<Gate> gates = new List<Gate>();
                             List<DocumentSnapshot> documents = querySnapshot.Result.ToList();
                             foreach (var rawGate in documents)
                             {
@@ -333,7 +449,6 @@ namespace ATEK.AccessControl_2.Services
             _firebaseClassesCollection = $"{Properties.Settings.Default.serviceAccountName}_classes";
             _firebaseGatesCollection = $"{Properties.Settings.Default.serviceAccountName}_gates";
             var buckets = storage.ListBuckets(projectId);
-            var test = buckets.GetEnumerator();
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);

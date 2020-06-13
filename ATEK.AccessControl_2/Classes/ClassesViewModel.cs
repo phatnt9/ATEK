@@ -82,8 +82,18 @@ namespace ATEK.AccessControl_2.Classes
             {
                 List<Class> deletes = new List<Class>();
                 deletes.Add(@class);
-                repo.RemoveClasses(deletes);
-                LoadData();
+                if (repo.Firebase_RemoveClass(@class))
+                {
+                    if (!repo.RemoveClasses(deletes))
+                    {
+                        repo.Firebase_AddClass(@class);
+                    }
+                    LoadData();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Error, Please check your internet");
+                }
             }
         }
     }

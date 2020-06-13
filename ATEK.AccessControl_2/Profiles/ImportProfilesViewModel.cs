@@ -226,7 +226,7 @@ namespace ATEK.AccessControl_2.Profiles
                 //Name 2
                 if (!hasError && CheckStringInputFromExcel(xlRange.Cells[i, 2].Value2))
                 {
-                    profile.Name = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
+                    profile.Name = xlRange.Cells[i, 2].Value2.ToString();
                 }
                 else if (!hasError)
                 {
@@ -320,10 +320,24 @@ namespace ATEK.AccessControl_2.Profiles
                     {
                         //Create New Class
                         Class newClass = new Class() { Name = className.ToUpper() };
-                        repo.AddClass(newClass);
-                        LoadData();
-                        profile.ClassId = newClass.Id;
-                        //ImportProfileImage(importFileFolder, profile.IMAGE);
+
+                        if (repo.AddClass(newClass))
+                        {
+                            if (repo.Firebase_AddClass(newClass))
+                            {
+                                LoadData();
+                                profile.ClassId = newClass.Id;
+                                //ImportProfileImage(importFileFolder, profile.IMAGE);
+                            }
+                            else
+                            {
+                                System.Windows.MessageBox.Show("Error, Please check your internet");
+                                var deletes = new List<Class>();
+                                deletes.Add(newClass);
+                                repo.RemoveClasses(deletes);
+                                return;
+                            }
+                        }
                     }
                     else
                     {

@@ -44,7 +44,8 @@ namespace ATEK.AccessControl_2.Profiles
         public ProfilesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
-            //FirebaseCommand = new RelayCommand(OnFirebaseCommand);
+            FirebaseOnCommand = new RelayCommand(OnFirebaseCommand);
+            FirebaseOffCommand = new RelayCommand(OffFirebaseCommand);
 
             AddProfileCommand = new RelayCommand(OnAddProfile);
             EditProfileCommand = new RelayCommand<Profile>(OnEditProfile);
@@ -63,7 +64,8 @@ namespace ATEK.AccessControl_2.Profiles
 
         #region Commands
 
-        public RelayCommand FirebaseCommand { get; private set; }
+        public RelayCommand FirebaseOnCommand { get; private set; }
+        public RelayCommand FirebaseOffCommand { get; private set; }
         public RelayCommand AddProfileCommand { get; private set; }
         public RelayCommand<Profile> EditProfileCommand { get; private set; }
         public RelayCommand<object> RemoveProfilesCommand { get; private set; }
@@ -96,6 +98,12 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void OnFirebaseCommand()
         {
+            repo.Firebase_SetTime();
+        }
+
+        private void OffFirebaseCommand()
+        {
+            repo.Firebase_GetTime();
         }
 
         public void LoadData()
@@ -201,21 +209,29 @@ namespace ATEK.AccessControl_2.Profiles
         {
             if (!allProfileGates.Exists(g => (g.Id == gateAddToProfile.Id)))
             {
-                if (!repo.AddProfileGate(selectedProfile, gateAddToProfile))
+                if (repo.Firebase_AddProfileGate(selectedProfile, gateAddToProfile))
                 {
-                    Console.WriteLine("Add Gate vao Profile khong thanh cong.");
+                    if (!repo.AddProfileGate(selectedProfile, gateAddToProfile))
+                    {
+                        MessageBox.Show("Add Gate vao Profile khong thanh cong.");
+                        repo.Firebase_RemoveProfileGateAsync(selectedProfile, gateAddToProfile);
+                    }
+                    else
+                    {
+                        if (selectedProfile != null)
+                        {
+                            LoadProfileGroupsAndGates();
+                        }
+                    }
                 }
                 else
                 {
-                    if (selectedProfile != null)
-                    {
-                        LoadProfileGroupsAndGates();
-                    }
+                    MessageBox.Show("Error, please check your internet");
                 }
             }
             else
             {
-                Console.WriteLine("Gate nay da ton tai.");
+                MessageBox.Show("Gate nay da ton tai.");
             }
         }
 
@@ -227,16 +243,24 @@ namespace ATEK.AccessControl_2.Profiles
 
         private void OnRemoveGateFromProfile(Gate profileGate)
         {
-            if (!repo.RemoveProfileGate(selectedProfile, profileGate))
+            if (repo.Firebase_RemoveProfileGate(selectedProfile, profileGate))
             {
-                Console.WriteLine("Remove Gate khong thanh cong.");
+                if (!repo.RemoveProfileGate(selectedProfile, profileGate))
+                {
+                    Console.WriteLine("Remove Gate khong thanh cong.");
+                    repo.Firebase_AddProfileGateAsync(selectedProfile, profileGate);
+                }
+                else
+                {
+                    if (selectedProfile != null)
+                    {
+                        LoadProfileGroupsAndGates();
+                    }
+                }
             }
             else
             {
-                if (selectedProfile != null)
-                {
-                    LoadProfileGroupsAndGates();
-                }
+                MessageBox.Show("Error, please check your internet");
             }
         }
 

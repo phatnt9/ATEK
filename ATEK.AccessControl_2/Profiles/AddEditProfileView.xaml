@@ -194,8 +194,8 @@
                                     Margin="5,2"
                                     VerticalContentAlignment="Center"
                                     Text="{Binding Profile.Gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                                    <ComboBoxItem>Male</ComboBoxItem>
-                                    <ComboBoxItem>Female</ComboBoxItem>
+                                    <ComboBoxItem>MALE</ComboBoxItem>
+                                    <ComboBoxItem>FEMALE</ComboBoxItem>
                                 </ComboBox>
                                 <TextBox
                                     Height="22"
@@ -217,8 +217,8 @@
                                     Margin="5,2"
                                     VerticalContentAlignment="Center"
                                     Text="{Binding Profile.Status, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}">
-                                    <ComboBoxItem>Active</ComboBoxItem>
-                                    <ComboBoxItem>Suspended</ComboBoxItem>
+                                    <ComboBoxItem>ACTIVE</ComboBoxItem>
+                                    <ComboBoxItem>SUSPENDED</ComboBoxItem>
                                 </ComboBox>
                                 <Grid Height="22" Margin="5,2">
 

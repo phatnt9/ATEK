@@ -50,7 +50,6 @@
                         VerticalAlignment="Center"
                         Content="Name:" />
                     <TextBox
-                        x:Name="nameTextBox"
                         Grid.Row="0"
                         Grid.Column="1"
                         Width="120"
@@ -58,6 +57,7 @@
                         Margin="3"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
+                        CharacterCasing="Upper"
                         Text="{Binding Name, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" />
                 </Grid>
                 <Grid>

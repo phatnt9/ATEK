@@ -118,10 +118,10 @@ namespace ATEK.AccessControl_2.Gates
 
         #region Methods
 
-        public void LoadData()
+        public async void LoadData()
         {
             LoadClasses();
-            LoadGatesAsync();
+            await LoadGatesAsync();
             if (selectedGate != null)
             {
                 LoadGateProfiles(selectedGate.Id);
@@ -136,12 +136,12 @@ namespace ATEK.AccessControl_2.Gates
             FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
         }
 
-        private async void LoadGatesAsync()
+        private async Task LoadGatesAsync()
         {
-            allGates = repo.GetGates().ToList();
             var result = await repo.Firebase_GetGatesAsync();
             if (result != null)
             {
+                allGates = repo.GetGates().ToList();
                 allGates_Firebase = result.ToList();
                 foreach (var fbGate in allGates_Firebase)
                 {

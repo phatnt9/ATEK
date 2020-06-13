@@ -429,8 +429,8 @@ namespace ATEK.AccessControl_2.Gates
                 {
                     if (!repo.AddProfileGate(listProfiles[i], gate))
                     {
-                        Console.WriteLine("Select Profile khong thanh cong.");
-                        repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate);
+                        MessageBox.Show("Select Profile khong thanh cong.");
+                        repo.Firebase_RemoveProfileGateAsync(listProfiles[i], gate);
                     }
                 }
                 else
@@ -516,11 +516,11 @@ namespace ATEK.AccessControl_2.Gates
             for (int i = 0; i < listProfiles.Count; i++)
             {
                 //if (repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate).Result)
-                if (repo.Firebase_DeleteProfileGate(listProfiles[i], gate))
+                if (repo.Firebase_RemoveProfileGate(listProfiles[i], gate))
                 {
                     if (!repo.RemoveProfileGate(listProfiles[i], gate))
                     {
-                        Console.WriteLine("Remove Profile khong thanh cong.");
+                        MessageBox.Show("Remove Profile khong thanh cong.");
                         repo.Firebase_AddProfileGateAsync(listProfiles[i], gate);
                     }
                 }
