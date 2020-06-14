@@ -31,6 +31,8 @@ namespace ATEK.AccessControl_2.Services
 
         Task<IEnumerable<Gate>> Firebase_GetGatesAsync();
 
+        Task<IEnumerable<Class>> Firebase_GetClassesAsync();
+
         void SaveChanges();
 
         IEnumerable<Profile> GetProfiles();

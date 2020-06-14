@@ -31,7 +31,6 @@ namespace ATEK.AccessControl_2.Gates
             AddGateCommand = new RelayCommand(OnAddGate);
             EditGateCommand = new RelayCommand<Gate>(OnEditGate);
             ManageGateCommand = new RelayCommand<Gate>(OnManageGate);
-            RemoveGateCommand = new RelayCommand<Gate>(OnRemoveGate);
         }
 
         //=====================================================================
@@ -41,7 +40,6 @@ namespace ATEK.AccessControl_2.Gates
         public RelayCommand AddGateCommand { get; private set; }
         public RelayCommand<Gate> EditGateCommand { get; private set; }
         public RelayCommand<Gate> ManageGateCommand { get; private set; }
-        public RelayCommand<Gate> RemoveGateCommand { get; private set; }
 
         #endregion Commands
 
@@ -148,7 +146,6 @@ namespace ATEK.AccessControl_2.Gates
                     if (!allGates.Exists(g => g.FirebaseId == fbGate.FirebaseId))
                     {
                         Console.WriteLine($"This Gate {fbGate.FirebaseId} doesn't existed in database.");
-                        fbGate.Status = "Online";
                         repo.AddGate(fbGate);
                     }
                     else
@@ -162,14 +159,11 @@ namespace ATEK.AccessControl_2.Gates
                     if (!allGates_Firebase.Exists(g => g.FirebaseId == gate.FirebaseId))
                     {
                         Console.WriteLine($"This Gate {gate.FirebaseId} doesn't existed in firebase.");
-                        gate.Status = "Offline";
-                        repo.UpdateGate(gate);
+                        OnRemoveGate(gate);
                     }
                     else
                     {
                         Console.WriteLine($"This Gate {gate.FirebaseId} existed in firebase.");
-                        gate.Status = "Online";
-                        repo.UpdateGate(gate);
                     }
                 }
                 allGates = repo.GetGates().ToList();

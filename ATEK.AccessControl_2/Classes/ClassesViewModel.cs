@@ -16,6 +16,7 @@ namespace ATEK.AccessControl_2.Classes
     {
         private readonly IAccessControlRepository repo;
         private List<Class> allClasses;
+        private List<Class> allClasses_Firebase;
         private ObservableCollection<Class> classes;
         private Class selectedClass;
 
@@ -58,10 +59,51 @@ namespace ATEK.AccessControl_2.Classes
             }
         }
 
-        public void LoadData()
+        public async void LoadData()
         {
-            allClasses = repo.GetClasses().ToList();
-            Classes = new ObservableCollection<Class>(allClasses);
+            await LoadClassesAsync();
+        }
+
+        public async Task LoadClassesAsync()
+        {
+            var result = await repo.Firebase_GetClassesAsync();
+            if (result != null)
+            {
+                allClasses = repo.GetClasses().ToList();
+                allClasses_Firebase = result.ToList();
+                foreach (var fbClass in allClasses_Firebase)
+                {
+                    if (!allClasses.Exists(g => g.Id == fbClass.Id))
+                    {
+                        Console.WriteLine($"This Class {fbClass.Name} doesn't existed in database.");
+                        repo.AddClass(fbClass);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"This Class {fbClass.Name} existed in database.");
+                    }
+                }
+                allClasses = repo.GetClasses().ToList();
+                foreach (var @class in allClasses)
+                {
+                    if (!allClasses_Firebase.Exists(g => g.Id == @class.Id))
+                    {
+                        Console.WriteLine($"This Class {@class.Name} doesn't existed in firebase.");
+                        OnRemoveClass(@class);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"This Class {@class.Name} existed in firebase.");
+                    }
+                }
+                allClasses = repo.GetClasses().ToList();
+                Classes = new ObservableCollection<Class>(allClasses);
+            }
+            else
+            {
+                MessageBox.Show("Error Load Classes");
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         private void OnAddClass()

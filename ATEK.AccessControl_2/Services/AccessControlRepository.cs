@@ -72,7 +72,7 @@ namespace ATEK.AccessControl_2.Services
             {
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
                 var writeResult = classRef.SetAsync(@class);
-                writeResult.Wait(2000);
+                writeResult.Wait(3000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -82,6 +82,11 @@ namespace ATEK.AccessControl_2.Services
                     case TaskStatus.Faulted:
                         {
                             throw new NotImplementedException();
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
                         }
                     default:
                         {
@@ -102,7 +107,7 @@ namespace ATEK.AccessControl_2.Services
             {
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
                 var writeResult = classRef.UpdateAsync("Name", @class.Name);
-                writeResult.Wait(2000);
+                writeResult.Wait(3000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -112,6 +117,11 @@ namespace ATEK.AccessControl_2.Services
                     case TaskStatus.Faulted:
                         {
                             throw new NotImplementedException();
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
                         }
                     default:
                         {
@@ -132,7 +142,7 @@ namespace ATEK.AccessControl_2.Services
             {
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection).Document(@class.Id.ToString());
                 var writeResult = classRef.DeleteAsync();
-                writeResult.Wait(2000);
+                writeResult.Wait(3000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -142,6 +152,11 @@ namespace ATEK.AccessControl_2.Services
                     case TaskStatus.Faulted:
                         {
                             throw new NotImplementedException();
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
                         }
                     default:
                         {
@@ -163,7 +178,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
                 DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
                 var writeResult = profileGatesRef.SetAsync(profile);
-                writeResult.Wait(2000);
+                writeResult.Wait(3000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -173,6 +188,11 @@ namespace ATEK.AccessControl_2.Services
                     case TaskStatus.Faulted:
                         {
                             throw new NotImplementedException();
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
                         }
                     default:
                         {
@@ -194,7 +214,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection).Document(gate.FirebaseId);
                 DocumentReference profileGatesRef = gateRef.Collection("Profiles").Document(profile.Pinno);
                 var writeResult = profileGatesRef.DeleteAsync();
-                writeResult.Wait(2000);
+                writeResult.Wait(3000);
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -204,6 +224,11 @@ namespace ATEK.AccessControl_2.Services
                     case TaskStatus.Faulted:
                         {
                             throw new NotImplementedException();
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
                         }
                     default:
                         {
@@ -356,6 +381,64 @@ namespace ATEK.AccessControl_2.Services
                                 }
                             }
                             return gates;
+                        }
+                    case TaskStatus.Faulted:
+                        {
+                            throw new NotImplementedException();
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Class>> Firebase_GetClassesAsync()
+        {
+            try
+            {
+                CollectionReference classesRef = db.Collection(_firebaseClassesCollection);
+                //classesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
+                var querySnapshot = classesRef.GetSnapshotAsync();
+                await querySnapshot;
+                switch (querySnapshot.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            List<Class> classes = new List<Class>();
+                            List<DocumentSnapshot> documents = querySnapshot.Result.ToList();
+                            foreach (var rawClass in documents)
+                            {
+                                if (rawClass.Exists)
+                                {
+                                    Class @class = new Class();
+                                    int firebaseClassId = 0;
+                                    if (int.TryParse(rawClass.Id, out firebaseClassId))
+                                    {
+                                        @class.Id = firebaseClassId;
+                                        Dictionary<string, object> classData = rawClass.ToDictionary();
+                                        foreach (KeyValuePair<string, object> pair in classData)
+                                        {
+                                            switch (pair.Key)
+                                            {
+                                                case "Name":
+                                                    {
+                                                        @class.Name = pair.Value.ToString();
+                                                        break;
+                                                    }
+                                            }
+                                        }
+                                        classes.Add(@class);
+                                    }
+                                }
+                            }
+                            return classes;
                         }
                     case TaskStatus.Faulted:
                         {

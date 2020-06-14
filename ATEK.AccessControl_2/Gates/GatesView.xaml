@@ -97,7 +97,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="Auto" Header="Remove">
+                        <!--<DataGridTemplateColumn Width="Auto" Header="Remove">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button
@@ -107,7 +107,7 @@
                                         Content="Remove" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        </DataGridTemplateColumn>-->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
