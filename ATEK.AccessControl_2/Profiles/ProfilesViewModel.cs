@@ -118,39 +118,70 @@ namespace ATEK.AccessControl_2.Profiles
         private void LoadProfiles()
         {
             allProfiles = repo.GetProfiles().ToList();
-            if (allProfiles.Count == 0)
+            if (allProfiles != null)
+            {
+                if (allProfiles.Count == 0)
+                {
+                    SelectedProfile = null;
+                }
+                Profiles = new ObservableCollection<Profile>(allProfiles);
+            }
+            else
             {
                 SelectedProfile = null;
+                Profiles = new ObservableCollection<Profile>();
             }
-            Profiles = new ObservableCollection<Profile>(allProfiles);
         }
 
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
-            Classes = new ObservableCollection<Class>(allClasses);
-            FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            if (allClasses != null)
+            {
+                allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+                Classes = new ObservableCollection<Class>(allClasses);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         private void LoadGates()
         {
             allGates = repo.GetGates().ToList();
-            if (allGates.Count == 0)
+            if (allGates != null)
+            {
+                if (allGates.Count == 0)
+                {
+                    GateAddToProfile = null;
+                }
+                Gates = new ObservableCollection<Gate>(allGates);
+            }
+            else
             {
                 GateAddToProfile = null;
+                Gates = new ObservableCollection<Gate>();
             }
-            Gates = new ObservableCollection<Gate>(allGates);
         }
 
         private void LoadGroups()
         {
             allGroups = repo.GetGroups().ToList();
-            if (allGroups.Count == 0)
+            if (allGroups != null)
+            {
+                if (allGroups.Count == 0)
+                {
+                    GroupAddToProfile = null;
+                }
+                Groups = new ObservableCollection<Group>(allGroups);
+            }
+            else
             {
                 GroupAddToProfile = null;
+                Groups = new ObservableCollection<Group>();
             }
-            Groups = new ObservableCollection<Group>(allGroups);
         }
 
         public void LoadProfileGroupsAndGates()
@@ -158,9 +189,23 @@ namespace ATEK.AccessControl_2.Profiles
             if (selectedProfile != null)
             {
                 allProfileGroups = repo.LoadGroupsOfProfile(selectedProfile.Id).ToList();
+                if (allProfileGroups != null)
+                {
+                    ProfileGroups = new ObservableCollection<Group>(allProfileGroups);
+                }
+                else
+                {
+                    ProfileGroups = new ObservableCollection<Group>();
+                }
                 allProfileGates = repo.LoadGatesOfProfile(selectedProfile.Id).ToList();
-                ProfileGroups = new ObservableCollection<Group>(allProfileGroups);
-                ProfileGates = new ObservableCollection<Gate>(allProfileGates);
+                if (allProfileGates != null)
+                {
+                    ProfileGates = new ObservableCollection<Gate>(allProfileGates);
+                }
+                else
+                {
+                    ProfileGates = new ObservableCollection<Gate>();
+                }
                 Console.WriteLine($"Select profile has {selectedProfile.ProfileGroups.Count} groups and {selectedProfile.ProfileGates.Count} gates");
             }
         }
@@ -183,9 +228,11 @@ namespace ATEK.AccessControl_2.Profiles
                 var collection = items.Cast<Profile>();
                 if (collection.Count() > 0)
                 {
-                    repo.RemoveProfiles(collection);
+                    if (repo.RemoveProfiles(collection))
+                    {
+                        LoadProfiles();
+                    }
                 }
-                LoadProfiles();
             }
         }
 
@@ -213,7 +260,7 @@ namespace ATEK.AccessControl_2.Profiles
                 {
                     if (!repo.AddProfileGate(selectedProfile, gateAddToProfile))
                     {
-                        MessageBox.Show("Add Gate vao Profile khong thanh cong.");
+                        MessageBox.Show("Error Adding Gate.");
                         repo.Firebase_RemoveProfileGateAsync(selectedProfile, gateAddToProfile);
                     }
                     else
@@ -226,12 +273,8 @@ namespace ATEK.AccessControl_2.Profiles
                 }
                 else
                 {
-                    MessageBox.Show("Error, please check your internet");
+                    MessageBox.Show("Error, Please check your internet.");
                 }
-            }
-            else
-            {
-                MessageBox.Show("Gate nay da ton tai.");
             }
         }
 
@@ -247,7 +290,7 @@ namespace ATEK.AccessControl_2.Profiles
             {
                 if (!repo.RemoveProfileGate(selectedProfile, profileGate))
                 {
-                    Console.WriteLine("Remove Gate khong thanh cong.");
+                    Console.WriteLine("Error Removing Gate.");
                     repo.Firebase_AddProfileGateAsync(selectedProfile, profileGate);
                 }
                 else
@@ -276,7 +319,7 @@ namespace ATEK.AccessControl_2.Profiles
             {
                 if (!repo.AddProfileGroup(selectedProfile, groupAddToProfile))
                 {
-                    Console.WriteLine("Add Group vao Profile khong thanh cong.");
+                    Console.WriteLine("Error Adding Group.");
                 }
                 else
                 {
@@ -285,10 +328,6 @@ namespace ATEK.AccessControl_2.Profiles
                         LoadProfileGroupsAndGates();
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Group nay da ton tai.");
             }
         }
 
@@ -302,7 +341,7 @@ namespace ATEK.AccessControl_2.Profiles
         {
             if (!repo.RemoveProfileGroup(selectedProfile, profileGroup))
             {
-                Console.WriteLine("Remove Profile khong thanh cong.");
+                Console.WriteLine("Error Remove Profile.");
             }
             else
             {

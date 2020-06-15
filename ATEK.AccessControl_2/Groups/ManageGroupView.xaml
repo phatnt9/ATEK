@@ -118,7 +118,24 @@
                                 Width="Auto"
                                 Binding="{Binding Status}"
                                 Header="Status"
-                                IsReadOnly="True" />
+                                IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#39B54A" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#BE2328" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -239,7 +256,24 @@
                                 Width="Auto"
                                 Binding="{Binding Status}"
                                 Header="Status"
-                                IsReadOnly="True" />
+                                IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#39B54A" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#BE2328" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

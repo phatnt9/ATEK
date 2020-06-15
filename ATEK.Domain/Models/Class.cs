@@ -17,11 +17,23 @@ namespace ATEK.Domain.Models
             Profiles = new List<Profile>();
         }
 
-        public int Id { get => id; set => id = value; }
+        public int Id
+        {
+            get { return id; }
+            set { SetProperty(ref id, value); }
+        }
 
         [FirestoreProperty]
-        public string Name { get => name; set => name = value; }
+        public string Name
+        {
+            get { return name; }
+            set { SetProperty(ref name, value); }
+        }
 
-        public List<Profile> Profiles { get => profiles; set => profiles = value; }
+        public List<Profile> Profiles
+        {
+            get { return profiles; }
+            set { SetProperty(ref profiles, value); }
+        }
     }
 }

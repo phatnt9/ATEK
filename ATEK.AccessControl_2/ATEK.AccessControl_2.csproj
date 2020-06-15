@@ -236,6 +236,10 @@
     <Compile Include="Classes\SimpleEditableClass.cs" />
     <Compile Include="ContainerHelper.cs" />
     <Compile Include="Converters\NegatableBooleanToVisibilityConverter.cs" />
+    <Compile Include="Gates\AddEditGateView.xaml.cs">
+      <DependentUpon>AddEditGateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gates\AddEditGateViewModel.cs" />
     <Compile Include="Gates\GatesView.xaml.cs">
       <DependentUpon>GatesView.xaml</DependentUpon>
     </Compile>
@@ -244,6 +248,7 @@
       <DependentUpon>ManageGateView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Gates\ManageGateViewModel.cs" />
+    <Compile Include="Gates\SimpleEditableGate.cs" />
     <Compile Include="GlobalConstant.cs" />
     <Compile Include="Groups\AddEditGroupView.xaml.cs">
       <DependentUpon>AddEditGroupView.xaml</DependentUpon>
@@ -290,6 +295,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Classes\ClassesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gates\AddEditGateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

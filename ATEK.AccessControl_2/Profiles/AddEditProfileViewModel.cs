@@ -23,7 +23,6 @@ namespace ATEK.AccessControl_2.Profiles
         public AddEditProfileViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
-
             CancelCommand = new RelayCommand(OnCancel);
             SaveCommand = new RelayCommand(OnSave, CanSave);
         }
@@ -160,7 +159,14 @@ namespace ATEK.AccessControl_2.Profiles
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            Classes = new ObservableCollection<Class>(allClasses);
+            if (allClasses != null)
+            {
+                Classes = new ObservableCollection<Class>(allClasses);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         #endregion Methods

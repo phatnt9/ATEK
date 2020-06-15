@@ -21,7 +21,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="10" />
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
@@ -92,13 +92,13 @@
                                 IsReadOnly="True" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Name}"
-                                Header="Name"
+                                Binding="{Binding Adno}"
+                                Header="Adno"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Adno}"
-                                Header="Adno"
+                                Binding="{Binding Name}"
+                                Header="Name"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
                                 Width="Auto"
@@ -114,7 +114,24 @@
                                 Width="Auto"
                                 Binding="{Binding Status}"
                                 Header="Status"
-                                IsReadOnly="True" />
+                                IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#39B54A" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#BE2328" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -185,7 +202,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <ProgressBar
-                        Name="pbStatusDelete"
+                        Name="pbStatusRemove"
                         Margin="2"
                         Maximum="100"
                         Minimum="0"
@@ -235,7 +252,24 @@
                                 Width="Auto"
                                 Binding="{Binding Status}"
                                 Header="Status"
-                                IsReadOnly="True" />
+                                IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#39B54A" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#BE2328" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -259,7 +293,7 @@
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
-                            Command="{Binding DeleteGateProfilesCommand}"
+                            Command="{Binding RemoveGateProfilesCommand}"
                             CommandParameter="{Binding ElementName=dg_gateProfiles, Path=SelectedItems}"
                             Content="Remove"
                             Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
@@ -267,7 +301,7 @@
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
-                            Command="{Binding StopDeleteGateProfilesCommand}"
+                            Command="{Binding StopRemoveGateProfilesCommand}"
                             Content="Stop"
                             Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource VisConverter}}" />
                     </StackPanel>

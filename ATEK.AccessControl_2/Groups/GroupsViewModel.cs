@@ -129,22 +129,43 @@ namespace ATEK.AccessControl_2.Groups
         private void LoadGroups()
         {
             allGroups = repo.GetGroups().ToList();
-            Groups = new ObservableCollection<Group>(allGroups);
+            if (allGroups != null)
+            {
+                Groups = new ObservableCollection<Group>(allGroups);
+            }
+            else
+            {
+                Groups = new ObservableCollection<Group>();
+            }
         }
 
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
-            Classes = new ObservableCollection<Class>(allClasses);
-            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            if (allClasses != null)
+            {
+                allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+                Classes = new ObservableCollection<Class>(allClasses);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         private void LoadGroupProfiles(int groupId)
         {
             allGroupProfiles = repo.LoadProfilesOfGroup(groupId).ToList();
-            GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
-            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            if (allGroupProfiles != null)
+            {
+                GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+            else
+            {
+                GroupProfiles = new ObservableCollection<Profile>();
+            }
         }
 
         private void FilterGroupProfiles(string searchInput, int classId)

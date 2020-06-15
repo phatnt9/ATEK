@@ -15,9 +15,15 @@ namespace ATEK.AccessControl_2.Services
 
         bool Firebase_AddClass(Class @class);
 
+        bool Firebase_AddGate(Gate gate);
+
         bool Firebase_UpdateClass(Class @class);
 
+        bool Firebase_UpdateGate(Gate gate);
+
         bool Firebase_RemoveClass(Class @class);
+
+        bool Firebase_RemoveGate(Gate gate);
 
         bool Firebase_AddProfileGate(Profile profile, Gate gate);
 

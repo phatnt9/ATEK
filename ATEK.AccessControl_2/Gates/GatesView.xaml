@@ -25,7 +25,16 @@
                 <RowDefinition />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" />
+            <Grid Grid.Row="0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button
+                        Width="50"
+                        Height="20"
+                        Margin="4,0"
+                        Command="{Binding RefreshGatesCommand}"
+                        Content="Refresh" />
+                </StackPanel>
+            </Grid>
             <Grid Grid.Row="1">
                 <DataGrid
                     x:Name="dg_gates"
@@ -56,12 +65,12 @@
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="{x:Type DataGridCell}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Status}" Value="Online">
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
                                             <Setter Property="Foreground" Value="White" />
                                             <Setter Property="FontWeight" Value="DemiBold" />
                                             <Setter Property="Background" Value="#39B54A" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=Status}" Value="Offline">
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
                                             <Setter Property="Foreground" Value="White" />
                                             <Setter Property="FontWeight" Value="DemiBold" />
                                             <Setter Property="Background" Value="#BE2328" />
@@ -79,7 +88,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button
-                                        Margin="5"
+                                        Margin="2"
                                         Command="{Binding DataContext.EditGateCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding}"
                                         Content="Edit" />
@@ -90,24 +99,13 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button
-                                        Margin="5"
+                                        Margin="2"
                                         Command="{Binding DataContext.ManageGateCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding}"
                                         Content="Manage" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <!--<DataGridTemplateColumn Width="Auto" Header="Remove">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button
-                                        Margin="5"
-                                        Command="{Binding DataContext.RemoveGateCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Remove" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>-->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -177,13 +175,13 @@
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding Name}"
-                            Header="Name"
+                            Binding="{Binding Adno}"
+                            Header="Adno"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding Adno}"
-                            Header="Adno"
+                            Binding="{Binding Name}"
+                            Header="Name"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="Auto"
@@ -199,7 +197,24 @@
                             Width="Auto"
                             Binding="{Binding Status}"
                             Header="Status"
-                            IsReadOnly="True" />
+                            IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#39B54A" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#BE2328" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

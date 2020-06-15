@@ -321,23 +321,44 @@ namespace ATEK.AccessControl_2.Groups
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
-            Classes = new ObservableCollection<Class>(allClasses);
-            FilterProfiles(searchProfilesInput, searchProfilesByClass);
-            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            if (allClasses != null)
+            {
+                allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+                Classes = new ObservableCollection<Class>(allClasses);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         public void LoadProfiles()
         {
             allProfiles = repo.GetProfiles().ToList();
-            Profiles = new ObservableCollection<Profile>(allProfiles);
+            if (allProfiles != null)
+            {
+                Profiles = new ObservableCollection<Profile>(allProfiles);
+            }
+            else
+            {
+                Profiles = new ObservableCollection<Profile>();
+            }
         }
 
         public void LoadGroupProfiles()
         {
             allGroupProfiles = repo.LoadProfilesOfGroup(group.Id).ToList();
-            GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
-            FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            if (allGroupProfiles != null)
+            {
+                GroupProfiles = new ObservableCollection<Profile>(allGroupProfiles);
+                FilterGroupProfiles(searchGroupProfilesInput, searchGroupProfilesByClass);
+            }
+            else
+            {
+                GroupProfiles = new ObservableCollection<Profile>();
+            }
         }
 
         private void OnStopSelectProfiles()
@@ -425,7 +446,7 @@ namespace ATEK.AccessControl_2.Groups
             {
                 if (!repo.AddProfileGroup(listProfiles[i], group))
                 {
-                    Console.WriteLine("Select Profile khong thanh cong.");
+                    Console.WriteLine("Error Selecting Profile.");
                 }
                 if (selectBackGroundWorker.CancellationPending)
                 {
@@ -459,10 +480,6 @@ namespace ATEK.AccessControl_2.Groups
                         removeBackGroundWorker.Disposed += RemoveBackGroundWorker_Disposed;
                         removeBackGroundWorker.RunWorkerAsync(list);
                         IsBackGroundWorkerBusy = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Co Delete ma bi trung het roi");
                     }
                 }
             }
@@ -505,7 +522,7 @@ namespace ATEK.AccessControl_2.Groups
             {
                 if (!repo.RemoveProfileGroup(listProfiles[i], group))
                 {
-                    Console.WriteLine("Remove Profile khong thanh cong.");
+                    Console.WriteLine("Error Removing Profile.");
                 }
                 if (removeBackGroundWorker.CancellationPending)
                 {

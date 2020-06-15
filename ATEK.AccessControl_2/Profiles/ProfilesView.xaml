@@ -90,7 +90,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button
-                                        Margin="5"
+                                        Margin="2"
                                         Command="{Binding DataContext.EditProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                         CommandParameter="{Binding}"
                                         Content="Edit" />
@@ -103,12 +103,12 @@
                             Header="Pinno" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding Name}"
-                            Header="Name" />
-                        <DataGridTextColumn
-                            Width="Auto"
                             Binding="{Binding Adno}"
                             Header="Adno" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Name}"
+                            Header="Name" />
                         <DataGridTextColumn
                             Width="Auto"
                             Binding="{Binding Class.Name}"
@@ -116,7 +116,24 @@
                         <DataGridTextColumn
                             Width="Auto"
                             Binding="{Binding Status}"
-                            Header="Status" />
+                            Header="Status">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="ACTIVE">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#39B54A" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=Status}" Value="SUSPENDED">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#BE2328" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn
                             Width="Auto"
                             Binding="{Binding Email}"
@@ -324,7 +341,7 @@
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <Button
-                                                            Margin="5"
+                                                            Margin="2"
                                                             Command="{Binding DataContext.RemoveGroupFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                                             CommandParameter="{Binding}"
                                                             Content="Remove" />
@@ -383,7 +400,7 @@
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <Button
-                                                            Margin="5"
+                                                            Margin="2"
                                                             Command="{Binding DataContext.RemoveGateFromProfileCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                                             CommandParameter="{Binding}"
                                                             Content="Remove" />

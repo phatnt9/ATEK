@@ -31,6 +31,7 @@ namespace ATEK.AccessControl_2.Gates
             AddGateCommand = new RelayCommand(OnAddGate);
             EditGateCommand = new RelayCommand<Gate>(OnEditGate);
             ManageGateCommand = new RelayCommand<Gate>(OnManageGate);
+            RefreshGatesCommand = new RelayCommand(OnRefreshGates);
         }
 
         //=====================================================================
@@ -40,6 +41,7 @@ namespace ATEK.AccessControl_2.Gates
         public RelayCommand AddGateCommand { get; private set; }
         public RelayCommand<Gate> EditGateCommand { get; private set; }
         public RelayCommand<Gate> ManageGateCommand { get; private set; }
+        public RelayCommand RefreshGatesCommand { get; private set; }
 
         #endregion Commands
 
@@ -129,9 +131,16 @@ namespace ATEK.AccessControl_2.Gates
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
-            Classes = new ObservableCollection<Class>(allClasses);
-            FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            if (allClasses != null)
+            {
+                allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+                Classes = new ObservableCollection<Class>(allClasses);
+                FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         private async Task LoadGatesAsync()
@@ -171,7 +180,7 @@ namespace ATEK.AccessControl_2.Gates
             }
             else
             {
-                MessageBox.Show("Error Load Gates");
+                MessageBox.Show("Error, Please check your internet");
                 Gates = new ObservableCollection<Gate>();
             }
         }
@@ -179,8 +188,15 @@ namespace ATEK.AccessControl_2.Gates
         private void LoadGateProfiles(int gateId)
         {
             allGateProfiles = repo.LoadProfilesOfGate(gateId).ToList();
-            GateProfiles = new ObservableCollection<Profile>(allGateProfiles);
-            FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            if (allGateProfiles != null)
+            {
+                GateProfiles = new ObservableCollection<Profile>(allGateProfiles);
+                FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            }
+            else
+            {
+                GateProfiles = new ObservableCollection<Profile>();
+            }
         }
 
         private void FilterGateProfiles(string searchInput, int classId)
@@ -255,12 +271,30 @@ namespace ATEK.AccessControl_2.Gates
             ManageGateRequested(gate);
         }
 
+        private async void OnRefreshGates()
+        {
+            await LoadGatesAsync();
+        }
+
         private void OnRemoveGate(Gate gate)
         {
             List<Gate> deletes = new List<Gate>();
             deletes.Add(gate);
-            repo.RemoveGates(deletes);
-            LoadData();
+            if (repo.Firebase_RemoveGate(gate))
+            {
+                if (!repo.RemoveGates(deletes))
+                {
+                    repo.Firebase_AddGate(gate);
+                }
+                else
+                {
+                    LoadData();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Error, Please check your internet");
+            }
         }
 
         #endregion Methods

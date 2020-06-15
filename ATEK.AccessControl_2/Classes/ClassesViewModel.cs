@@ -53,10 +53,7 @@ namespace ATEK.AccessControl_2.Classes
         public Class SelectedClass
         {
             get { return selectedClass; }
-            set
-            {
-                SetProperty(ref selectedClass, value);
-            }
+            set { SetProperty(ref selectedClass, value); }
         }
 
         public async void LoadData()
@@ -101,7 +98,7 @@ namespace ATEK.AccessControl_2.Classes
             }
             else
             {
-                MessageBox.Show("Error Load Classes");
+                MessageBox.Show("Error, Please check your internet");
                 Classes = new ObservableCollection<Class>();
             }
         }
@@ -119,7 +116,7 @@ namespace ATEK.AccessControl_2.Classes
         private void OnRemoveClass(Class @class)
         {
             string message = "Delete class will remove all its associated profiles. Are you sure?";
-            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show(message, "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+            MessageBoxResult messageBoxResult = MessageBox.Show(message, "Delete Confirmation", MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 List<Class> deletes = new List<Class>();
@@ -130,11 +127,14 @@ namespace ATEK.AccessControl_2.Classes
                     {
                         repo.Firebase_AddClass(@class);
                     }
-                    LoadData();
+                    else
+                    {
+                        LoadData();
+                    }
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Error, Please check your internet");
+                    MessageBox.Show("Error, Please check your internet.");
                 }
             }
         }

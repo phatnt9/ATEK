@@ -30,6 +30,7 @@ namespace ATEK.AccessControl_2.Main
         private bool isBackGroundWorkerBusy;
         private AddEditProfileViewModel addEditProfileViewModel;
         private AddEditClassViewModel addEditClassViewModel;
+        private AddEditGateViewModel addEditGateViewModel;
         private AddEditGroupViewModel addEditGroupViewModel;
         private readonly IAccessControlRepository repo;
 
@@ -42,15 +43,17 @@ namespace ATEK.AccessControl_2.Main
             NavToGroupsCommand = new RelayCommand(OnNavGroups);
 
             ProfilesViewModel = ContainerHelper.Container.Resolve<ProfilesViewModel>();
-            ProfilesViewModel.ImportProfilesRequested += NavToImportProfiles;
             ProfilesViewModel.AddProfileRequested += NavToAddProfiles;
             ProfilesViewModel.EditProfileRequested += NavToEditProfiles;
+            ProfilesViewModel.ImportProfilesRequested += NavToImportProfiles;
 
             ClassesViewModel = ContainerHelper.Container.Resolve<ClassesViewModel>();
             ClassesViewModel.AddClassRequested += NavToAddClass;
             ClassesViewModel.EditClassRequested += NavToEditClass;
 
             GatesViewModel = ContainerHelper.Container.Resolve<GatesViewModel>();
+            GatesViewModel.AddGateRequested += NavToAddGate;
+            GatesViewModel.EditGateRequested += NavToEditGate;
             GatesViewModel.ManageGateRequested += NavToManageGate;
 
             GroupsViewModel = ContainerHelper.Container.Resolve<GroupsViewModel>();
@@ -63,6 +66,9 @@ namespace ATEK.AccessControl_2.Main
 
             AddEditClassViewModel = ContainerHelper.Container.Resolve<AddEditClassViewModel>();
             AddEditClassViewModel.Done += OnNavClasses;
+
+            AddEditGateViewModel = ContainerHelper.Container.Resolve<AddEditGateViewModel>();
+            AddEditGateViewModel.Done += OnNavGates;
 
             AddEditGroupViewModel = ContainerHelper.Container.Resolve<AddEditGroupViewModel>();
             AddEditGroupViewModel.Done += OnNavGroups;
@@ -99,6 +105,20 @@ namespace ATEK.AccessControl_2.Main
         //=====================================================================
 
         #region Methods
+
+        private void NavToAddGate(Gate gate)
+        {
+            AddEditGateViewModel.EditMode = false;
+            AddEditGateViewModel.SetGate(gate);
+            CurrentViewModel = AddEditGateViewModel;
+        }
+
+        private void NavToEditGate(Gate gate)
+        {
+            AddEditGateViewModel.EditMode = true;
+            AddEditGateViewModel.SetGate(gate);
+            CurrentViewModel = AddEditGateViewModel;
+        }
 
         private void NavToAddProfiles(Profile profile)
         {
@@ -223,6 +243,12 @@ namespace ATEK.AccessControl_2.Main
         {
             get { return addEditProfileViewModel; }
             set { SetProperty(ref addEditProfileViewModel, value); }
+        }
+
+        public AddEditGateViewModel AddEditGateViewModel
+        {
+            get { return addEditGateViewModel; }
+            set { SetProperty(ref addEditGateViewModel, value); }
         }
 
         public AddEditGroupViewModel AddEditGroupViewModel

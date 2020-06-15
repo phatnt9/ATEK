@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATEK.AccessControl_2.Classes
+namespace ATEK.AccessControl_2.Gates
 {
-    public class AddEditClassViewModel : BindableBase
+    public class AddEditGateViewModel : BindableBase
     {
         private readonly IAccessControlRepository repo;
-        private SimpleEditableClass @class;
-        private Class editingClass = null;
+        private SimpleEditableGate gate;
+        private Gate editingGate = null;
         private bool editMode;
 
-        public AddEditClassViewModel(IAccessControlRepository repo)
+        public AddEditGateViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
             CancelCommand = new RelayCommand(OnCancel);
@@ -43,26 +43,28 @@ namespace ATEK.AccessControl_2.Classes
 
         #region Methods
 
-        public void SetClass(Class @class)
+        public void SetGate(Gate gate)
         {
-            editingClass = @class;
-            if (Class != null) Class.ErrorsChanged -= RaiseCanExecuteChanged;
-            Class = new SimpleEditableClass();
-            Class.ErrorsChanged += RaiseCanExecuteChanged;
-            CopyClass(@class, Class);
+            editingGate = gate;
+            if (Gate != null) Gate.ErrorsChanged -= RaiseCanExecuteChanged;
+            Gate = new SimpleEditableGate();
+            Gate.ErrorsChanged += RaiseCanExecuteChanged;
+            CopyGate(gate, Gate);
         }
 
         private bool CanSave()
         {
-            return (!Class.HasErrors) && (!string.IsNullOrWhiteSpace(Class.Name));
+            return (!Gate.HasErrors) && (!string.IsNullOrWhiteSpace(Gate.Name));
         }
 
-        private void CopyClass(Class source, SimpleEditableClass target)
+        private void CopyGate(Gate source, SimpleEditableGate target)
         {
             target.Id = source.Id;
             if (EditMode)
             {
                 target.Name = source.Name;
+                target.Status = source.Status;
+                target.Note = source.Note;
             }
         }
 
@@ -73,32 +75,32 @@ namespace ATEK.AccessControl_2.Classes
 
         private void OnSave()
         {
-            if (UpdateClass(Class, editingClass))
+            if (UpdateGate(Gate, editingGate))
             {
                 if (EditMode)
                 {
-                    if (repo.Firebase_UpdateClass(editingClass))
+                    if (repo.Firebase_UpdateGate(editingGate))
                     {
-                        if (!repo.UpdateClass(editingClass))
+                        if (!repo.UpdateGate(editingGate))
                         {
-                            repo.Firebase_AddClass(editingClass);
+                            repo.Firebase_AddGate(editingGate);
                         }
                     }
                     else
                     {
-                        System.Windows.MessageBox.Show("Error, Please check your internet.");
+                        System.Windows.MessageBox.Show("Error, Please check your internet");
                     }
                 }
                 else
                 {
-                    if (repo.AddClass(editingClass))
+                    if (repo.AddGate(editingGate))
                     {
-                        if (!repo.Firebase_AddClass(editingClass))
+                        if (!repo.Firebase_AddGate(editingGate))
                         {
-                            System.Windows.MessageBox.Show("Error, Please check your internet.");
-                            var deletes = new List<Class>();
-                            deletes.Add(editingClass);
-                            repo.RemoveClasses(deletes);
+                            System.Windows.MessageBox.Show("Error, Please check your internet");
+                            var deletes = new List<Gate>();
+                            deletes.Add(editingGate);
+                            repo.RemoveGates(deletes);
                         }
                     }
                 }
@@ -111,13 +113,15 @@ namespace ATEK.AccessControl_2.Classes
             SaveCommand.RaiseCanExecuteChanged();
         }
 
-        private bool UpdateClass(SimpleEditableClass source, Class target)
+        private bool UpdateGate(SimpleEditableGate source, Gate target)
         {
             if (string.IsNullOrEmpty(source.Name))
                 return false;
             else
             {
                 target.Name = source.Name;
+                target.Status = source.Status;
+                target.Note = source.Note;
                 return true;
             }
         }
@@ -128,8 +132,17 @@ namespace ATEK.AccessControl_2.Classes
 
         #region Properties
 
-        public SimpleEditableClass Class { get { return @class; } set { SetProperty(ref @class, value); } }
-        public bool EditMode { get { return editMode; } set { SetProperty(ref editMode, value); } }
+        public bool EditMode
+        {
+            get { return editMode; }
+            set { SetProperty(ref editMode, value); }
+        }
+
+        public SimpleEditableGate Gate
+        {
+            get { return gate; }
+            set { SetProperty(ref gate, value); }
+        }
 
         #endregion Properties
 

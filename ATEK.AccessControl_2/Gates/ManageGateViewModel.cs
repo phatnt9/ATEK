@@ -41,9 +41,9 @@ namespace ATEK.AccessControl_2.Gates
             removeBackGroundWorker = new BackgroundWorker();
             CancelCommand = new RelayCommand(OnCancel);
             SelectProfilesCommand = new RelayCommand<object>(OnSelectProfiles);
-            DeleteGateProfilesCommand = new RelayCommand<object>(OnRemoveGateProfiles);
+            RemoveGateProfilesCommand = new RelayCommand<object>(OnRemoveGateProfiles);
             StopSelectProfilesCommand = new RelayCommand(OnStopSelectProfiles);
-            StopDeleteGateProfilesCommand = new RelayCommand(OnStopRemoveGateProfiles);
+            StopRemoveGateProfilesCommand = new RelayCommand(OnStopRemoveGateProfiles);
         }
 
         //=====================================================================
@@ -53,8 +53,8 @@ namespace ATEK.AccessControl_2.Gates
         public RelayCommand CancelCommand { get; private set; }
         public RelayCommand<object> SelectProfilesCommand { get; private set; }
         public RelayCommand StopSelectProfilesCommand { get; private set; }
-        public RelayCommand<object> DeleteGateProfilesCommand { get; private set; }
-        public RelayCommand StopDeleteGateProfilesCommand { get; private set; }
+        public RelayCommand<object> RemoveGateProfilesCommand { get; private set; }
+        public RelayCommand StopRemoveGateProfilesCommand { get; private set; }
 
         #endregion Commands
 
@@ -322,23 +322,44 @@ namespace ATEK.AccessControl_2.Gates
         private void LoadClasses()
         {
             allClasses = repo.GetClasses().ToList();
-            allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
-            Classes = new ObservableCollection<Class>(allClasses);
-            FilterProfiles(searchProfilesInput, searchProfilesByClass);
-            FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            if (allClasses != null)
+            {
+                allClasses.Insert(0, new Class() { Id = 0, Name = "All" });
+                Classes = new ObservableCollection<Class>(allClasses);
+                FilterProfiles(searchProfilesInput, searchProfilesByClass);
+                FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            }
+            else
+            {
+                Classes = new ObservableCollection<Class>();
+            }
         }
 
         public void LoadProfiles()
         {
             allProfiles = repo.GetProfiles().ToList();
-            Profiles = new ObservableCollection<Profile>(allProfiles);
+            if (allProfiles != null)
+            {
+                Profiles = new ObservableCollection<Profile>(allProfiles);
+            }
+            else
+            {
+                Profiles = new ObservableCollection<Profile>();
+            }
         }
 
         public void LoadGateProfiles()
         {
             allGateProfiles = repo.LoadProfilesOfGate(gate.Id).ToList();
-            GateProfiles = new ObservableCollection<Profile>(allGateProfiles);
-            FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            if (allGateProfiles != null)
+            {
+                GateProfiles = new ObservableCollection<Profile>(allGateProfiles);
+                FilterGateProfiles(searchGateProfilesInput, searchGateProfilesByClass);
+            }
+            else
+            {
+                GateProfiles = new ObservableCollection<Profile>();
+            }
         }
 
         private void OnStopSelectProfiles()
@@ -424,18 +445,17 @@ namespace ATEK.AccessControl_2.Gates
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                //if (repo.Firebase_AddProfileGateAsync(listProfiles[i], gate).Result)
                 if (repo.Firebase_AddProfileGate(listProfiles[i], gate))
                 {
                     if (!repo.AddProfileGate(listProfiles[i], gate))
                     {
-                        MessageBox.Show("Select Profile khong thanh cong.");
+                        MessageBox.Show("Error Selecting Profile.");
                         repo.Firebase_RemoveProfileGateAsync(listProfiles[i], gate);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Khong add len firebase duoc.");
+                    MessageBox.Show("Error, Please check your internet.");
                     return;
                 }
 
@@ -471,10 +491,6 @@ namespace ATEK.AccessControl_2.Gates
                         removeBackGroundWorker.Disposed += RemoveBackGroundWorker_Disposed;
                         removeBackGroundWorker.RunWorkerAsync(list);
                         IsBackGroundWorkerBusy = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Co Delete ma bi trung het roi");
                     }
                 }
             }
@@ -515,18 +531,17 @@ namespace ATEK.AccessControl_2.Gates
             List<Profile> listProfiles = (List<Profile>)e.Argument;
             for (int i = 0; i < listProfiles.Count; i++)
             {
-                //if (repo.Firebase_DeleteProfileGateAsync(listProfiles[i], gate).Result)
                 if (repo.Firebase_RemoveProfileGate(listProfiles[i], gate))
                 {
                     if (!repo.RemoveProfileGate(listProfiles[i], gate))
                     {
-                        MessageBox.Show("Remove Profile khong thanh cong.");
+                        MessageBox.Show("Error Removing Profile.");
                         repo.Firebase_AddProfileGateAsync(listProfiles[i], gate);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Khong delete len firebase duoc.");
+                    MessageBox.Show("Error, Please check your internet.");
                     return;
                 }
                 if (removeBackGroundWorker.CancellationPending)
