@@ -21,6 +21,8 @@
 		<Compile Remove="Migrations\20200609130224_asasca.Designer.cs" />
 		<Compile Remove="Migrations\20200611080133_ascasock.cs" />
 		<Compile Remove="Migrations\20200611080133_ascasock.Designer.cs" />
+		<Compile Remove="Migrations\20200616124846_Test.cs" />
+		<Compile Remove="Migrations\20200616124846_Test.Designer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

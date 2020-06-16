@@ -16,7 +16,7 @@
     </b:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition Width="250" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
@@ -51,7 +51,8 @@
                             Width="*"
                             Binding="{Binding Id}"
                             Header="Id"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Visibility="Hidden" />
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Name}"
@@ -83,7 +84,8 @@
                             Width="*"
                             Binding="{Binding FirebaseId}"
                             Header="FirebaseId"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Visibility="Hidden" />
                         <DataGridTemplateColumn Width="Auto" Header="Edit">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -132,6 +134,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition />
+                <RowDefinition Height="70" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
@@ -218,7 +221,8 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2" />
+            <Grid Grid.Row="3">
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                     <TextBlock
                         Width="60"
