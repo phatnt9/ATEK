@@ -60,7 +60,13 @@ namespace ATEK.AccessControl_2.Profiles
                 if (EditMode)
                 {
                     editingProfile.DateModified = DateTime.Today;
-                    repo.UpdateProfile(editingProfile);
+                    if (repo.UpdateProfile(editingProfile))
+                    {
+                        foreach (var pg in editingProfile.ProfileGates)
+                        {
+                            repo.Firebase_UpdateProfileGateData(editingProfile, pg.Gate.FirebaseId);
+                        }
+                    }
                     Done();
                 }
                 else

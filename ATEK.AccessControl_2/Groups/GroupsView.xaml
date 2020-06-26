@@ -17,6 +17,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
+            <ColumnDefinition Width="4" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
@@ -106,7 +107,11 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Grid.Column="1">
+        <GridSplitter
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            Background="Transparent" />
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition />

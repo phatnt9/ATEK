@@ -484,6 +484,9 @@ namespace ATEK.AccessControl_2.Profiles
                     errorRowIndex = i;
                     hasError = true;
                 }
+
+                profile.ActiveTime = "00:00-23:59-00:00-23:59";
+
                 //Date Created 18
                 if (!hasError && CheckDateInputFromExcel(xlRange.Cells[i, 18].Value2))
                 {

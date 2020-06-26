@@ -31,6 +31,7 @@ namespace ATEK.Domain.Models
         private int classId;
         private List<ProfileGate> profileGates;
         private List<ProfileGroup> profileGroups;
+        private string activeTime;
 
         public Profile()
         {
@@ -86,6 +87,9 @@ namespace ATEK.Domain.Models
 
         [FirestoreProperty]
         public string LicensePlate { get { return licensePlate; } set { SetProperty(ref licensePlate, value); } }
+
+        [FirestoreProperty]
+        public string ActiveTime { get { return activeTime; } set { SetProperty(ref activeTime, value); } }
 
         public DateTime DateCreated
         {

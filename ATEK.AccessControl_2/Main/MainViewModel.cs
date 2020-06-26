@@ -55,6 +55,8 @@ namespace ATEK.AccessControl_2.Main
             GatesViewModel.AddGateRequested += NavToAddGate;
             GatesViewModel.EditGateRequested += NavToEditGate;
             GatesViewModel.ManageGateRequested += NavToManageGate;
+            GatesViewModel.StartBackgroundProgress += OnStartProgress;
+            GatesViewModel.StopBackgroundProgress += OnStopProgress;
 
             GroupsViewModel = ContainerHelper.Container.Resolve<GroupsViewModel>();
             GroupsViewModel.AddGroupRequested += NavToAddGroup;

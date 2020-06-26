@@ -3,6 +3,7 @@ using ATEK.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,25 @@ namespace ATEK.AccessControl_2.Gates
         private ObservableCollection<Gate> gates;
         private ObservableCollection<Class> classes;
         private ObservableCollection<Profile> gateProfiles;
+        private string setProgress;
+        private int setProgressValue;
 
         private int searchGateProfilesByClass;
         private string searchGateProfilesInput;
+        private bool customActiveTimesChecked;
+        private ObservableCollection<string> hoursList = new ObservableCollection<string>() { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24" };
+        private ObservableCollection<string> minutesList = new ObservableCollection<string>() { "00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "59" };
+        private string first_ActiveTime_From_Hour;
+        private string first_ActiveTime_From_Minute;
+        private string first_ActiveTime_To_Hour;
+        private string first_ActiveTime_To_Minute;
+        private string second_ActiveTime_From_Hour;
+        private string second_ActiveTime_From_Minute;
+        private string second_ActiveTime_To_Hour;
+        private string second_ActiveTime_To_Minute;
+        private Profile selectedProfile;
+        private BackgroundWorker setActiveTimesBackGroundWorker;
+        private bool isBackGroundWorkerBusy;
 
         public GatesViewModel(IAccessControlRepository repo)
         {
@@ -32,6 +49,8 @@ namespace ATEK.AccessControl_2.Gates
             EditGateCommand = new RelayCommand<Gate>(OnEditGate);
             ManageGateCommand = new RelayCommand<Gate>(OnManageGate);
             RefreshGatesCommand = new RelayCommand(OnRefreshGates);
+            ApplyActiveTimeCommand = new RelayCommand<object>(OnApplyActiveTime);
+            StopApplyActiveTimeCommand = new RelayCommand(OnStopSetActiveTime);
         }
 
         //=====================================================================
@@ -42,6 +61,8 @@ namespace ATEK.AccessControl_2.Gates
         public RelayCommand<Gate> EditGateCommand { get; private set; }
         public RelayCommand<Gate> ManageGateCommand { get; private set; }
         public RelayCommand RefreshGatesCommand { get; private set; }
+        public RelayCommand<object> ApplyActiveTimeCommand { get; private set; }
+        public RelayCommand StopApplyActiveTimeCommand { get; private set; }
 
         #endregion Commands
 
@@ -55,11 +76,57 @@ namespace ATEK.AccessControl_2.Gates
 
         public event Action<Gate> ManageGateRequested = delegate { };
 
+        public event Action StartBackgroundProgress = delegate { };
+
+        public event Action StopBackgroundProgress = delegate { };
+
         #endregion Actions
 
         //=====================================================================
 
         #region Properties
+
+        public bool IsBackGroundWorkerBusy
+        {
+            get { return isBackGroundWorkerBusy; }
+            set
+            {
+                SetProperty(ref isBackGroundWorkerBusy, value);
+                if (isBackGroundWorkerBusy)
+                {
+                    StartBackgroundProgress();
+                }
+                else
+                {
+                    StopBackgroundProgress();
+                }
+            }
+        }
+
+        public string SetProgress
+        {
+            get { return setProgress; }
+            set { SetProperty(ref setProgress, value); }
+        }
+
+        public int SetProgressValue
+        {
+            get { return setProgressValue; }
+            set
+            {
+                SetProperty(ref setProgressValue, value);
+                SetProgress = setProgressValue + "%";
+            }
+        }
+
+        public string First_ActiveTime_From_Hour { get { return first_ActiveTime_From_Hour; } set { SetProperty(ref first_ActiveTime_From_Hour, value); } }
+        public string First_ActiveTime_From_Minute { get { return first_ActiveTime_From_Minute; } set { SetProperty(ref first_ActiveTime_From_Minute, value); } }
+        public string First_ActiveTime_To_Hour { get { return first_ActiveTime_To_Hour; } set { SetProperty(ref first_ActiveTime_To_Hour, value); } }
+        public string First_ActiveTime_To_Minute { get { return first_ActiveTime_To_Minute; } set { SetProperty(ref first_ActiveTime_To_Minute, value); } }
+        public string Second_ActiveTime_From_Hour { get { return second_ActiveTime_From_Hour; } set { SetProperty(ref second_ActiveTime_From_Hour, value); } }
+        public string Second_ActiveTime_From_Minute { get { return second_ActiveTime_From_Minute; } set { SetProperty(ref second_ActiveTime_From_Minute, value); } }
+        public string Second_ActiveTime_To_Hour { get { return second_ActiveTime_To_Hour; } set { SetProperty(ref second_ActiveTime_To_Hour, value); } }
+        public string Second_ActiveTime_To_Minute { get { return second_ActiveTime_To_Minute; } set { SetProperty(ref second_ActiveTime_To_Minute, value); } }
 
         public ObservableCollection<Gate> Gates
         {
@@ -76,6 +143,29 @@ namespace ATEK.AccessControl_2.Gates
                 if (selectedGate != null)
                 {
                     LoadGateProfiles(selectedGate.Id);
+                }
+            }
+        }
+
+        public Profile SelectedProfile
+        {
+            get { return selectedProfile; }
+            set
+            {
+                SetProperty(ref selectedProfile, value);
+                if (selectedProfile != null)
+                {
+                    foreach (var pg in selectedProfile.ProfileGates)
+                    {
+                        Console.WriteLine($"GateId: {pg.GateId}");
+                        string rs = $"[{pg.ActiveTimes.Count}]Activetimes: ";
+                        if (pg.ActiveTimes.Count == 2)
+                        {
+                            string temp = $"{pg.ActiveTimes[0].ToString()}-{pg.ActiveTimes[1].ToString()}";
+                            Console.WriteLine(rs + temp);
+                            Console.WriteLine("========================================");
+                        }
+                    }
                 }
             }
         }
@@ -110,6 +200,24 @@ namespace ATEK.AccessControl_2.Gates
         {
             get { return classes; }
             set { SetProperty(ref classes, value); }
+        }
+
+        public bool CustomActiveTimesChecked
+        {
+            get { return customActiveTimesChecked; }
+            set { SetProperty(ref customActiveTimesChecked, value); }
+        }
+
+        public ObservableCollection<string> HoursList
+        {
+            get { return hoursList; }
+            set { SetProperty(ref hoursList, value); }
+        }
+
+        public ObservableCollection<string> MinutesList
+        {
+            get { return minutesList; }
+            set { SetProperty(ref minutesList, value); }
         }
 
         #endregion Properties
@@ -253,6 +361,214 @@ namespace ATEK.AccessControl_2.Gates
                         }
                     }
                 }
+            }
+        }
+
+        private void OnStopSetActiveTime()
+        {
+            if (setActiveTimesBackGroundWorker.WorkerSupportsCancellation)
+            {
+                setActiveTimesBackGroundWorker.CancelAsync();
+            }
+        }
+
+        private void OnApplyActiveTime(object obj)
+        {
+            if (obj != null && SelectedGate != null)
+            {
+                System.Collections.IList items = (System.Collections.IList)obj;
+                var collection = items.Cast<Profile>();
+                if (collection.Count() > 0)
+                {
+                    setActiveTimesBackGroundWorker = new BackgroundWorker();
+                    setActiveTimesBackGroundWorker.WorkerSupportsCancellation = true;
+                    setActiveTimesBackGroundWorker.WorkerReportsProgress = true;
+                    setActiveTimesBackGroundWorker.DoWork += SetActiveTimesBackGroundWorker_DoWork;
+                    setActiveTimesBackGroundWorker.RunWorkerCompleted += SetActiveTimesBackGroundWorker_RunWorkerCompleted;
+                    setActiveTimesBackGroundWorker.ProgressChanged += SetActiveTimesBackGroundWorker_ProgressChanged;
+                    setActiveTimesBackGroundWorker.Disposed += SetActiveTimesBackGroundWorker_Disposed;
+                    setActiveTimesBackGroundWorker.RunWorkerAsync(collection.ToList());
+                    IsBackGroundWorkerBusy = true;
+                }
+            }
+        }
+
+        private void SetActiveTimesBackGroundWorker_Disposed(object sender, EventArgs e)
+        {
+            IsBackGroundWorkerBusy = false;
+        }
+
+        private void SetActiveTimesBackGroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            SetProgressValue = e.ProgressPercentage;
+        }
+
+        private void SetActiveTimesBackGroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // check error, check cancel, then use result
+            if (e.Error != null)
+            {
+                // handle the error
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+            }
+            else
+            {
+            }
+            // general cleanup code, runs when there was an error or not.
+            SetProgressValue = 0;
+            setActiveTimesBackGroundWorker.Dispose();
+        }
+
+        private void SetActiveTimesBackGroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var listProfiles = (List<Profile>)e.Argument;
+            for (int i = 0; i < listProfiles.Count; i++)
+            {
+                var profileGate = listProfiles[i].ProfileGates.FirstOrDefault(pg => pg.GateId == SelectedGate.Id);
+                if (profileGate != null)
+                {
+                    string activeTime = SetActiveTimeToProfileGate(profileGate);
+                    if (activeTime != null)
+                    {
+                        if (!repo.Firebase_UpdateProfileGateActiveTime(activeTime, SelectedGate.FirebaseId, listProfiles[i].Pinno))
+                        {
+                            MessageBox.Show("Error, Please check your internet.");
+                            return;
+                        }
+                    }
+                }
+                if (setActiveTimesBackGroundWorker.CancellationPending)
+                {
+                    return;
+                }
+                (sender as BackgroundWorker).ReportProgress((i * 100) / listProfiles.Count);
+            }
+        }
+
+        private string SetActiveTimeToProfileGate(ProfileGate profileGate)
+        {
+            var listActiveTimes = GetActiveTime(profileGate.ProfileId, profileGate.GateId);
+            if (listActiveTimes != null)
+            {
+                if (profileGate.ActiveTimes.Count <= 0)
+                {
+                    //New
+                    bool result = true;
+                    foreach (var activeTime in listActiveTimes)
+                    {
+                        if (!repo.AddActiveTime(activeTime))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+                    if (!result)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return $"{listActiveTimes[0].ToString()}-{listActiveTimes[1].ToString()}";
+                    }
+                }
+                else
+                {
+                    //Update
+                    bool result = true;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        if (!repo.RemoveActiveTime(profileGate.ActiveTimes.First()))
+                        {
+                            result = false;
+                            break;
+                        }
+                        if (!repo.AddActiveTime(listActiveTimes[i]))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+                    if (!result)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return $"{listActiveTimes[0].ToString()}-{listActiveTimes[1].ToString()}";
+                    }
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<ActiveTime> GetActiveTime(int profileGateProfileId, int profileGateGateId)
+        {
+            if (CustomActiveTimesChecked)
+            {
+                //New ActiveTimes
+                if (!string.IsNullOrWhiteSpace(first_ActiveTime_From_Hour) &&
+                    !string.IsNullOrWhiteSpace(first_ActiveTime_From_Minute) &&
+                    !string.IsNullOrWhiteSpace(first_ActiveTime_To_Hour) &&
+                    !string.IsNullOrWhiteSpace(first_ActiveTime_To_Minute) &&
+                    !string.IsNullOrWhiteSpace(second_ActiveTime_From_Hour) &&
+                    !string.IsNullOrWhiteSpace(second_ActiveTime_From_Minute) &&
+                    !string.IsNullOrWhiteSpace(second_ActiveTime_To_Hour) &&
+                    !string.IsNullOrWhiteSpace(second_ActiveTime_To_Minute)
+                    )
+                {
+                    var firstActiveTime = new ActiveTime()
+                    {
+                        FromTime = $"{first_ActiveTime_From_Hour}:{first_ActiveTime_From_Minute}",
+                        ToTime = $"{first_ActiveTime_To_Hour}:{first_ActiveTime_To_Minute}",
+                        ProfileGateProfileId = profileGateProfileId,
+                        ProfileGateGateId = profileGateGateId
+                    };
+                    var secondActiveTime = new ActiveTime()
+                    {
+                        FromTime = $"{second_ActiveTime_From_Hour}:{second_ActiveTime_From_Minute}",
+                        ToTime = $"{second_ActiveTime_To_Hour}:{second_ActiveTime_To_Minute}",
+                        ProfileGateProfileId = profileGateProfileId,
+                        ProfileGateGateId = profileGateGateId
+                    };
+
+                    List<ActiveTime> result = new List<ActiveTime>();
+                    result.Add(firstActiveTime);
+                    result.Add(secondActiveTime);
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                //24/24
+                var firstActiveTime = new ActiveTime()
+                {
+                    FromTime = "00:00",
+                    ToTime = "23:59",
+                    ProfileGateProfileId = profileGateProfileId,
+                    ProfileGateGateId = profileGateGateId
+                };
+                var secondActiveTime = new ActiveTime()
+                {
+                    FromTime = "00:00",
+                    ToTime = "23:59",
+                    ProfileGateProfileId = profileGateProfileId,
+                    ProfileGateGateId = profileGateGateId
+                };
+
+                List<ActiveTime> result = new List<ActiveTime>();
+                result.Add(firstActiveTime);
+                result.Add(secondActiveTime);
+                return result;
             }
         }
 

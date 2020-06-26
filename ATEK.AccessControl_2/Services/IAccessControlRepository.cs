@@ -35,6 +35,10 @@ namespace ATEK.AccessControl_2.Services
 
         Task<bool> Firebase_RemoveProfileGateAsync(Profile profile, Gate gate);
 
+        bool Firebase_UpdateProfileGateData(Profile editingProfile, string firebaseId);
+
+        bool Firebase_UpdateProfileGateActiveTime(string data, string firebaseId, string pinno);
+
         Task<IEnumerable<Gate>> Firebase_GetGatesAsync();
 
         Task<IEnumerable<Class>> Firebase_GetClassesAsync();
@@ -61,6 +65,8 @@ namespace ATEK.AccessControl_2.Services
 
         bool AddProfileGate(Profile profile, Gate gate);
 
+        bool AddActiveTime(ActiveTime activeTime);
+
         bool UpdateProfile(Profile profile);
 
         bool UpdateClass(Class @class);
@@ -80,6 +86,8 @@ namespace ATEK.AccessControl_2.Services
         bool RemoveProfileGroup(Profile profile, Group group);
 
         bool RemoveProfileGate(Profile profile, Gate gate);
+
+        bool RemoveActiveTime(ActiveTime activeTime);
 
         IEnumerable<Profile> LoadProfilesOfGroup(int groupId);
 

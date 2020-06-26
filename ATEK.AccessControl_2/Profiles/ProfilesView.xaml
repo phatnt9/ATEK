@@ -252,42 +252,7 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" />
-                            <Grid Grid.Row="1">
-                                <StackPanel>
-                                    <DockPanel Height="30">
-                                        <ComboBox
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0" />
-                                        <Label>:</Label>
-                                        <ComboBox
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0" />
-                                        <Button
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0"
-                                            Content="Save" />
-                                    </DockPanel>
-                                    <DockPanel Height="30">
-                                        <ComboBox
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0" />
-                                        <Label>:</Label>
-                                        <ComboBox
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0" />
-                                        <Button
-                                            Width="50"
-                                            Height="20"
-                                            Margin="4,0"
-                                            Content="Save" />
-                                    </DockPanel>
-                                </StackPanel>
-                            </Grid>
+                            <Grid Grid.Row="1" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Manage" IsSelected="True">

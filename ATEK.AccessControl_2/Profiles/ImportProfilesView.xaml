@@ -45,6 +45,7 @@
                                 Margin="5"
                                 Content="Update Profiles"
                                 GroupName="addorupdate"
+                                IsChecked="False"
                                 Visibility="{Binding IsBackGroundWorkerBusy, Converter={StaticResource NegVisConverter}}" />
                         </StackPanel>
                     </Grid>

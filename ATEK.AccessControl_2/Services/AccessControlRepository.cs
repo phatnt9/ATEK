@@ -40,29 +40,95 @@ namespace ATEK.AccessControl_2.Services
 
         #region Firebase
 
-        public async void Firebase_SetTime()
+        public bool Firebase_UpdateProfileGateData(Profile editingProfile, string firebaseId)
         {
-            DateTime data = DateTime.Now;
-            Dictionary<string, object> date = new Dictionary<string, object>
+            try
             {
-                { "timeNow", DateTime.SpecifyKind(data, DateTimeKind.Utc)}
-            };
-            DocumentReference classRef = await db.Collection("TimeTest").AddAsync(date);
+                DocumentReference profileGateRef = db.Collection(_firebaseGatesCollection)
+                                                .Document(firebaseId)
+                                                .Collection("Profiles")
+                                                .Document(editingProfile.Pinno);
+                //DocumentReference gateRef = db.Collection(_firebaseGatesCollection)
+                //                                .Document(firebaseId);
+                Dictionary<string, object> updates = new Dictionary<string, object>
+                {
+                    { "Pinno", editingProfile.Pinno },
+                    { "Adno", editingProfile.Adno },
+                    { "Name", editingProfile.Name },
+                    { "ClassId", editingProfile.ClassId },
+                    { "DateToLock", editingProfile.DateToLock },
+                    { "CheckDateToLock", editingProfile.CheckDateToLock },
+                    { "LicensePlate", editingProfile.LicensePlate },
+                    { "Image", editingProfile.Image }
+                };
+                var writeResult = profileGateRef.UpdateAsync(updates);
+                writeResult.Wait(3000);
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
         }
 
-        public async void Firebase_GetTime()
+        public bool Firebase_UpdateProfileGateActiveTime(string data, string firebaseId, string pinno)
         {
-            Query allCitiesQuery = db.Collection("TimeTest");
-            QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
+            try
             {
-                Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
-                Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                foreach (KeyValuePair<string, object> pair in city)
+                DocumentReference profileGateRef = db.Collection(_firebaseGatesCollection)
+                                                .Document(firebaseId)
+                                                .Collection("Profiles")
+                                                .Document(pinno);
+                DocumentReference gateRef = db.Collection(_firebaseGatesCollection)
+                                                .Document(firebaseId);
+                Dictionary<string, object> updates = new Dictionary<string, object>
                 {
-                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                    { "ActiveTime", data }
+                };
+                var writeResult = profileGateRef.UpdateAsync(updates);
+                writeResult.Wait(3000);
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            updates = new Dictionary<string, object>
+                            {
+                                { "ServerUpdateTimeCheck", DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc) }
+                            };
+                            gateRef.UpdateAsync(updates);
+                            return true;
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
                 }
-                Console.WriteLine("");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
             }
         }
 
@@ -615,11 +681,37 @@ namespace ATEK.AccessControl_2.Services
             _firebaseClassesCollection = $"{Properties.Settings.Default.serviceAccountName}_classes";
             _firebaseGatesCollection = $"{Properties.Settings.Default.serviceAccountName}_gates";
             var buckets = storage.ListBuckets(projectId);
-            foreach (var bucket in buckets)
-            {
-                Console.WriteLine(bucket.Name);
-            }
+            //foreach (var bucket in buckets)
+            //{
+            //    Console.WriteLine(bucket.Name);
+            //}
             return null;
+        }
+
+        public async void Firebase_SetTime()
+        {
+            DateTime data = DateTime.Now;
+            Dictionary<string, object> date = new Dictionary<string, object>
+            {
+                { "timeNow", DateTime.SpecifyKind(data, DateTimeKind.Utc)}
+            };
+            DocumentReference classRef = await db.Collection("TimeTest").AddAsync(date);
+        }
+
+        public async void Firebase_GetTime()
+        {
+            Query allCitiesQuery = db.Collection("TimeTest");
+            QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
+            {
+                Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
+                Dictionary<string, object> city = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in city)
+                {
+                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                }
+                Console.WriteLine("");
+            }
         }
 
         #endregion Firebase
@@ -643,7 +735,7 @@ namespace ATEK.AccessControl_2.Services
 
         public IEnumerable<Gate> GetGates()
         {
-            return _context.Gates.Include(g => g.ProfileGates).ToList();
+            return _context.Gates.Include(g => g.ProfileGates).ThenInclude(pg => pg.ActiveTimes).ToList();
         }
 
         public IEnumerable<Group> GetGroups()
@@ -1001,6 +1093,42 @@ namespace ATEK.AccessControl_2.Services
                  Gates = p.ProfileGates.Select(pg => pg.Gate)
              }).FirstOrDefault();
             return profile.Gates;
+        }
+
+        public bool AddActiveTime(ActiveTime activeTime)
+        {
+            try
+            {
+                _context.Add(activeTime);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (HandleException(ex))
+                {
+                    _context.Remove(activeTime);
+                }
+                return false;
+            }
+        }
+
+        public bool RemoveActiveTime(ActiveTime activeTime)
+        {
+            if (activeTime != null)
+            {
+                Console.WriteLine($"Remove Co ne.{activeTime.Id}");
+                _context.Entry(activeTime).State = EntityState.Deleted;
+                _context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Remove Ko co.{activeTime.Id}");
+                _context.Remove(activeTime);
+                _context.SaveChanges();
+                return true;
+            }
         }
 
         public virtual bool HandleException(Exception exception)

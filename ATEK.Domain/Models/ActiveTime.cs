@@ -13,6 +13,11 @@ namespace ATEK.Domain.Models
         private int profileGateGateId;
         private ProfileGate profileGate;
 
+        public override string ToString()
+        {
+            return $"{fromTime}-{toTime}";
+        }
+
         public int Id
         {
             get { return id; }
