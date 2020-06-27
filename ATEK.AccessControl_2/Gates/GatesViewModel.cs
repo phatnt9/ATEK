@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -40,17 +41,20 @@ namespace ATEK.AccessControl_2.Gates
         private string second_ActiveTime_To_Minute;
         private Profile selectedProfile;
         private BackgroundWorker setActiveTimesBackGroundWorker;
+        private BackgroundWorker getTimeChecksBackGroundWorker;
         private bool isBackGroundWorkerBusy;
 
         public GatesViewModel(IAccessControlRepository repo)
         {
             this.repo = repo;
             AddGateCommand = new RelayCommand(OnAddGate);
+            GetTimeChecksCommand = new RelayCommand<Gate>(OnGetTimeChecks);
             EditGateCommand = new RelayCommand<Gate>(OnEditGate);
             ManageGateCommand = new RelayCommand<Gate>(OnManageGate);
             RefreshGatesCommand = new RelayCommand(OnRefreshGates);
             ApplyActiveTimeCommand = new RelayCommand<object>(OnApplyActiveTime);
             StopApplyActiveTimeCommand = new RelayCommand(OnStopSetActiveTime);
+            CardSweepCommand = new RelayCommand<Profile>(OnCardSweep);
         }
 
         //=====================================================================
@@ -58,11 +62,13 @@ namespace ATEK.AccessControl_2.Gates
         #region Commands
 
         public RelayCommand AddGateCommand { get; private set; }
+        public RelayCommand<Gate> GetTimeChecksCommand { get; private set; }
         public RelayCommand<Gate> EditGateCommand { get; private set; }
         public RelayCommand<Gate> ManageGateCommand { get; private set; }
         public RelayCommand RefreshGatesCommand { get; private set; }
         public RelayCommand<object> ApplyActiveTimeCommand { get; private set; }
         public RelayCommand StopApplyActiveTimeCommand { get; private set; }
+        public RelayCommand<Profile> CardSweepCommand { get; private set; }
 
         #endregion Commands
 
@@ -142,6 +148,7 @@ namespace ATEK.AccessControl_2.Gates
                 SetProperty(ref selectedGate, value);
                 if (selectedGate != null)
                 {
+                    Console.WriteLine($"Selected gate is: {selectedGate.Name}");
                     LoadGateProfiles(selectedGate.Id);
                 }
             }
@@ -225,6 +232,95 @@ namespace ATEK.AccessControl_2.Gates
         //=====================================================================
 
         #region Methods
+
+        private void OnGetTimeChecks(Gate gate)
+        {
+            if (gate != null)
+            {
+                List<TimeCheck> gateListTimeChecks = repo.Firebase_GetTimeChecks(gate.FirebaseId);
+                if (gateListTimeChecks != null)
+                {
+                    getTimeChecksBackGroundWorker = new BackgroundWorker();
+                    getTimeChecksBackGroundWorker.WorkerSupportsCancellation = true;
+                    getTimeChecksBackGroundWorker.WorkerReportsProgress = true;
+                    getTimeChecksBackGroundWorker.DoWork += GetTimeChecksBackGroundWorker_DoWork;
+                    getTimeChecksBackGroundWorker.RunWorkerCompleted += GetTimeChecksBackGroundWorker_RunWorkerCompleted;
+                    getTimeChecksBackGroundWorker.ProgressChanged += GetTimeChecksBackGroundWorker_ProgressChanged;
+                    getTimeChecksBackGroundWorker.Disposed += GetTimeChecksBackGroundWorker_Disposed;
+                    List<object> args = new List<object>();
+                    args.Add(gate.FirebaseId);
+                    args.Add(gateListTimeChecks);
+                    getTimeChecksBackGroundWorker.RunWorkerAsync(args);
+                    IsBackGroundWorkerBusy = true;
+                }
+            }
+        }
+
+        private void GetTimeChecksBackGroundWorker_Disposed(object sender, EventArgs e)
+        {
+            IsBackGroundWorkerBusy = false;
+        }
+
+        private void GetTimeChecksBackGroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            SetProgressValue = e.ProgressPercentage;
+        }
+
+        private void GetTimeChecksBackGroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // check error, check cancel, then use result
+            if (e.Error != null)
+            {
+                // handle the error
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+            }
+            else
+            {
+            }
+            // general cleanup code, runs when there was an error or not.
+            SetProgressValue = 0;
+            getTimeChecksBackGroundWorker.Dispose();
+        }
+
+        private void GetTimeChecksBackGroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            List<object> args = (List<object>)e.Argument;
+            var gateFirebaseId = (string)args[0];
+            var gateListTimeChecks = (List<TimeCheck>)args[1];
+            for (int i = 0; i < gateListTimeChecks.Count; i++)
+            {
+                if (repo.AddTimeCheck(gateListTimeChecks[i]))
+                {
+                    if (!repo.Firebase_RemoveTimeCheck(gateFirebaseId, gateListTimeChecks[i].FirebaseId))
+                    {
+                        MessageBox.Show("Error, Please check your internet");
+                        return;
+                    }
+                }
+                if (getTimeChecksBackGroundWorker.CancellationPending)
+                {
+                    return;
+                }
+                (sender as BackgroundWorker).ReportProgress((i * 100) / gateListTimeChecks.Count);
+            }
+        }
+
+        private void OnCardSweep(Profile profile)
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                TimeCheck timeCheck = new TimeCheck()
+                {
+                    GateFirebaseId = selectedGate.FirebaseId,
+                    Pinno = profile.Pinno,
+                    Timecheck = DateTime.Now
+                };
+                repo.Firebase_AddTimeCheck(timeCheck);
+            }
+        }
 
         public async void LoadData()
         {
@@ -366,7 +462,7 @@ namespace ATEK.AccessControl_2.Gates
 
         private void OnStopSetActiveTime()
         {
-            if (setActiveTimesBackGroundWorker.WorkerSupportsCancellation)
+            if (setActiveTimesBackGroundWorker != null && setActiveTimesBackGroundWorker.WorkerSupportsCancellation)
             {
                 setActiveTimesBackGroundWorker.CancelAsync();
             }

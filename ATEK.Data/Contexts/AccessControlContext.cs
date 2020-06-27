@@ -17,6 +17,7 @@ namespace ATEK.Data.Contexts
         public DbSet<Gate> Gates { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Class> Classes { get; set; }
+        public DbSet<TimeCheck> TimeChecks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ATEK.AccessControl_2.Gates"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
+    d:DesignHeight="650"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <b:Interaction.Triggers>
@@ -96,6 +96,17 @@
                             Header="FirebaseId"
                             IsReadOnly="True"
                             Visibility="Hidden" />
+                        <DataGridTemplateColumn Width="Auto" Header="Get TimeChecks">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="2"
+                                        Command="{Binding DataContext.GetTimeChecksCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Get" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Width="Auto" Header="Edit">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -166,21 +177,25 @@
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding HoursList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding First_ActiveTime_From_Hour}" />
                                                         <Label>:</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding MinutesList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding First_ActiveTime_From_Minute}" />
                                                         <Label Padding="10,0,5,0" VerticalContentAlignment="Center">to</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding HoursList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding First_ActiveTime_To_Hour}" />
                                                         <Label>:</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding MinutesList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding First_ActiveTime_To_Minute}" />
                                                     </DockPanel>
                                                 </Grid>
@@ -190,21 +205,25 @@
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding HoursList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding Second_ActiveTime_From_Hour}" />
                                                         <Label>:</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding MinutesList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding Second_ActiveTime_From_Minute}" />
                                                         <Label Padding="10,0,5,0" VerticalContentAlignment="Center">to</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding HoursList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding Second_ActiveTime_To_Hour}" />
                                                         <Label>:</Label>
                                                         <ComboBox
                                                             Width="Auto"
                                                             ItemsSource="{Binding MinutesList}"
+                                                            SelectedIndex="0"
                                                             SelectedValue="{Binding Second_ActiveTime_To_Minute}" />
                                                     </DockPanel>
                                                 </Grid>
@@ -328,11 +347,6 @@
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="Auto"
-                            Binding="{Binding ActiveTime}"
-                            Header="Active Time"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="Auto"
                             Binding="{Binding Status}"
                             Header="Status"
                             IsReadOnly="True">
@@ -353,6 +367,17 @@
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
+                        <DataGridTemplateColumn Width="Auto" Header="Sweep">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="2"
+                                        Command="{Binding DataContext.CardSweepCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Sweep" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

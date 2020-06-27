@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ATEK.AccessControl_2.Profiles
 {
@@ -60,12 +61,25 @@ namespace ATEK.AccessControl_2.Profiles
                 if (EditMode)
                 {
                     editingProfile.DateModified = DateTime.Today;
-                    if (repo.UpdateProfile(editingProfile))
+                    bool error = false;
+                    foreach (var pg in editingProfile.ProfileGates)
                     {
-                        foreach (var pg in editingProfile.ProfileGates)
+                        if (!repo.Firebase_UpdateProfileGateData(editingProfile, pg.Gate.FirebaseId))
                         {
-                            repo.Firebase_UpdateProfileGateData(editingProfile, pg.Gate.FirebaseId);
+                            error = true;
+                            break;
                         }
+                    }
+                    if (!error)
+                    {
+                        if (!repo.UpdateProfile(editingProfile))
+                        {
+                            MessageBox.Show("Error updating Profile. Please try again later.");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, Please check your internet.");
                     }
                     Done();
                 }

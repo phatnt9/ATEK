@@ -4,14 +4,16 @@ using ATEK.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ATEK.Data.Migrations
 {
     [DbContext(typeof(AccessControlContext))]
-    partial class ProfileContextModelSnapshot : ModelSnapshot
+    [Migration("20200627151917_AddTimeChecksTable")]
+    partial class AddTimeChecksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,9 +213,6 @@ namespace ATEK.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FirebaseId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GateFirebaseId")
                         .HasColumnType("nvarchar(max)");

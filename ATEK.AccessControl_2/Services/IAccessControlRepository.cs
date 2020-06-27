@@ -96,5 +96,13 @@ namespace ATEK.AccessControl_2.Services
         IEnumerable<Group> LoadGroupsOfProfile(int profileId);
 
         IEnumerable<Gate> LoadGatesOfProfile(int profileId);
+
+        bool Firebase_AddTimeCheck(TimeCheck timeCheck);
+
+        List<TimeCheck> Firebase_GetTimeChecks(string firebaseId);
+
+        bool AddTimeCheck(TimeCheck timeCheck);
+
+        bool Firebase_RemoveTimeCheck(string gateFirebaseId, string firebaseId);
     }
 }

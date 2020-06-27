@@ -40,6 +40,98 @@ namespace ATEK.AccessControl_2.Services
 
         #region Firebase
 
+        public bool Firebase_RemoveTimeCheck(string gateFirebaseId, string firebaseId)
+        {
+            try
+            {
+                DocumentReference timeCheckRef = db.Collection(_firebaseGatesCollection)
+                                                .Document(gateFirebaseId)
+                                                .Collection("TimeChecks")
+                                                .Document(firebaseId);
+                var writeResult = timeCheckRef.DeleteAsync();
+                writeResult.Wait();
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
+        public List<TimeCheck> Firebase_GetTimeChecks(string firebaseId)
+        {
+            List<TimeCheck> result = new List<TimeCheck>();
+            try
+            {
+                Query allTimeCheckQuery = db.Collection(_firebaseGatesCollection)
+                                            .Document(firebaseId)
+                                            .Collection("TimeChecks");
+                var taskQuerySnapshot = allTimeCheckQuery.OrderByDescending("Timecheck").GetSnapshotAsync();
+                taskQuerySnapshot.Wait();
+                foreach (DocumentSnapshot documentSnapshot in taskQuerySnapshot.Result.Documents)
+                {
+                    TimeCheck timeCheck = documentSnapshot.ConvertTo<TimeCheck>();
+                    timeCheck.FirebaseId = documentSnapshot.Id;
+                    result.Add(timeCheck);
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return null;
+            }
+        }
+
+        public bool Firebase_AddTimeCheck(TimeCheck timeCheck)
+        {
+            try
+            {
+                CollectionReference timeCheckRef = db.Collection(_firebaseGatesCollection)
+                                                .Document(timeCheck.GateFirebaseId)
+                                                .Collection("TimeChecks");
+                var writeResult = timeCheckRef.AddAsync(timeCheck);
+                writeResult.Wait();
+                switch (writeResult.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        {
+                            return true;
+                        }
+                    case TaskStatus.WaitingForActivation:
+                        {
+                            writeResult.Dispose();
+                            return false;
+                        }
+                    default:
+                        {
+                            throw new NotImplementedException();
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                return false;
+            }
+        }
+
         public bool Firebase_UpdateProfileGateData(Profile editingProfile, string firebaseId)
         {
             try
@@ -62,7 +154,7 @@ namespace ATEK.AccessControl_2.Services
                     { "Image", editingProfile.Image }
                 };
                 var writeResult = profileGateRef.UpdateAsync(updates);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -102,14 +194,14 @@ namespace ATEK.AccessControl_2.Services
                     { "ActiveTime", data }
                 };
                 var writeResult = profileGateRef.UpdateAsync(updates);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
                         {
                             updates = new Dictionary<string, object>
                             {
-                                { "ServerUpdateTimeCheck", DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc) }
+                                { "ServerLastUpdate", DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc) }
                             };
                             gateRef.UpdateAsync(updates);
                             return true;
@@ -139,7 +231,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection)
                                                 .Document(@class.Id.ToString());
                 var writeResult = classRef.SetAsync(@class);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -171,7 +263,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection)
                                                 .Document(gate.FirebaseId.ToString());
                 var writeResult = gateRef.SetAsync(gate);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -207,7 +299,7 @@ namespace ATEK.AccessControl_2.Services
                     { "Name", @class.Name }
                 };
                 var writeResult = classRef.UpdateAsync(updates);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -245,7 +337,7 @@ namespace ATEK.AccessControl_2.Services
                     { "Note", gate.Note },
                 };
                 var writeResult = gateRef.UpdateAsync(updates);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -277,7 +369,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference classRef = db.Collection(_firebaseClassesCollection)
                                                 .Document(@class.Id.ToString());
                 var writeResult = classRef.DeleteAsync();
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -309,7 +401,7 @@ namespace ATEK.AccessControl_2.Services
                 DocumentReference gateRef = db.Collection(_firebaseGatesCollection)
                                                 .Document(gate.FirebaseId.ToString());
                 var writeResult = gateRef.DeleteAsync();
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -343,7 +435,7 @@ namespace ATEK.AccessControl_2.Services
                                                         .Collection("Profiles")
                                                         .Document(profile.Pinno);
                 var writeResult = profileGatesRef.SetAsync(profile);
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -377,7 +469,7 @@ namespace ATEK.AccessControl_2.Services
                                                         .Collection("Profiles")
                                                         .Document(profile.Pinno);
                 var writeResult = profileGatesRef.DeleteAsync();
-                writeResult.Wait(3000);
+                writeResult.Wait();
                 switch (writeResult.Status)
                 {
                     case TaskStatus.RanToCompletion:
@@ -492,7 +584,7 @@ namespace ATEK.AccessControl_2.Services
             try
             {
                 CollectionReference gatesRef = db.Collection(_firebaseGatesCollection);
-                gatesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
+                //gatesRef.Listen(snapShots => OnFirebaseGatesChange(snapShots));
                 var querySnapshot = gatesRef.GetSnapshotAsync();
                 await querySnapshot;
                 switch (querySnapshot.Status)
@@ -853,6 +945,42 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
+        public bool AddActiveTime(ActiveTime activeTime)
+        {
+            try
+            {
+                _context.Add(activeTime);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (HandleException(ex))
+                {
+                    _context.Remove(activeTime);
+                }
+                return false;
+            }
+        }
+
+        public bool AddTimeCheck(TimeCheck timeCheck)
+        {
+            try
+            {
+                _context.TimeChecks.Add(timeCheck);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (HandleException(ex))
+                {
+                    _context.TimeChecks.Remove(timeCheck);
+                }
+                return false;
+            }
+        }
+
         public bool UpdateProfile(Profile profile)
         {
             try
@@ -1051,6 +1179,24 @@ namespace ATEK.AccessControl_2.Services
             }
         }
 
+        public bool RemoveActiveTime(ActiveTime activeTime)
+        {
+            if (activeTime != null)
+            {
+                Console.WriteLine($"Remove Co ne.{activeTime.Id}");
+                _context.Entry(activeTime).State = EntityState.Deleted;
+                _context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Remove Ko co.{activeTime.Id}");
+                _context.Remove(activeTime);
+                _context.SaveChanges();
+                return true;
+            }
+        }
+
         public IEnumerable<Profile> LoadProfilesOfGroup(int groupId)
         {
             var group = _context.Groups.AsQueryable().Where(g => g.Id == groupId)
@@ -1095,48 +1241,15 @@ namespace ATEK.AccessControl_2.Services
             return profile.Gates;
         }
 
-        public bool AddActiveTime(ActiveTime activeTime)
-        {
-            try
-            {
-                _context.Add(activeTime);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                if (HandleException(ex))
-                {
-                    _context.Remove(activeTime);
-                }
-                return false;
-            }
-        }
-
-        public bool RemoveActiveTime(ActiveTime activeTime)
-        {
-            if (activeTime != null)
-            {
-                Console.WriteLine($"Remove Co ne.{activeTime.Id}");
-                _context.Entry(activeTime).State = EntityState.Deleted;
-                _context.SaveChanges();
-                return true;
-            }
-            else
-            {
-                Console.WriteLine($"Remove Ko co.{activeTime.Id}");
-                _context.Remove(activeTime);
-                _context.SaveChanges();
-                return true;
-            }
-        }
-
         public virtual bool HandleException(Exception exception)
         {
-            MessageBox.Show("ERROR IN DATABASE CONTEXT");
             Console.WriteLine(exception.GetType().ToString());
             switch (exception)
             {
+                case System.InvalidOperationException ex:
+                    {
+                        return false;
+                    }
                 case Grpc.Core.RpcException ex:
                     {
                         switch (ex.StatusCode)
