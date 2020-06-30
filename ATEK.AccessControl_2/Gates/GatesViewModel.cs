@@ -25,6 +25,8 @@ namespace ATEK.AccessControl_2.Gates
         private ObservableCollection<Profile> gateProfiles;
         private string setProgress;
         private int setProgressValue;
+        private string getProgress;
+        private int getProgressValue;
 
         private int searchGateProfilesByClass;
         private string searchGateProfilesInput;
@@ -49,6 +51,7 @@ namespace ATEK.AccessControl_2.Gates
             this.repo = repo;
             AddGateCommand = new RelayCommand(OnAddGate);
             GetTimeChecksCommand = new RelayCommand<Gate>(OnGetTimeChecks);
+            StopGetTimeChecksCommand = new RelayCommand(OnStopGetTimeChecks);
             EditGateCommand = new RelayCommand<Gate>(OnEditGate);
             ManageGateCommand = new RelayCommand<Gate>(OnManageGate);
             RefreshGatesCommand = new RelayCommand(OnRefreshGates);
@@ -63,6 +66,7 @@ namespace ATEK.AccessControl_2.Gates
 
         public RelayCommand AddGateCommand { get; private set; }
         public RelayCommand<Gate> GetTimeChecksCommand { get; private set; }
+        public RelayCommand StopGetTimeChecksCommand { get; private set; }
         public RelayCommand<Gate> EditGateCommand { get; private set; }
         public RelayCommand<Gate> ManageGateCommand { get; private set; }
         public RelayCommand RefreshGatesCommand { get; private set; }
@@ -115,6 +119,12 @@ namespace ATEK.AccessControl_2.Gates
             set { SetProperty(ref setProgress, value); }
         }
 
+        public string GetProgress
+        {
+            get { return getProgress; }
+            set { SetProperty(ref getProgress, value); }
+        }
+
         public int SetProgressValue
         {
             get { return setProgressValue; }
@@ -122,6 +132,16 @@ namespace ATEK.AccessControl_2.Gates
             {
                 SetProperty(ref setProgressValue, value);
                 SetProgress = setProgressValue + "%";
+            }
+        }
+
+        public int GetProgressValue
+        {
+            get { return getProgressValue; }
+            set
+            {
+                SetProperty(ref getProgressValue, value);
+                GetProgress = getProgressValue + "%";
             }
         }
 
@@ -233,13 +253,23 @@ namespace ATEK.AccessControl_2.Gates
 
         #region Methods
 
+        private void OnStopGetTimeChecks()
+        {
+            if (getTimeChecksBackGroundWorker != null && getTimeChecksBackGroundWorker.WorkerSupportsCancellation)
+            {
+                getTimeChecksBackGroundWorker.CancelAsync();
+            }
+        }
+
         private void OnGetTimeChecks(Gate gate)
         {
             if (gate != null)
             {
                 List<TimeCheck> gateListTimeChecks = repo.Firebase_GetTimeChecks(gate.FirebaseId);
+               
                 if (gateListTimeChecks != null)
                 {
+                    Console.WriteLine(gateListTimeChecks.Count);
                     getTimeChecksBackGroundWorker = new BackgroundWorker();
                     getTimeChecksBackGroundWorker.WorkerSupportsCancellation = true;
                     getTimeChecksBackGroundWorker.WorkerReportsProgress = true;
@@ -263,7 +293,7 @@ namespace ATEK.AccessControl_2.Gates
 
         private void GetTimeChecksBackGroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            SetProgressValue = e.ProgressPercentage;
+            GetProgressValue = e.ProgressPercentage;
         }
 
         private void GetTimeChecksBackGroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -281,7 +311,7 @@ namespace ATEK.AccessControl_2.Gates
             {
             }
             // general cleanup code, runs when there was an error or not.
-            SetProgressValue = 0;
+            GetProgressValue = 0;
             getTimeChecksBackGroundWorker.Dispose();
         }
 
